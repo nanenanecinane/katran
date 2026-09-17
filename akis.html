@@ -696,7 +696,7 @@ return map;
 }
 
 async function loadPosts() {
-var res = await supabaseClient.from('posts').select('*').order('created_at', { ascending: false }).limit(50);
+var res = await supabaseClient.from('posts').select('*').neq('type', 'forum').order('created_at', { ascending: false }).limit(50);
 if (res.error) { document.getElementById('postsContainer').innerHTML = '<div class="empty">Hata: ' + escapeHtml(res.error.message) + '</div>'; return; }
 allPosts = res.data || [];
 if (!allPosts.length) { document.getElementById('postsContainer').innerHTML = '<div class="empty">Henüz gönderi yok. İlk paylaşan sen ol!</div>'; return; }

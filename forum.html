@@ -1671,7 +1671,7 @@
                         <input type="password" id="authPassword" required placeholder="••••••••">
                     </div>
                     <button type="submit" class="btn" id="authBtn">Giriş Yap</button>
-                    <button type="button" class="btn-link" id="toggleAuth">Hesap Oluştur</button>
+                    <a href="kayit.html" class="btn-link" id="toggleAuth">Hesabın yok mu? Başvur</a>
                 </form>
             </section>
 
@@ -1695,6 +1695,14 @@
                     </div>
                     <button type="submit" class="btn">Paylaş</button>
                 </form>
+            </section>
+
+            <!-- ===== ONAY BEKLEYENLER ===== -->
+            <section id="pendingNotice" class="forum-form hidden">
+                <div class="form-header">
+                    <h2>Başvurun İnceleniyor</h2>
+                </div>
+                <p style="color: var(--muted);">Üyeliğin yönetim onayından sonra forumda yazıp tartışmalara katılabilirsin. Onaylanınca burası açılacak.</p>
             </section>
 
             <!-- ===== POSTS ===== -->
@@ -1823,29 +1831,27 @@
             }, { passive: true });
 
             // =========================================================
-            // 6. SUPABASE — FORUM
+            // 6. SUPABASE — FORUM (ana proje: tek hesap, tek giriş)
+            // Gönderiler posts (type='forum'), yorumlar comments tablosunda.
             // =========================================================
-            const SUPABASE_URL = "https://ypweazqdnbrhgxyxzigb.supabase.co";
-            const SUPABASE_ANON_KEY = "sb_publishable_EX3420gv_xyT82ze6ew59Q_Cdaq3YnF";
+            const SUPABASE_URL = "https://bdxvgtxregsonbvhvdav.supabase.co";
+            const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkeHZndHhyZWdzb25idmh2ZGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0MzM4ODcsImV4cCI6MjEwNTAwOTg4N30.7gQGqcvDzTKpQyjnRkmcCrwPny3m5pfUOy4BWk7O0CQ";
 
             const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-            // ADMIN
-            const ADMIN_EMAIL = "yaynuray756@gmail.com";
 
             // DOM
             const authSection = document.getElementById('authSection');
             const forumFormSection = document.getElementById('forumFormSection');
+            const pendingNotice = document.getElementById('pendingNotice');
             const authForm = document.getElementById('authForm');
-            const authBtn = document.getElementById('authBtn');
-            const toggleAuth = document.getElementById('toggleAuth');
             const welcomeText = document.getElementById('welcomeText');
             const logoutBtn = document.getElementById('logoutBtn');
             const newPostForm = document.getElementById('newPostForm');
             const postsContainer = document.getElementById('postsContainer');
 
-            let isSignUpMode = false;
             let currentUser = null;
+            let currentProfile = null;
+            let isSiteAdmin = false;
 
             // --- MODERASYON BOTU ---
             function moderasyonBotuKontrol(metin) {
@@ -1868,13 +1874,6 @@
                     return { uygunsuz: true, neden: "Güvenliğiniz ve forum düzeni için telefon numarası paylaşılması kesinlikle yasaktır." };
                 }
                 return { uygunsuz: false };
-            }
-
-            function getUserDisplayName(user) {
-                if (user && user.user_metadata && user.user_metadata.display_name) {
-                    return user.user_metadata.display_name;
-                }
-                return user ? user.email.split('@')[0] : "Anonim";
             }
 
             // --- HTML KAÇIŞ (XSS koruması: kullanıcı verisi innerHTML'e kaçışsız basılmaz) ---
@@ -1902,61 +1901,71 @@
                 alert(baslik + ': ' + dostHata(err && err.message));
             }
 
-            // --- ÜST BAR giriş/avatar göstergesi ---
-            function paintMastheadAuth(user) {
+            // --- ÜST BAR giriş/avatar göstergesi (kendi profili) ---
+            function paintMastheadAuth(profile) {
                 var link = document.getElementById('authLink');
-                if (!link || !user) return;
-                var name = getUserDisplayName(user);
+                if (!link || !profile) return;
+                var name = profile.full_name || profile.username || 'Üye';
                 link.href = 'profil.html';
                 link.title = name;
                 if (window.renderAvatar) {
-                    link.innerHTML = window.renderAvatar({ full_name: name, avatar: 'harf' }, 36);
+                    link.innerHTML = window.renderAvatar(profile, 36);
                     link.classList.remove('avatar-login-btn');
                 } else {
-                    link.innerHTML = '<span id="authText">' + escapeHtml(name.split(' ')[0]) + '</span>';
+                    link.innerHTML = '<span id="authText">' + escapeHtml(String(name).split(' ')[0]) + '</span>';
                 }
             }
 
-            // --- OTURUM ---
-            supabaseClient.auth.onAuthStateChange((event, session) => {
+            function showLoggedOut() {
+                authSection.classList.remove('hidden');
+                forumFormSection.classList.add('hidden');
+                pendingNotice.classList.add('hidden');
+            }
+
+            // --- OTURUM (tek hesap: ana proje) ---
+            supabaseClient.auth.onAuthStateChange(async (event, session) => {
                 currentUser = session?.user || null;
+                currentProfile = null;
+                isSiteAdmin = false;
                 if (currentUser) {
-                    authSection.classList.add('hidden');
-                    forumFormSection.classList.remove('hidden');
-                    const nameToShow = getUserDisplayName(currentUser);
+                    try {
+                        const pr = await supabaseClient
+                            .from('profiles')
+                            .select('full_name, username, avatar, status')
+                            .eq('id', currentUser.id)
+                            .single();
+                        if (pr.data) currentProfile = pr.data;
+                    } catch (e) {}
+                    try {
+                        const ar = await supabaseClient.rpc('is_admin');
+                        isSiteAdmin = ar.data === true;
+                    } catch (e) {}
+                    const nameToShow = (currentProfile && (currentProfile.full_name || currentProfile.username)) || currentUser.email.split('@')[0];
                     welcomeText.textContent = `Merhaba, ${nameToShow}`;
-                    paintMastheadAuth(currentUser);
+                    paintMastheadAuth(currentProfile || { full_name: nameToShow, avatar: 'harf' });
+                    authSection.classList.add('hidden');
+                    if (currentProfile && currentProfile.status === 'approved') {
+                        forumFormSection.classList.remove('hidden');
+                        pendingNotice.classList.add('hidden');
+                    } else {
+                        forumFormSection.classList.add('hidden');
+                        pendingNotice.classList.remove('hidden');
+                    }
                 } else {
-                    authSection.classList.remove('hidden');
-                    forumFormSection.classList.add('hidden');
+                    showLoggedOut();
                 }
                 loadPosts();
             });
 
-            // --- AUTH ---
-            toggleAuth.addEventListener('click', () => {
-                isSignUpMode = !isSignUpMode;
-                authBtn.textContent = isSignUpMode ? "Kayıt Ol" : "Giriş Yap";
-                toggleAuth.textContent = isSignUpMode ? "Zaten hesabım var" : "Hesap Oluştur";
-                document.querySelector('.auth-box h2').textContent = isSignUpMode ?
-                    "Yeni Hesap Oluştur" :
-                    "Kolektif Diyaloğa Katıl";
-            });
-
+            // --- GİRİŞ (kayıt site başvurusundan: kayit.html) ---
             authForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const email = document.getElementById('authEmail').value;
                 const password = document.getElementById('authPassword').value;
 
                 try {
-                    if (isSignUpMode) {
-                        const { error } = await supabaseClient.auth.signUp({ email, password });
-                        if (error) hataGoster('Kayıt başarısız', error);
-                        else alert("Kayıt başarılı! Lütfen e-posta adresinize gönderilen doğrulama linkine tıklayın.");
-                    } else {
-                        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                        if (error) hataGoster('Giriş başarısız', error);
-                    }
+                    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (error) hataGoster('Giriş başarısız', error);
                 } catch (err) {
                     hataGoster('Beklenmedik bir hata oluştu', err);
                 }
@@ -1964,17 +1973,20 @@
 
             logoutBtn.addEventListener('click', () => supabaseClient.auth.signOut());
 
-            // --- YENİ GÖNDERİ ---
+            // --- YENİ GÖNDERİ (onaylı üyeler) ---
             newPostForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!currentUser) {
                     alert("Lütfen önce giriş yapın.");
                     return;
                 }
+                if (!currentProfile || currentProfile.status !== 'approved') {
+                    alert("Forumda yazmak için üyeliğinin onaylanması gerekiyor.");
+                    return;
+                }
 
                 const title = document.getElementById('postTitle').value;
                 const content = document.getElementById('postContent').value;
-                const displayName = getUserDisplayName(currentUser);
 
                 const botKontrolBaslik = moderasyonBotuKontrol(title);
                 const botKontrolIcerik = moderasyonBotuKontrol(content);
@@ -1989,8 +2001,8 @@
                 }
 
                 try {
-                    const { error } = await supabaseClient.from('forum_posts').insert([
-                        { title, content, user_email: displayName, user_id: currentUser.id }
+                    const { error } = await supabaseClient.from('posts').insert([
+                        { title, content, user_id: currentUser.id, type: 'forum' }
                     ]);
 
                     if (error) hataGoster('Paylaşım gönderilemedi', error);
@@ -2018,11 +2030,9 @@
                     return;
                 }
 
-                const displayName = getUserDisplayName(currentUser);
-
                 try {
-                    const { error } = await supabaseClient.from('forum_comments').insert([
-                        { post_id: postId, content, user_email: displayName, user_id: currentUser.id }
+                    const { error } = await supabaseClient.from('comments').insert([
+                        { post_id: postId, content, user_id: currentUser.id }
                     ]);
 
                     if (error) hataGoster('Yorum gönderilemedi', error);
@@ -2038,22 +2048,21 @@
             // --- GÖNDERİ SİL (global) ---
             window.deletePost = async function(postId) {
                 if (!currentUser) return;
-                const isAdmin = currentUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
                 // Önce post sahibi mi kontrol et
                 const { data: post } = await supabaseClient
-                    .from('forum_posts')
+                    .from('posts')
                     .select('user_id')
                     .eq('id', postId)
                     .single();
 
-                if ((post && post.user_id === currentUser.id) || isAdmin) {
+                if ((post && post.user_id === currentUser.id) || isSiteAdmin) {
                     if (confirm('Bu gönderiyi silmek istediğinize emin misiniz?')) {
                         try {
                             // Önce yorumları sil
-                            await supabaseClient.from('forum_comments').delete().eq('post_id', postId);
+                            await supabaseClient.from('comments').delete().eq('post_id', postId);
                             // Sonra gönderiyi sil
-                            await supabaseClient.from('forum_posts').delete().eq('id', postId);
+                            await supabaseClient.from('posts').delete().eq('id', postId);
                             loadPosts();
                         } catch (err) {
                             hataGoster('Gönderi silinemedi', err);
@@ -2067,18 +2076,17 @@
             // --- YORUM SİL (global) ---
             window.deleteComment = async function(commentId) {
                 if (!currentUser) return;
-                const isAdmin = currentUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
                 const { data: comment } = await supabaseClient
-                    .from('forum_comments')
+                    .from('comments')
                     .select('user_id')
                     .eq('id', commentId)
                     .single();
 
-                if (comment && (comment.user_id === currentUser.id || isAdmin)) {
+                if (comment && (comment.user_id === currentUser.id || isSiteAdmin)) {
                     if (confirm('Bu yorumu silmek istediğinize emin misiniz?')) {
                         try {
-                            await supabaseClient.from('forum_comments').delete().eq('id', commentId);
+                            await supabaseClient.from('comments').delete().eq('id', commentId);
                             loadPosts();
                         } catch (err) {
                             hataGoster('Yorum silinemedi', err);
@@ -2089,15 +2097,16 @@
                 }
             };
 
-            // --- GÖNDERİLERİ LİSTELE ---
+            // --- GÖNDERİLERİ LİSTELE (ana proje: posts type='forum') ---
             async function loadPosts() {
                 if (!postsContainer) return;
                 postsContainer.innerHTML = "<div style='text-align:center; padding:2rem; color:var(--muted);'>Tartışmalar yükleniyor...</div>";
 
                 try {
                     const { data: posts, error } = await supabaseClient
-                        .from('forum_posts')
-                        .select(`*, forum_comments(*)`)
+                        .from('posts')
+                        .select('*')
+                        .eq('type', 'forum')
                         .order('created_at', { ascending: false });
 
                     if (error) {
@@ -2117,7 +2126,35 @@
                         return;
                     }
 
-                    const isAdmin = currentUser && currentUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+                    const postIds = posts.map(p => p.id);
+
+                    let commentsByPost = {};
+                    try {
+                        const { data: comments } = await supabaseClient
+                            .from('comments')
+                            .select('*')
+                            .in('post_id', postIds)
+                            .order('created_at', { ascending: true });
+                        (comments || []).forEach(c => {
+                            (commentsByPost[c.post_id] = commentsByPost[c.post_id] || []).push(c);
+                        });
+                    } catch (e) {}
+
+                    let nameById = {};
+                    try {
+                        const authorIds = [...new Set(posts.map(p => p.user_id).filter(Boolean))];
+                        if (authorIds.length) {
+                            const { data: authors } = await supabaseClient
+                                .from('public_profiles')
+                                .select('id, full_name, username')
+                                .in('id', authorIds);
+                            (authors || []).forEach(a => {
+                                nameById[a.id] = a.full_name || a.username || 'İsimsiz';
+                            });
+                        }
+                    } catch (e) {}
+
+                    const authorName = (uid) => nameById[uid] || 'İsimsiz';
 
                     postsContainer.innerHTML = '';
                     posts.forEach(post => {
@@ -2127,18 +2164,18 @@
                             year: 'numeric'
                         });
                         const isPostOwner = currentUser && currentUser.id === post.user_id;
-                        const showPostDeleteBtn = isPostOwner || isAdmin;
+                        const showPostDeleteBtn = isPostOwner || isSiteAdmin;
+                        const postComments = commentsByPost[post.id] || [];
 
                         let commentsHTML = '';
-                        if (post.forum_comments && post.forum_comments.length > 0) {
-                            post.forum_comments.forEach(comment => {
+                        postComments.forEach(comment => {
                                 const isCommentOwner = currentUser && currentUser.id === comment.user_id;
-                                const showCommentDeleteBtn = isCommentOwner || isAdmin;
+                                const showCommentDeleteBtn = isCommentOwner || isSiteAdmin;
 
                                 commentsHTML += `
                                             <div class="comment">
                                                 <div class="comment-meta">
-                                                    <span class="comment-author">${escapeHtml(comment.user_email)}</span>
+                                                    <span class="comment-author">${escapeHtml(authorName(comment.user_id))}</span>
                                                     <span>${new Date(comment.created_at).toLocaleDateString('tr-TR')}</span>
                                                 </div>
                                                 <div class="comment-text">${escapeHtml(comment.content)}</div>
@@ -2146,9 +2183,9 @@
                                             </div>
                                         `;
                             });
-                        }
 
-                        const commentFormHTML = currentUser ? `
+                        const canComment = currentProfile && currentProfile.status === 'approved';
+                        const commentFormHTML = canComment ? `
                                     <div class="comment-form">
                                         <input type="text" placeholder="Fikrini ekle..." id="commentInput_${post.id}">
                                         <button onclick="addComment('${post.id}', document.getElementById('commentInput_${post.id}'))" class="btn" style="padding:0.6rem 1.2rem; font-size:0.8rem;">Gönder</button>
@@ -2160,7 +2197,7 @@
                         postElement.className = 'post-card';
                         postElement.innerHTML = `
                                     <div class="post-meta">
-                                        <span class="post-author">${escapeHtml(post.user_email)}</span>
+                                        <span class="post-author">${escapeHtml(authorName(post.user_id))}</span>
                                         <span class="post-date">${date}</span>
                                     </div>
                                     <h3 class="post-title">${escapeHtml(post.title)}</h3>
