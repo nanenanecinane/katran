@@ -215,6 +215,7 @@ letter-spacing: 0.05em;
 .badge-pending { background: rgba(255,193,7,0.15); color: #ffc107; }
 .badge-approved { background: rgba(76,175,80,0.15); color: #81c784; }
 .badge-rejected { background: rgba(224,49,49,0.15); color: #ff8a8a; }
+.badge-banned { background: rgba(212,168,67,0.15); color: #d4a843; }
 .badge-admin { background: rgba(212,168,67,0.15); color: #d4a843; }
 .badge-member { background: rgba(168,158,148,0.15); color: var(--muted); }
 .rank-pill {
@@ -559,6 +560,10 @@ html += '<div class="item-actions">';
 html += '<button class="btn btn-approve" onclick="approveApplication(\'' + app.id + '\')">' + ICONS.check + ' Onayla</button>';
 html += '<button class="btn btn-reject" onclick="rejectApplication(\'' + app.id + '\')">' + ICONS.x + ' Reddet</button>';
 html += '</div>';
+} else if (status === 'rejected') {
+html += '<div class="item-actions">';
+html += '<button class="btn btn-neutral" onclick="unrejectApplication(\'' + app.id + '\')">↩ Geri Al</button>';
+html += '</div>';
 }
 
 html += '</div>';
@@ -602,12 +607,8 @@ if (!confirm('Bu başvuruyu reddetmek istediğine emin misin?')) return;
 var res = await supabaseClient.from('applications').update({ status: 'rejected' }).eq('id', appId);
 if (res.error) { toast('Hata: ' + res.error.message, true); return; }
 
-// profiles'daki kaydı da rejected yap
-var appRes = await supabaseClient.from('applications').select('email').eq('id', appId).single();
-if (appRes.data) {
-await supabaseClient.from('profiles').update({ status: 'rejected' }).eq('email', appRes.data.email);
-}
-
+// NOT: profil satırı 'pending' kalır (şema reddedildi durumunu profilde tutmaz);
+// kişi giriş yapamaz, yazamaz; Geri Al ile sıra eski haline döner.
 toast('Reddedildi');
 await updateCounts();
 loadApplications();
@@ -638,17 +639,17 @@ return;
 // İstatistik: kaç onaylı, kaç pending
 var approved = members.filter(function(m) { return m.status === 'approved'; }).length;
 var pending = members.filter(function(m) { return m.status === 'pending'; }).length;
-var rejected = members.filter(function(m) { return m.status === 'rejected'; }).length;
+var banned = members.filter(function(m) { return m.status === 'banned'; }).length;
 
 var html = '<div class="section"><h2>Üyeler</h2>';
-html += '<p style="color:var(--muted);font-size:0.85rem;margin-bottom:1.2rem;">Toplam: ' + members.length + ' · Onaylı: ' + approved + ' · Bekleyen: ' + pending + ' · Reddedilen: ' + rejected + '</p>';
+html += '<p style="color:var(--muted);font-size:0.85rem;margin-bottom:1.2rem;">Toplam: ' + members.length + ' · Onaylı: ' + approved + ' · Bekleyen: ' + pending + ' · Yasaklı: ' + banned + '</p>';
 
 members.forEach(function(m) {
 var status = m.status || 'pending';
 var badgeClass = status === 'approved' ? 'badge-approved' :
-status === 'rejected' ? 'badge-rejected' : 'badge-pending';
+status === 'banned' ? 'badge-banned' : 'badge-pending';
 var badgeText = status === 'approved' ? 'Onaylı' :
-status === 'rejected' ? 'Reddedilen' : 'Bekliyor';
+status === 'banned' ? 'Yasaklı' : 'Bekliyor';
 
 var rank = m.rank || 'filiz';
 var rankLabel = rank === 'katran' ? 'Katran Kurucusu' :
@@ -677,6 +678,11 @@ html += '</div>';
 } else if (status === 'approved') {
 html += '<div class="item-actions">';
 html += '<button class="btn btn-neutral" onclick="toggleAdmin(\'' + m.id + '\', \'' + (m.role || 'member') + '\')">' + ICONS.crown + ' ' + (m.role === 'admin' ? 'Adminliği Kaldır' : 'Admin Yap') + '</button>';
+html += '<button class="btn btn-reject" onclick="banMember(\'' + m.id + '\')">' + ICONS.x + ' Yasakla</button>';
+html += '</div>';
+} else if (status === 'banned') {
+html += '<div class="item-actions">';
+html += '<button class="btn btn-neutral" onclick="unbanMember(\'' + m.id + '\')">↩ Yasağı Kaldır</button>';
 html += '</div>';
 }
 
@@ -687,30 +693,70 @@ document.getElementById('tabContent').innerHTML = html;
 }
 
 window.approveMember = async function(id) {
-await supabaseClient.from('profiles').update({ status: 'approved' }).eq('id', id);
-await supabaseClient.from('applications').update({ status: 'approved' }).eq('email', (await supabaseClient.from('profiles').select('email').eq('id', id).single()).data.email);
+var r1 = await supabaseClient.from('profiles').update({ status: 'approved', approved_by: currentUser.id }).eq('id', id);
+if (r1.error) { toast('Hata: ' + r1.error.message, true); return; }
+var emailRes = await supabaseClient.from('profiles').select('email').eq('id', id).single();
+if (emailRes.data) {
+await supabaseClient.from('applications').update({ status: 'approved' }).eq('email', emailRes.data.email);
+}
 toast('Onaylandı');
 await updateCounts();
 loadMembers();
 };
 
 window.rejectMember = async function(id) {
-await supabaseClient.from('profiles').update({ status: 'rejected' }).eq('id', id);
+if (!confirm('Bu üyenin başvurusunu reddetmek istiyor musun? Profili beklemede kalır, giriş yapamaz.')) return;
 var emailRes = await supabaseClient.from('profiles').select('email').eq('id', id).single();
-if (emailRes.data) {
-await supabaseClient.from('applications').update({ status: 'rejected' }).eq('email', emailRes.data.email);
-}
+if (!emailRes.data) { toast('Profil bulunamadı', true); return; }
+var res = await supabaseClient.from('applications').update({ status: 'rejected' }).eq('email', emailRes.data.email);
+if (res.error) { toast('Hata: ' + res.error.message, true); return; }
 toast('Reddedildi');
 await updateCounts();
 loadMembers();
 };
 
 window.toggleAdmin = async function(id, currentRole) {
+if (id === currentUser.id) { toast('Kendi yetkini değiştiremezsin.', true); return; }
 var newRole = currentRole === 'admin' ? 'member' : 'admin';
 if (!confirm(newRole === 'admin' ? 'Bu kullanıcıyı admin yapmak istediğine emin misin?' : 'Adminliğini kaldırmak istediğine emin misin?')) return;
 await supabaseClient.from('profiles').update({ role: newRole }).eq('id', id);
 toast(newRole === 'admin' ? 'Admin yapıldı' : 'Adminlik kaldırıldı');
 loadMembers();
+};
+
+// Üyeyi yasakla (onaylı → yasaklı)
+window.banMember = async function(id) {
+if (id === currentUser.id) { toast('Kendini yasaklayamazsın.', true); return; }
+if (!confirm('Bu üyeyi yasaklamak istediğine emin misin? Girişi kapanacak.')) return;
+var res = await supabaseClient.from('profiles').update({ status: 'banned' }).eq('id', id);
+if (res.error) { toast('Hata: ' + res.error.message, true); return; }
+toast('Üye yasaklandı');
+await updateCounts();
+loadMembers();
+};
+
+// Yasağı kaldır (yasaklı → onaylı)
+window.unbanMember = async function(id) {
+if (!confirm('Bu üyenin yasağını kaldırıp üyeliğe geri almak istiyor musun?')) return;
+var res = await supabaseClient.from('profiles').update({ status: 'approved' }).eq('id', id);
+if (res.error) { toast('Hata: ' + res.error.message, true); return; }
+toast('Yasak kaldırıldı, üye aktif');
+await updateCounts();
+loadMembers();
+};
+
+// Reddedilen başvuruyu geri al (reddedildi → bekliyor)
+window.unrejectApplication = async function(appId) {
+if (!confirm('Bu başvuruyu tekrar inceleme sırasına almak istiyor musun?')) return;
+var res = await supabaseClient.from('applications').update({ status: 'pending' }).eq('id', appId);
+if (res.error) { toast('Hata: ' + res.error.message, true); return; }
+var appRes = await supabaseClient.from('applications').select('email').eq('id', appId).single();
+if (appRes.data) {
+await supabaseClient.from('profiles').update({ status: 'pending' }).eq('email', appRes.data.email);
+}
+toast('Başvuru bekleyenlere alındı');
+await updateCounts();
+loadApplications();
 };
 
 // ---------- KİTAP TALEPLERİ ----------

@@ -341,9 +341,16 @@ showSuccess('✅ Giriş başarılı! Yönlendiriliyorsunuz...');
 
 // Onay kapısı: sadece onaylı üyeler içeride
 var meRes = await supabaseClient.from('profiles').select('status').eq('id', result.data.user.id).single();
-if (!meRes.data || meRes.data.status !== 'approved') {
+if (!meRes.data || meRes.data.status === 'pending') {
 await supabaseClient.auth.signOut();
 showError('⏳ Başvurun henüz onaylanmadı. Onaylanınca giriş yapabilirsin.');
+submitBtn.disabled = false;
+submitBtn.textContent = 'Giriş Yap';
+return;
+}
+if (meRes.data.status === 'banned') {
+await supabaseClient.auth.signOut();
+showError('⛔ Bu hesap yasaklanmış. İtiraz için bizimle iletişime geç.');
 submitBtn.disabled = false;
 submitBtn.textContent = 'Giriş Yap';
 return;

@@ -1958,6 +1958,9 @@
                     } else {
                         forumFormSection.classList.add('hidden');
                         pendingNotice.classList.remove('hidden');
+                        if (currentProfile && currentProfile.status === 'banned') {
+                            pendingNotice.querySelector('p').textContent = 'Hesabın yasaklanmış. İtiraz için bizimle iletişime geç.';
+                        }
                     }
                 } else {
                     showLoggedOut();
