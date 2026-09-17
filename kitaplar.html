@@ -167,6 +167,7 @@ text-transform: uppercase;
 }
 .source-badge.google { background: rgba(66,133,244,0.15); color: #4285f4; }
 .source-badge.openlibrary { background: rgba(139,46,62,0.15); color: var(--bordo, #8b2e3e); }
+.source-badge.local { background: rgba(176,68,85,0.15); color: var(--bordo, #b04455); }
 
 /* MODAL */
 .modal-backdrop {
@@ -630,11 +631,41 @@ async function doSearch() {
   btn.disabled = true;
   
   try {
-    var result = await hybridSearch(query);
-    var booksToSave = result.books;
-    var sourceUsed = result.source;
+    // 0. ÖNCE YEREL KATALOG (harici servisler patlasa bile çalışır)
+    var localBooks = [];
+    try {
+      var ql = query.replace(/[%_\\,]/g, ' ').trim();
+      if (ql) {
+        var localRes = await supabaseClient
+          .from('books')
+          .select('*')
+          .or('title.ilike.%' + ql + '%,author.ilike.%' + ql + '%')
+          .limit(20);
+        localBooks = localRes.data || [];
+        var qlow = query.toLowerCase();
+        localBooks.sort(function(a, b) {
+          var ae = ((a.title || '').toLowerCase() === qlow) ? 0 : 1;
+          var be = ((b.title || '').toLowerCase() === qlow) ? 0 : 1;
+          return ae - be;
+        });
+        localBooks.forEach(function(b) {
+          b._local = true;
+          b.source = b.source || 'local';
+          b.external_id = b.external_id || ('local-' + b.id);
+        });
+      }
+    } catch (e) { console.warn('Yerel arama hatası:', e); }
+
+    // 1. HARİCİ KAYNAKLAR (patlarsa yereli engellemez)
+    var booksToSave = [];
+    var sourceUsed = 'local';
+    try {
+      var result = await hybridSearch(query);
+      booksToSave = result.books || [];
+      sourceUsed = result.source || 'local';
+    } catch (e) { console.warn('Harici arama hatası:', e); }
     
-    if (!booksToSave.length) {
+    if (!booksToSave.length && !localBooks.length) {
       container.innerHTML = '<div class="empty">Sonuç bulunamadı.</div>';
       document.getElementById('requestBox').style.display = 'block';
       btn.disabled = false;
@@ -665,7 +696,7 @@ async function doSearch() {
     });
     
     var newBooks = booksToSave.filter(function(b) {
-      return b.external_id && !existingMap[b.external_id + '_' + b.source];
+      return b.external_id && !b._local && !existingMap[b.external_id + '_' + b.source];
     });
     
     if (newBooks.length) {
@@ -674,14 +705,22 @@ async function doSearch() {
         existingMap[b.external_id + '_' + b.source] = b.id;
       });
     }
+
+    // Yerel sonuçları en üste ekle
+    localBooks.forEach(function(b) {
+      existingMap[b.external_id + '_' + b.source] = b.id;
+    });
+    booksToSave = localBooks.concat(booksToSave);
     
     // Render
     var html = '';
     html += '<div style="text-align:right;font-size:0.7rem;color:var(--text-dim);margin-bottom:0.5rem;">';
     if (sourceUsed === 'google') {
       html += '<span class="source-badge google">Google Books</span>';
-    } else {
+    } else if (sourceUsed === 'openlibrary') {
       html += '<span class="source-badge openlibrary">Open Library</span>';
+    } else {
+      html += '<span class="source-badge local">Katran Kataloğu</span>';
     }
     html += '</div>';
     

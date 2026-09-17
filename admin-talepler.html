@@ -307,26 +307,37 @@ container.innerHTML = html;
 }
 
 window.setStatus = async function(id, status) {
+// Onayda önce düzenleme fırsatı ver (talep edenin yazdığı birebir gelmesin)
+if (status === 'approved') {
+try {
+var curRes = await supabaseClient.from('book_requests').select('title, author, note').eq('id', id).single();
+if (curRes.error || !curRes.data) { alert('Talep bulunamadı.'); return; }
+var newTitle = prompt('Kitap adı (düzenleyebilirsin):', curRes.data.title || '');
+if (newTitle === null) return;
+newTitle = newTitle.trim();
+if (!newTitle) { alert('Kitap adı boş olamaz.'); return; }
+var newAuthor = prompt('Yazar (düzenleyebilirsin):', curRes.data.author || '');
+if (newAuthor === null) return;
+var updRes = await supabaseClient.from('book_requests').update({ title: newTitle, author: (newAuthor || '').trim(), status: 'approved', reviewed_at: new Date().toISOString(), reviewed_by: currentUser.id }).eq('id', id);
+if (updRes.error) { console.error('Durum güncelleme hatası:', updRes.error); alert('İşlem başarısız. Bağlantını kontrol edip tekrar dene.'); return; }
+var exRes = await supabaseClient.from('books').select('id').eq('title', newTitle).limit(1);
+if (!exRes.data || !exRes.data.length) {
+var insRes = await supabaseClient.from('books').insert([{ title: newTitle, author: (newAuthor || '').trim() || null }]);
+if (insRes.error) { console.error('Katalog ekleme hatası:', insRes.error); alert('Onaylandı ama kataloğa eklenemedi: ' + insRes.error.message); await loadRequests(); return; }
+alert('Onaylandı ve kataloğa eklendi.');
+} else {
+alert('Onaylandı (katalogda zaten vardı).');
+}
+await loadRequests();
+return;
+} catch (e) { console.error('Onay hatası:', e); alert('İşlem başarısız. Bağlantını kontrol edip tekrar dene.'); return; }
+}
 var res = await supabaseClient
 .from('book_requests')
 .update({ status: status, reviewed_at: new Date().toISOString(), reviewed_by: currentUser.id })
 .eq('id', id);
 
 if (res.error) { console.error('Durum güncelleme hatası:', res.error); alert('İşlem başarısız. Bağlantını kontrol edip tekrar dene.'); return; }
-
-// Onaylanan talep kataloğa işlensin
-if (status === 'approved') {
-try {
-var reqRes = await supabaseClient.from('book_requests').select('title, author').eq('id', id).single();
-if (reqRes.data && reqRes.data.title) {
-var exRes = await supabaseClient.from('books').select('id').eq('title', reqRes.data.title).limit(1);
-if (!exRes.data || !exRes.data.length) {
-var insRes = await supabaseClient.from('books').insert([{ title: reqRes.data.title, author: reqRes.data.author || null }]);
-if (insRes.error) console.error('Katalog ekleme hatası:', insRes.error);
-}
-}
-} catch (e) { console.error('Katalog ekleme hatası:', e); }
-}
 await loadRequests();
 };
 })();
