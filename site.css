@@ -130,17 +130,17 @@
   transform: scale(0.8);
   transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.masthead .nav-links a:hover::before {
+.masthead .nav-links a:not(#authLink):hover::before {
   opacity: 1;
   transform: scale(1);
 }
-.masthead .nav-links a:hover {
+.masthead .nav-links a:not(#authLink):hover {
   color: #f8ece8;
 }
 [data-theme="light"] .masthead .nav-links a:hover {
   color: #0a0808;
 }
-.masthead .nav-links a:hover svg {
+.masthead .nav-links a:not(#authLink):hover svg {
   stroke: #b04455;
 }
 .masthead .nav-links a span,
@@ -175,7 +175,7 @@
 .masthead .auth-container a:hover {
   transform: scale(1.08);
 }
-.masthead .avatar-login-btn {
+.masthead .nav-links a.avatar-login-btn {
   background: #b04455;
   color: #fff;
   font-size: 0.78rem;
@@ -186,7 +186,7 @@
   text-decoration: none;
   display: inline-block;
 }
-.masthead .avatar-login-btn:hover {
+.masthead .nav-links a.avatar-login-btn:hover {
   background: #8b2e3e;
   color: #fff;
 }

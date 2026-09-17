@@ -44,6 +44,9 @@ text-decoration: none;
 .notif-btn:hover { color: var(--bordo, #8b2e3e); border-color: var(--bordo, #8b2e3e); background: var(--bordo-glow, rgba(139,46,62,0.25)); }
 .notif-badge { position: absolute; top: -6px; right: -6px; background: var(--accent, #e03131); color: #fff; font-size: 0.62rem; padding: 2px 6px; border-radius: 20px; font-weight: 700; min-width: 18px; text-align: center; }
 .container { max-width: 600px; margin: 0 auto; padding: 1.2rem 1rem; }
+@media (min-width: 900px) {
+.container { max-width: 680px; }
+}
 .tabs { display: flex; gap: 0.4rem; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border, rgba(255,255,255,0.08)); padding-bottom: 0.5rem; }
 .tab {
 background: transparent;
@@ -486,7 +489,7 @@ Hakkında
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
 Forum
 </a>
-<span class="auth-side"><span id="notifContainer"><a href="giris.html" class="notif-btn">Giriş</a></span><span class="auth-container" id="authContainer"><a href="giris.html" id="authLink" class="avatar-login-btn"><span id="authText">Giriş Yap</span></a></span></span>
+<span class="auth-side"><span id="notifContainer"></span><span class="auth-container" id="authContainer"><a href="giris.html" id="authLink" class="avatar-login-btn"><span id="authText">Giriş Yap</span></a></span></span>
 </nav>
 </header>
 

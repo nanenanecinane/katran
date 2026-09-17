@@ -39,7 +39,21 @@ border: 1px solid var(--border);
 border-radius: 20px;
 padding: 3rem 2.5rem;
 position: relative;
-transition: background 0.3s ease, border-color 0.3s ease;
+overflow: hidden;
+transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+.container::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 3px;
+background: linear-gradient(90deg, var(--bordo), var(--bordo-dark));
+}
+.container:hover {
+box-shadow: var(--shadow-lg);
+transform: translateY(-2px);
 }
 
 .logo-mark {

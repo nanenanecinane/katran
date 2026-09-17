@@ -38,7 +38,22 @@ background: var(--bg-elev);
 border: 1px solid var(--border);
 border-radius: 20px;
 padding: 3rem 2.5rem;
-transition: background 0.3s ease, border-color 0.3s ease;
+position: relative;
+overflow: hidden;
+transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+.container::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 3px;
+background: linear-gradient(90deg, var(--bordo), var(--bordo-dark));
+}
+.container:hover {
+box-shadow: var(--shadow-lg);
+transform: translateY(-2px);
 }
 
 .brand-top {
@@ -240,7 +255,7 @@ h1 { font-size: 1.5rem; }
 
 <div id="message" class="message"></div>
 
-<form id="applyForm">
+<form id="applyForm" novalidate>
 <div class="form-group">
 <label for="full_name">Adın Soyadın</label>
 <input type="text" id="full_name" required minlength="3" maxlength="60" placeholder="Örn: Ahmet Yılmaz" autocomplete="name">
@@ -380,9 +395,25 @@ password: document.getElementById('password').value,
 reason: document.getElementById('reason').value.trim()
 };
 
+if (!/^[a-zA-Z0-9_]{3,20}$/.test(formData.username)) {
+messageDiv.className = 'message error';
+messageDiv.textContent = '❌ Kullanıcı adı sadece harf, rakam ve _ içerebilir (3-20 karakter).';
+submitBtn.disabled = false;
+submitBtn.textContent = 'Başvuruyu Gönder';
+return;
+}
+
 if (!usernameAvailable) {
 messageDiv.className = 'message error';
 messageDiv.textContent = '❌ Lütfen geçerli ve müsait bir kullanıcı adı seç.';
+submitBtn.disabled = false;
+submitBtn.textContent = 'Başvuruyu Gönder';
+return;
+}
+
+if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+messageDiv.className = 'message error';
+messageDiv.textContent = '❌ Geçerli bir e-posta gir.';
 submitBtn.disabled = false;
 submitBtn.textContent = 'Başvuruyu Gönder';
 return;
@@ -407,6 +438,22 @@ return;
 if (!formData.reason || formData.reason.length < 30) {
 messageDiv.className = 'message error';
 messageDiv.textContent = '❌ Katılma nedenini en az 30 karakter yazmalısın.';
+submitBtn.disabled = false;
+submitBtn.textContent = 'Başvuruyu Gönder';
+return;
+}
+
+if (!formData.password || formData.password.length < 6) {
+messageDiv.className = 'message error';
+messageDiv.textContent = '❌ Şifren en az 6 karakter olmalı.';
+submitBtn.disabled = false;
+submitBtn.textContent = 'Başvuruyu Gönder';
+return;
+}
+
+if (!document.getElementById('rules').checked) {
+messageDiv.className = 'message error';
+messageDiv.textContent = '❌ Devam etmek için topluluk kurallarını kabul etmelisin.';
 submitBtn.disabled = false;
 submitBtn.textContent = 'Başvuruyu Gönder';
 return;

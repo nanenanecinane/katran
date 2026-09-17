@@ -384,7 +384,7 @@
             transform: scale(0.8);
             transition: var(--transition-smooth);
         }
-        .nav-links a:hover::before {
+        .nav-links a:not(#authLink):hover::before {
             opacity: 1;
             transform: scale(1);
         }
@@ -399,10 +399,10 @@
             transition: var(--transition-smooth);
             transform: translateX(-50%);
         }
-        .nav-links a:hover::after {
+        .nav-links a:not(#authLink):hover::after {
             width: 35%;
         }
-        .nav-links a:hover {
+        .nav-links a:not(#authLink):hover {
             color: var(--katran);
         }
         .nav-links a[aria-current="page"] {
@@ -415,7 +415,7 @@
         .nav-links a[aria-current="page"]::after {
             width: 35%;
         }
-        .nav-links a:hover svg {
+        .nav-links a:not(#authLink):hover svg {
             stroke: var(--karanfil);
             transform: translateY(-1px);
         }
@@ -648,8 +648,8 @@
            13. FOOTER — ANA SİTE İLE AYNI
            ============================================================ */
         .site-footer {
-            background: var(--katran);
-            color: var(--kagit);
+            background: var(--kagit-dark);
+            color: var(--katran);
             padding: 3rem 2rem 2rem;
             margin: 3rem -2rem -2rem;
             border-radius: 24px 24px 0 0;
@@ -657,10 +657,6 @@
             text-align: center;
             position: relative;
             overflow: hidden;
-        }
-        [data-theme="katran"] .site-footer {
-            background: var(--kagit-dark);
-            color: var(--katran);
         }
         .site-footer::before {
             content: '';
@@ -901,7 +897,7 @@
         .auth-container a:hover {
             transform: scale(1.08);
         }
-        .avatar-login-btn {
+        .nav-links a.avatar-login-btn {
             background: var(--karanfil);
             color: #fff;
             font-size: 0.78rem;
@@ -913,7 +909,7 @@
             transition: background 0.2s;
             display: inline-block;
         }
-        .avatar-login-btn:hover {
+        .nav-links a.avatar-login-btn:hover {
             background: var(--karanfil-dark);
         }
 
@@ -1088,6 +1084,28 @@
 
                 <p>
                     Köklü bir ilkenin izinden yürüyoruz:                     <span class="highlight-text">"İşte siyah, işte beyaz. Kendi rengini bul.Ve bir şeyden şikayet etmeden önce alternatif sun."</span>
+                </p>
+            </section>
+        </main>
+
+        <!-- ========== FOOTER ========== -->
+        <footer class="site-footer" role="contentinfo">
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+
+            <div class="footer-content">
+                <div class="footer-brand"><span class="red">Katran</span> Dergi</div>
+                <div class="footer-divider" aria-hidden="true"></div>
+                <p>&copy; 2025 — Kırmızı karanfil ektik, katranın bağrına.</p>
+            </div>
+        </footer>
+    </div>
     <script>
     (function() {
         'use strict';
