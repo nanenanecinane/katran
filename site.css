@@ -11,7 +11,7 @@
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  padding: 1.8rem 2rem;
+  padding: 1.1rem 2rem;
   margin-bottom: 3rem;
   position: sticky;
   top: 0;
@@ -29,8 +29,8 @@
 .masthead.scrolled {
   box-shadow: 0 4px 40px rgba(0, 0, 0, 0.04);
   background: rgba(13, 4, 5, 0.88);
-  padding-top: 1.2rem;
-  padding-bottom: 1.2rem;
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
 }
 [data-theme="light"] .masthead.scrolled {
   background: rgba(244, 239, 232, 0.88);
@@ -275,7 +275,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.8rem;
-    padding: 1.2rem 1rem;
+    padding: 1rem;
     border-radius: 0 0 12px 12px;
   }
   .masthead .brand-name {
