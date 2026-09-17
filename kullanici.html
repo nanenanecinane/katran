@@ -404,7 +404,9 @@ var sessionRes = await supabaseClient.auth.getSession();
 if (sessionRes.data.session) currentUser = sessionRes.data.session.user;
 var isOwn = currentUser && currentUser.id === targetUserId;
 
-var profileRes = await supabaseClient.from('profiles').select('*').eq('id', targetUserId).single();
+var profileRes = isOwn
+  ? await supabaseClient.from('profiles').select('*').eq('id', targetUserId).single()
+  : await supabaseClient.from('public_profiles').select('id, username, full_name, avatar, avatar_url, bio, status').eq('id', targetUserId).single();
 if (profileRes.error || !profileRes.data) { showError('Kullanıcı bulunamadı.'); return; }
 var profile = profileRes.data;
 if (profile.status !== 'approved' && !isOwn) { showError('Bu kullanıcının profili mevcut değil.'); return; }
@@ -574,7 +576,7 @@ var res = await supabaseClient.from('follows').select('following_id').eq('follow
 userIds = (res.data || []).map(function(r) { return r.following_id; });
 }
 if (!userIds.length) { document.getElementById('modalBody').innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);font-size:0.9rem;">Henüz kimse yok.</div>'; return; }
-var profRes = await supabaseClient.from('profiles').select('id, full_name, username, avatar').in('id', userIds);
+var profRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar').in('id', userIds);
 var profiles = profRes.data || [];
 var html = '';
 profiles.forEach(function(p) {

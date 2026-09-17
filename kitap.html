@@ -817,7 +817,7 @@ if (!userIds.length) {
 document.getElementById('userListBody').innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);font-size:0.9rem;">Henüz kimse yok.</div>';
 return;
 }
-var profRes = await supabaseClient.from('profiles').select('id, full_name, username').in('id', userIds);
+var profRes = await supabaseClient.from('public_profiles').select('id, full_name, username').in('id', userIds);
 var profiles = profRes.data || [];
 var html = '';
 profiles.forEach(function(p) {
@@ -846,7 +846,7 @@ container.innerHTML = '<p style="color:var(--text-dim);font-size:0.85rem;font-st
 return;
 }
 var userIds = quotes.map(function(q) { return q.user_id; }).filter(function(v, i, a) { return a.indexOf(v) === i; });
-var profRes = await supabaseClient.from('profiles').select('id, full_name, username').in('id', userIds);
+var profRes = await supabaseClient.from('public_profiles').select('id, full_name, username').in('id', userIds);
 var profileMap = {};
 (profRes.data || []).forEach(function(p) { profileMap[p.id] = p; });
 var html = '';

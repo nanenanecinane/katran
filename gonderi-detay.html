@@ -348,7 +348,7 @@ return;
 }
 post = postRes.data;
 
-var authorRes = await supabaseClient.from('profiles').select('id, full_name, username, avatar').eq('id', post.user_id).single();
+var authorRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar').eq('id', post.user_id).single();
 profileCache[post.user_id] = authorRes.data || { full_name: 'İsimsiz', username: 'kullanici', avatar: 'harf' };
 
 if (post.book_id) {
@@ -360,7 +360,7 @@ if (post.repost_of) {
 var origRes = await supabaseClient.from('posts').select('*').eq('id', post.repost_of).single();
 if (origRes.data) {
   post._original = origRes.data;
-  var origAuthor = await supabaseClient.from('profiles').select('id, full_name, username, avatar').eq('id', origRes.data.user_id).single();
+  var origAuthor = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar').eq('id', origRes.data.user_id).single();
   profileCache[origRes.data.user_id] = origAuthor.data || { full_name: 'İsimsiz', username: 'kullanici', avatar: 'harf' };
 }
 }
@@ -608,7 +608,7 @@ var ids = comments.map(function(c) { return c.user_id; });
 var uniqueIds = ids.filter(function(v, i, a) { return a.indexOf(v) === i; });
 var missing = uniqueIds.filter(function(id) { return !profileCache[id]; });
 if (missing.length) {
-var pRes = await supabaseClient.from('profiles').select('id, full_name, username, avatar').in('id', missing);
+var pRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar').in('id', missing);
 (pRes.data || []).forEach(function(p) { profileCache[p.id] = p; });
 }
   

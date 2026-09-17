@@ -229,7 +229,7 @@ function getAvatar(profile, size) {
 async function fetchProfiles(ids) {
 var missing = ids.filter(function(id) { return !profileCache[id]; });
 if (missing.length) {
-var res = await supabaseClient.from('profiles').select('id, full_name, username, avatar').in('id', missing);
+var res = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar').in('id', missing);
 (res.data || []).forEach(function(p) { profileCache[p.id] = p; });
 }
 var map = {};

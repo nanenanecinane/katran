@@ -310,7 +310,7 @@ currentUser = sessionRes.data.session.user;
 var profRes = await supabaseClient.from('profiles').select('status').eq('id', currentUser.id).single();
 if (!profRes.data || profRes.data.status !== 'approved') { window.location.href = 'giris.html'; return; }
 
-var usersRes = await supabaseClient.from('profiles').select('id, full_name, username, avatar').eq('status', 'approved').neq('id', currentUser.id).order('full_name', { ascending: true }).limit(200);
+var usersRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar').eq('status', 'approved').neq('id', currentUser.id).order('full_name', { ascending: true }).limit(200);
 allUsers = usersRes.data || [];
 filteredUsers = allUsers.slice();
 

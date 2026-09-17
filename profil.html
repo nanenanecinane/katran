@@ -699,7 +699,7 @@ document.getElementById('modalBody').innerHTML = '<div style="padding:2rem;text-
 return;
 }
 
-var profRes = await supabaseClient.from('profiles').select('id, full_name, username, avatar').in('id', userIds);
+var profRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar').in('id', userIds);
 var profiles = profRes.data || [];
 
 var html = '';

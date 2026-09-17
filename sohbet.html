@@ -387,7 +387,7 @@ if (!sessionRes.data.session) { window.location.href = 'giris.html'; return; }
 currentUser = sessionRes.data.session.user;
 if (otherId === currentUser.id) { window.location.href = 'mesajlar.html'; return; }
 
-var profRes = await supabaseClient.from('profiles').select('id, full_name, username, avatar, status').eq('id', otherId).single();
+var profRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar, status').eq('id', otherId).single();
 if (profRes.error || !profRes.data || profRes.data.status !== 'approved') {
 document.getElementById('topNav').innerHTML = '<a href="mesajlar.html" class="back-link">←</a><div class="loading" style="padding:0;">Kullanıcı bulunamadı.</div>';
 return;

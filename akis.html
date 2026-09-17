@@ -687,7 +687,7 @@ renderPosts();
 async function fetchProfiles(ids) {
 var missing = ids.filter(function(id) { return !profileCache[id]; });
 if (missing.length) {
-var res = await supabaseClient.from('profiles').select('id, full_name, username, avatar').in('id', missing);
+var res = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar').in('id', missing);
 (res.data || []).forEach(function(p) { profileCache[p.id] = p; });
 }
 var map = {};
@@ -1164,7 +1164,7 @@ if (origRes.error || !origRes.data) { toast('Gönderi bulunamadı', true); retur
 pendingDmPost = origRes.data;
 document.getElementById('dmBody').innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);">Yükleniyor...</div>';
 document.getElementById('dmModal').classList.add('open');
-var usersRes = await supabaseClient.from('profiles').select('id, full_name, username, avatar').eq('status', 'approved').neq('id', currentUser.id).order('full_name', { ascending: true }).limit(100);
+var usersRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar').eq('status', 'approved').neq('id', currentUser.id).order('full_name', { ascending: true }).limit(100);
 var users = usersRes.data || [];
 if (!users.length) { document.getElementById('dmBody').innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);">Kullanıcı bulunamadı.</div>'; return; }
 var html = '';

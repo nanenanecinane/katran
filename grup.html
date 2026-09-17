@@ -420,7 +420,7 @@ var senderIds = msgs.map(function(m) { return m.sender_id; });
 var uniqueIds = senderIds.filter(function(v, i, a) { return a.indexOf(v) === i; });
 var missingIds = uniqueIds.filter(function(id) { return !profileCache[id]; });
 if (missingIds.length) {
-var profRes = await supabaseClient.from('profiles').select('id, full_name, username, avatar').in('id', missingIds);
+var profRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar').in('id', missingIds);
 (profRes.data || []).forEach(function(p) { profileCache[p.id] = p; });
 }
 
@@ -463,7 +463,7 @@ document.getElementById('modalBody').innerHTML = '<div class="loading"><div clas
 var res = await supabaseClient.from('group_members').select('user_id, role, joined_at').eq('group_id', groupId).order('joined_at', { ascending: true });
 var members = res.data || [];
 var userIds = members.map(function(m) { return m.user_id; });
-var profRes = await supabaseClient.from('profiles').select('id, full_name, username, avatar').in('id', userIds);
+var profRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar').in('id', userIds);
 var profileMap = {};
 (profRes.data || []).forEach(function(p) { profileMap[p.id] = p; });
 
