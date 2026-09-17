@@ -140,6 +140,40 @@
         /* ============================================================
            6. THEME TOGGLE
            ============================================================ */
+        .auth-side {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 0.3rem;
+        }
+        .auth-container {
+            display: inline-flex;
+            align-items: center;
+        }
+        .auth-container a {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .auth-container a:hover {
+            transform: scale(1.08);
+        }
+        .nav-links a.avatar-login-btn {
+            background: var(--karanfil);
+            color: #fff;
+            font-size: 0.78rem;
+            font-weight: 700;
+            font-family: var(--font-sans);
+            padding: 0.5rem 1rem;
+            border-radius: 60px;
+            text-decoration: none;
+            transition: background 0.2s;
+            display: inline-block;
+        }
+        .nav-links a.avatar-login-btn:hover {
+            background: var(--karanfil-dark);
+        }
+
         .theme-toggle {
             position: fixed;
             bottom: 30px;
@@ -844,40 +878,6 @@
                 font-size: 2rem;
             }
 
-        .auth-side {
-            display: inline-flex;
-            align-items: center;
-            margin-left: 0.3rem;
-        }
-        .auth-container {
-            display: inline-flex;
-            align-items: center;
-        }
-        .auth-container a {
-            display: inline-flex;
-            align-items: center;
-            text-decoration: none;
-            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .auth-container a:hover {
-            transform: scale(1.08);
-        }
-        .nav-links a.avatar-login-btn {
-            background: var(--karanfil);
-            color: #fff;
-            font-size: 0.78rem;
-            font-weight: 700;
-            font-family: var(--font-sans);
-            padding: 0.5rem 1rem;
-            border-radius: 60px;
-            text-decoration: none;
-            transition: background 0.2s;
-            display: inline-block;
-        }
-        .nav-links a.avatar-login-btn:hover {
-            background: var(--karanfil-dark);
-        }
-
         .theme-toggle {
                 bottom: 20px;
                 right: 20px;
@@ -957,6 +957,40 @@
 </head>
 <body>
 
+<header class="masthead" id="masthead" role="banner">
+            <a href="index.html" class="brand" aria-label="Katran Dergi Ana Sayfa">
+                <span class="brand-name"><span class="red">KATRAN</span> DERGİ</span>
+                <span class="brand-tagline">edebiyat · sanat · düşünce</span>
+            </a>
+            <nav class="nav-links" role="navigation" aria-label="Ana navigasyon">
+                <a href="index.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Ana Sayfa
+                </a>
+                <a href="yazilar.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    Yazılar
+                </a>
+                <a href="akis.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    Akış
+                </a>
+                <a href="kolektif.html" aria-current="page">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Kolektif
+                </a>
+                <a href="hakkinda.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    Hakkında
+                </a>
+                <a href="forum.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Forum
+                </a>
+                <span class="auth-side"><span class="auth-container" id="authContainer"><a href="giris.html" id="authLink" class="avatar-login-btn"><span id="authText">Giriş Yap</span></a></span></span>
+            </nav>
+        </header>
+
     <!-- ============================================================
     SCROLL PROGRESS
     ============================================================ -->
@@ -994,39 +1028,7 @@
     <div class="site-wrapper" id="siteWrapper">
 
         <!-- ========== HEADER ========== -->
-        <header class="masthead" id="masthead" role="banner">
-            <a href="index.html" class="brand" aria-label="Katran Dergi Ana Sayfa">
-                <span class="brand-name"><span class="red">KATRAN</span> DERGİ</span>
-                <span class="brand-tagline">edebiyat · sanat · düşünce</span>
-            </a>
-            <nav class="nav-links" role="navigation" aria-label="Ana navigasyon">
-                <a href="index.html">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                    Ana Sayfa
-                </a>
-                <a href="yazilar.html">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                    Yazılar
-                </a>
-                <a href="akis.html">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                    Akış
-                </a>
-                <a href="kolektif.html" aria-current="page">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    Kolektif
-                </a>
-                <a href="hakkinda.html">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                    Hakkında
-                </a>
-                <a href="forum.html">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    Forum
-                </a>
-                <span class="auth-side"><span class="auth-container" id="authContainer"><a href="giris.html" id="authLink" class="avatar-login-btn"><span id="authText">Giriş Yap</span></a></span></span>
-            </nav>
-        </header>
+        
 
         <!-- ========== MAIN ========== -->
         <main role="main">

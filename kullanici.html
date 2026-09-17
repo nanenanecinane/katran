@@ -28,6 +28,14 @@ padding: 1.5rem 1rem 100px;
 transition: background 0.3s ease, color 0.3s ease;
 }
 .container { max-width: 700px; margin: 0 auto; }
+@media (min-width: 1024px) {
+.container { max-width: 1060px; }
+#profileContent { display: grid; grid-template-columns: 300px 1fr; gap: 0 2.5rem; align-items: start; }
+#profileContent > .top-bar { grid-column: 1 / -1; }
+#profileContent > div:nth-of-type(-n+5):not(.top-bar) { grid-column: 1; }
+#profileContent > div:nth-of-type(n+6) { grid-column: 2; }
+#profileContent .profile-card { position: sticky; top: 100px; }
+}
 .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem; }
 .back-link {
 color: var(--text-muted);
@@ -451,7 +459,7 @@ document.getElementById('modalClose').addEventListener('click', function() { doc
 document.getElementById('userListModal').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); });
 
 document.getElementById('loadingState').style.display = 'none';
-document.getElementById('profileContent').style.display = 'block';
+document.getElementById('profileContent').style.display = '';
 })();
 
 async function loadFollowCounts() {

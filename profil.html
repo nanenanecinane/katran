@@ -28,6 +28,14 @@ padding: 1.5rem 1rem 100px;
 transition: background 0.3s ease, color 0.3s ease;
 }
 .container { max-width: 700px; margin: 0 auto; }
+@media (min-width: 1024px) {
+.container { max-width: 1060px; }
+#profileContent { display: grid; grid-template-columns: 300px 1fr; gap: 0 2.5rem; align-items: start; }
+#profileContent > .top-bar { grid-column: 1 / -1; }
+#profileContent > div:nth-of-type(-n+6):not(.top-bar) { grid-column: 1; }
+#profileContent > div:nth-of-type(n+7) { grid-column: 2; }
+#profileContent .profile-card { position: sticky; top: 100px; }
+}
 @media (min-width: 900px) {
 .container { max-width: 760px; }
 }
@@ -648,7 +656,7 @@ await loadFollowCounts();
 await loadStatsAndShelves(currentUser.id);
 
 document.getElementById('loadingState').style.display = 'none';
-document.getElementById('profileContent').style.display = 'block';
+document.getElementById('profileContent').style.display = '';
 
 loadMyPosts(currentUser.id);
 
