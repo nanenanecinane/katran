@@ -237,7 +237,7 @@ h1 { font-size: 1.5rem; }
 <form id="applyForm">
 <div class="form-group">
 <label for="full_name">Adın Soyadın</label>
-<input type="text" id="full_name" required placeholder="Örn: Ahmet Yılmaz" autocomplete="name">
+<input type="text" id="full_name" required minlength="3" maxlength="60" placeholder="Örn: Ahmet Yılmaz" autocomplete="name">
 </div>
 
 <div class="form-group">
@@ -389,6 +389,14 @@ return;
 if (!emailAvailable) {
 messageDiv.className = 'message error';
 messageDiv.textContent = '❌ Lütfen geçerli ve kullanılmamış bir e-posta gir.';
+submitBtn.disabled = false;
+submitBtn.textContent = 'Başvuruyu Gönder';
+return;
+}
+
+if (!formData.full_name || formData.full_name.length < 3) {
+messageDiv.className = 'message error';
+messageDiv.textContent = '❌ Adın soyadın en az 3 karakter olmalı.';
 submitBtn.disabled = false;
 submitBtn.textContent = 'Başvuruyu Gönder';
 return;

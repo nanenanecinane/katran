@@ -2142,7 +2142,9 @@
 
                     let nameById = {};
                     try {
-                        const authorIds = [...new Set(posts.map(p => p.user_id).filter(Boolean))];
+                        const commentIds = [];
+                        postIds.forEach(pid => { (commentsByPost[pid] || []).forEach(c => { if (c.user_id) commentIds.push(c.user_id); }); });
+                        const authorIds = [...new Set(posts.map(p => p.user_id).concat(commentIds).filter(Boolean))];
                         if (authorIds.length) {
                             const { data: authors } = await supabaseClient
                                 .from('public_profiles')
