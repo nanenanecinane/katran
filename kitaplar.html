@@ -669,7 +669,7 @@ async function doSearch() {
     });
     
     if (newBooks.length) {
-      var insertRes = await supabaseClient.from('books').insert(newBooks).select('id, external_id, source');
+      var insertRes = await supabaseClient.from('books').upsert(newBooks, { onConflict: 'external_id,source' }).select('id, external_id, source');
       (insertRes.data || []).forEach(function(b) {
         existingMap[b.external_id + '_' + b.source] = b.id;
       });

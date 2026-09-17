@@ -313,6 +313,20 @@ var res = await supabaseClient
 .eq('id', id);
 
 if (res.error) { console.error('Durum güncelleme hatası:', res.error); alert('İşlem başarısız. Bağlantını kontrol edip tekrar dene.'); return; }
+
+// Onaylanan talep kataloğa işlensin
+if (status === 'approved') {
+try {
+var reqRes = await supabaseClient.from('book_requests').select('title, author').eq('id', id).single();
+if (reqRes.data && reqRes.data.title) {
+var exRes = await supabaseClient.from('books').select('id').eq('title', reqRes.data.title).limit(1);
+if (!exRes.data || !exRes.data.length) {
+var insRes = await supabaseClient.from('books').insert([{ title: reqRes.data.title, author: reqRes.data.author || null }]);
+if (insRes.error) console.error('Katalog ekleme hatası:', insRes.error);
+}
+}
+} catch (e) { console.error('Katalog ekleme hatası:', e); }
+}
 await loadRequests();
 };
 })();

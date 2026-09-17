@@ -509,7 +509,6 @@ var desc = olData.description;
 if (desc && typeof desc === 'object') desc = desc.value;
 var subj = olData.subjects ? olData.subjects.slice(0, 5).join(', ') : null;
 if (desc || subj) {
-await supabaseClient.from('books').update({ description: desc, subjects: subj }).eq('id', bookId);
 bookData.description = desc;
 bookData.subjects = subj;
 }
@@ -698,6 +697,7 @@ document.getElementById('ratingHint').textContent = hints[value] || 'Bir yıldı
 document.getElementById('ratingStars').addEventListener('click', async function(e) {
 var star = e.target.closest('.rating-star');
 if (!star) return;
+if (!currentUser) { toast('Puan vermek için giriş yapmalısın', true); return; }
 var value = parseInt(star.getAttribute('data-value'));
 myRating = value;
 updateRatingStars(value);
@@ -712,7 +712,7 @@ var sumRes = await supabaseClient.from('user_books').select('rating').eq('book_i
 var ratings = (sumRes.data || []).map(function(r) { return r.rating; });
 var sum = ratings.reduce(function(a, b) { return a + b; }, 0);
 var count = ratings.length;
-await supabaseClient.from('books').update({ rating_sum: sum, rating_count: count }).eq('id', bookId);
+await supabaseClient.rpc('recalculate_rating', { bid: bookId });
 bookData.rating_sum = sum;
 bookData.rating_count = count;
 
@@ -775,7 +775,7 @@ contributed_by: currentUser.id,
 contribution_count: (bookData.contribution_count || 0) + 1
 };
 
-var res = await supabaseClient.from('books').update(updates).eq('id', bookId);
+var res = await supabaseClient.rpc('contribute_book_info', { bid: bookId, d: desc, s: cats || '' });
 if (res.error) {
 toast('Hata: ' + res.error.message, true);
 btn.disabled = false;
