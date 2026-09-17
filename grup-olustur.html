@@ -389,7 +389,7 @@ var desc = document.getElementById('groupDesc').value.trim();
 var messageDiv = document.getElementById('message');
 var btn = document.getElementById('submitBtn');
 
-messageDiv.style.display = 'none';
+messageDiv.style.display = '';
 if (!name) {
 messageDiv.className = 'message error';
 messageDiv.innerHTML = ICON_ERROR + '<span>Grup adı gerekli.</span>';

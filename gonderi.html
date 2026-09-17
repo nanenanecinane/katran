@@ -239,7 +239,7 @@ if (content.length < 1) { showMessage('En az 1 karakter yaz.', 'error'); return;
 
 submitBtn.disabled = true;
 submitBtn.textContent = 'Paylaşılıyor...';
-message.style.display = 'none';
+message.style.display = '';
 
 var sessionRes = await supabaseClient.auth.getSession();
 var session = sessionRes.data.session;
