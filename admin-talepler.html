@@ -57,9 +57,9 @@ flex-wrap: wrap;
 gap: 1rem;
 }
 h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; }
-h1 .red { color: #e03131; }
+h1 .red { color: #b04455; }
 .back-link { color: var(--muted); text-decoration: none; font-size: 0.9rem; padding: 0.5rem 1rem; border: 1px solid var(--line-strong); border-radius: 60px; }
-.back-link:hover { color: #e03131; border-color: #e03131; }
+.back-link:hover { color: #b04455; border-color: #b04455; }
 .tabs { display: flex; gap: 0.4rem; margin-bottom: 1.5rem; }
 .tab {
 background: transparent;
@@ -72,7 +72,8 @@ font-weight: 600;
 cursor: pointer;
 font-family: inherit;
 }
-.tab.active { background: #e03131; color: #fff; border-color: #e03131; }
+.tab:hover { color: #b04455; background: rgba(176,68,85,0.08); }
+.tab.active { background: #b04455; color: #fff; border-color: #b04455; }
 .request-card {
 background: var(--surface);
 border: 1px solid var(--line-soft);
@@ -96,7 +97,7 @@ font-size: 0.85rem;
 background: var(--inset);
 padding: 0.6rem 0.9rem;
 border-radius: 8px;
-border-left: 2px solid #e03131;
+border-left: 2px solid #b04455;
 margin-top: 0.5rem;
 line-height: 1.5;
 }
@@ -128,7 +129,7 @@ letter-spacing: 0.05em;
 .status-approved { background: rgba(76,175,80,0.15); color: #81c784; }
 .status-rejected { background: rgba(224,49,49,0.15); color: #ff8a8a; }
 .loading, .empty { text-align: center; padding: 3rem; color: var(--muted); }
-.empty .flower { font-size: 2.5rem; color: #e03131; display: block; margin-bottom: 1rem; }
+.empty .flower { font-size: 2.5rem; color: #b04455; display: block; margin-bottom: 1rem; }
 .error-msg {
 background: rgba(224,49,49,0.15);
 border: 1px solid rgba(224,49,49,0.4);
@@ -145,7 +146,7 @@ right: 1.2rem;
 width: 46px;
 height: 46px;
 border-radius: 50%;
-border: 2px solid #e03131;
+border: 2px solid #b04455;
 background: var(--surface);
 color: var(--text);
 cursor: pointer;

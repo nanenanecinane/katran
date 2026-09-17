@@ -324,6 +324,17 @@ return;
 }
 
 showSuccess('✅ Giriş başarılı! Yönlendiriliyorsunuz...');
+
+// Onay kapısı: sadece onaylı üyeler içeride
+var meRes = await supabaseClient.from('profiles').select('status').eq('id', result.data.user.id).single();
+if (!meRes.data || meRes.data.status !== 'approved') {
+await supabaseClient.auth.signOut();
+showError('⏳ Başvurun henüz onaylanmadı. Onaylanınca giriş yapabilirsin.');
+submitBtn.disabled = false;
+submitBtn.textContent = 'Giriş Yap';
+return;
+}
+
 setTimeout(function() {
 window.location.href = 'akis.html';
 }, 1000);

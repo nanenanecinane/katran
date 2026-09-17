@@ -198,6 +198,12 @@ margin-top: 0.4rem;
 font-size: 0.8rem;
 min-height: 1rem;
 }
+.field-hint {
+display: block;
+margin-top: 0.4rem;
+font-size: 0.8rem;
+color: var(--text-muted);
+}
 
 @media (max-width: 520px) {
 .container { padding: 2rem 1.5rem; }
@@ -260,6 +266,7 @@ h1 { font-size: 1.5rem; }
 <div class="form-group">
 <label for="reason">Neden Katran'a katılmak istiyorsun?</label>
 <textarea id="reason" required minlength="30" placeholder="Kısaca kendinden ve Katran'a neden katılmak istediğinden bahset..."></textarea>
+<small class="field-hint">En az 30 karakter yazmalısın.</small>
 </div>
 
 <div class="rules-check">
@@ -348,16 +355,11 @@ emailStatus.style.color = 'var(--text-muted)';
 
 clearTimeout(emailTimer);
 emailTimer = setTimeout(async function() {
-var res = await supabaseClient.from('applications').select('id').eq('email', val).limit(1);
-if (res.data && res.data.length > 0) {
-emailStatus.textContent = '❌ Bu e-posta ile zaten başvuru yapılmış';
-emailStatus.style.color = '#ff8a8a';
-emailAvailable = false;
-} else {
-emailStatus.textContent = '✓ Kullanılabilir';
+// NOT: anon bu tabloyu okuyamadığı için (RLS) e-posta tekilliği
+// burada kontrol edilemez; kopyalar gönderimde yakalanır (23505).
+emailStatus.textContent = '✓ Geçerli görünüyor';
 emailStatus.style.color = '#81c784';
 emailAvailable = true;
-}
 }, 500);
 });
 
@@ -402,6 +404,14 @@ submitBtn.textContent = 'Başvuruyu Gönder';
 return;
 }
 
+if (!formData.reason || formData.reason.length < 30) {
+messageDiv.className = 'message error';
+messageDiv.textContent = '❌ Katılma nedenini en az 30 karakter yazmalısın.';
+submitBtn.disabled = false;
+submitBtn.textContent = 'Başvuruyu Gönder';
+return;
+}
+
 try {
 var appRes = await supabaseClient.from('applications').insert([{
 email: formData.email,
@@ -430,6 +440,9 @@ username: formData.username
 });
 
 if (authRes.error) {
+if (/already registered|already exists/i.test(authRes.error.message)) {
+throw new Error('Bu e-posta ile zaten bir hesap var. Giriş yapmayı dene.');
+}
 throw new Error(authRes.error.message);
 }
 
