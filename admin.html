@@ -456,6 +456,19 @@ loadTab();
 });
 });
 
+// Derin bağlantı: ?tab=bookRequests gibi
+try {
+var tabParam = new URLSearchParams(window.location.search).get('tab');
+if (tabParam) {
+var tabBtn = document.querySelector('.tab[data-tab="' + tabParam + '"]');
+if (tabBtn) {
+document.querySelectorAll('.tab').forEach(function(x) { x.classList.remove('active'); });
+tabBtn.classList.add('active');
+activeTab = tabParam;
+}
+}
+} catch (e) {}
+
 // Sayaçları güncelle
 await updateCounts();
 loadTab();
@@ -808,6 +821,10 @@ html += '<div class="item-actions">';
 html += '<button class="btn btn-approve" onclick="approveBookRequest(\'' + r.id + '\')">' + ICONS.check + ' Onayla</button>';
 html += '<button class="btn btn-reject" onclick="rejectBookRequest(\'' + r.id + '\')">' + ICONS.x + ' Reddet</button>';
 html += '</div>';
+} else if (status === 'rejected') {
+html += '<div class="item-actions">';
+html += '<button class="btn btn-neutral" onclick="unrejectBookRequest(\'' + r.id + '\')">↩ Geri Al</button>';
+html += '</div>';
 }
 
 html += '</div>';
@@ -817,15 +834,46 @@ document.getElementById('tabContent').innerHTML = html;
 }
 
 window.approveBookRequest = async function(id) {
-await supabaseClient.from('book_requests').update({ status: 'approved', reviewed_at: new Date().toISOString(), reviewed_by: currentUser.id }).eq('id', id);
-toast('Talep onaylandı');
+var curRes = await supabaseClient.from('book_requests').select('title, author').eq('id', id).single();
+if (curRes.error || !curRes.data) { toast('Talep bulunamadı', true); return; }
+var newTitle = prompt('Kitap adı (düzenleyebilirsin):', curRes.data.title || '');
+if (newTitle === null) return;
+newTitle = newTitle.trim();
+if (!newTitle) { toast('Kitap adı boş olamaz', true); return; }
+var newAuthor = prompt('Yazar (düzenleyebilirsin):', curRes.data.author || '');
+if (newAuthor === null) return;
+var updRes = await supabaseClient.from('book_requests').update({ title: newTitle, author: (newAuthor || '').trim(), status: 'approved', reviewed_at: new Date().toISOString(), reviewed_by: currentUser.id }).eq('id', id);
+if (updRes.error) { toast('Hata: ' + updRes.error.message, true); return; }
+try {
+var exRes = await supabaseClient.from('books').select('id').eq('title', newTitle).limit(1);
+if (!exRes.data || !exRes.data.length) {
+var insRes = await supabaseClient.from('books').insert([{ title: newTitle, author: (newAuthor || '').trim() || null }]);
+if (insRes.error) { toast('Onaylandı ama kataloğa eklenemedi: ' + insRes.error.message, true); await updateCounts(); loadBookRequests(); return; }
+toast('Onaylandı ve kataloğa eklendi');
+} else {
+toast('Onaylandı (katalogda zaten vardı)');
+}
+} catch (e) {
+toast('Onaylandı ama katalog kontrolü başarısız', true);
+}
 await updateCounts();
 loadBookRequests();
 };
 
 window.rejectBookRequest = async function(id) {
-await supabaseClient.from('book_requests').update({ status: 'rejected', reviewed_at: new Date().toISOString(), reviewed_by: currentUser.id }).eq('id', id);
+if (!confirm('Bu kitap talebini reddetmek istediğine emin misin?')) return;
+var res = await supabaseClient.from('book_requests').update({ status: 'rejected', reviewed_at: new Date().toISOString(), reviewed_by: currentUser.id }).eq('id', id);
+if (res.error) { toast('Hata: ' + res.error.message, true); return; }
 toast('Talep reddedildi');
+await updateCounts();
+loadBookRequests();
+};
+
+window.unrejectBookRequest = async function(id) {
+if (!confirm('Bu talebi tekrar inceleme sırasına almak istiyor musun?')) return;
+var res = await supabaseClient.from('book_requests').update({ status: 'pending', reviewed_at: null, reviewed_by: null }).eq('id', id);
+if (res.error) { toast('Hata: ' + res.error.message, true); return; }
+toast('Talep bekleyenlere alındı');
 await updateCounts();
 loadBookRequests();
 };

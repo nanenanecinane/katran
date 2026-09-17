@@ -317,7 +317,7 @@ text = '<strong>' + escapeHtml(actor.full_name) + '</strong> seni takip etmeye b
 link = 'kullanici.html?id=' + n.actor_id;
 } else if (n.type === 'book_request') {
 text = '<strong>' + escapeHtml(actor.full_name) + '</strong> kitap talep etti <span class="notif-icon">' + ICONS.book + '</span>';
-link = 'admin-talepler.html';
+link = 'admin.html?tab=bookRequests';
 } else if (n.type === 'repost') {
 text = '<strong>' + escapeHtml(actor.full_name) + '</strong> gönderini yeniden paylaştı <span class="notif-icon">' + ICONS.repost + '</span>';
 } else if (n.type === 'quote') {
