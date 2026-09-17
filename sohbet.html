@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"/>
+<script>
+(function() {
+  try {
+    var t = localStorage.getItem('katran-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Sohbet • Katran Dergi</title>
+<link rel="stylesheet" href="tema.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+height: 100%;
+}
+
+body {
+font-family: 'Inter', -apple-system, sans-serif;
+background: var(--bg, #0a0808);
+color: var(--text, #f4efe8);
+height: 100vh;
+height: 100dvh;
+display: flex;
+flex-direction: column;
+overflow: hidden;
+padding-bottom: 0 !important;
+margin-bottom: 0 !important;
+}
+
+/* ÜST NAV */
+.top-nav {
+background: var(--nav-bg, rgba(10,8,8,0.95));
+backdrop-filter: blur(20px);
+border-bottom: 1px solid var(--border, rgba(255,255,255,0.06));
+padding: 0.7rem 1rem;
+display: flex;
+align-items: center;
+gap: 0.8rem;
+flex-shrink: 0;
+z-index: 10;
+}
+.back-link {
+color: var(--text-muted, #a89e94);
+text-decoration: none;
+display: inline-flex;
+align-items: center;
+padding: 0.4rem;
+border-radius: 50%;
+transition: all 0.2s;
+flex-shrink: 0;
+}
+.back-link svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.back-link:hover { color: var(--bordo, #8b2e3e); background: var(--bordo-glow, rgba(139,46,62,0.25)); }
+.chat-user {
+display: flex;
+align-items: center;
+gap: 0.7rem;
+flex: 1;
+text-decoration: none;
+color: inherit;
+min-width: 0;
+}
+.chat-info { min-width: 0; }
+.chat-name { font-weight: 700; font-size: 0.95rem; color: var(--text, #f4efe8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-username { color: var(--text-muted, #a89e94); font-size: 0.78rem; }
+.color-btn {
+background: var(--bg-elev, rgba(255,255,255,0.03));
+border: 1px solid var(--border, rgba(255,255,255,0.08));
+color: var(--text-muted, #a89e94);
+width: 38px;
+height: 38px;
+border-radius: 50%;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.2s;
+flex-shrink: 0;
+}
+.color-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.color-btn:hover { color: var(--bordo, #8b2e3e); border-color: var(--bordo, #8b2e3e); background: var(--bordo-glow, rgba(139,46,62,0.25)); }
+
+/* MESAJLAR */
+.messages {
+flex: 1 1 auto;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
+padding: 1rem;
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
+max-width: 700px;
+margin: 0 auto;
+width: 100%;
+min-height: 0;
+}
+.date-label {
+text-align: center;
+font-size: 0.72rem;
+color: var(--text-dim, #7a7068);
+margin: 0.8rem 0;
+font-style: italic;
+}
+.msg {
+max-width: 75%;
+padding: 0.7rem 1rem;
+border-radius: 16px;
+font-size: 0.92rem;
+line-height: 1.5;
+word-wrap: break-word;
+white-space: pre-wrap;
+transition: background 0.3s ease, color 0.3s ease;
+}
+.msg.sent {
+align-self: flex-end;
+background: var(--chat-color, #8b2e3e);
+color: #fff;
+border-bottom-right-radius: 4px;
+}
+.msg.received {
+align-self: flex-start;
+background: var(--bg-elev-2, rgba(255,255,255,0.06));
+color: var(--text, #f4efe8);
+border-bottom-left-radius: 4px;
+}
+.msg-time { font-size: 0.65rem; opacity: 0.65; margin-top: 0.2rem; }
+.msg.sent .msg-time { text-align: right; }
+
+/* COMPOSER — HER ZAMAN GÖRÜNÜR */
+.composer {
+display: flex !important;
+padding: 0.7rem 1rem;
+padding-bottom: calc(0.7rem + env(safe-area-inset-bottom));
+border-top: 1px solid var(--border, rgba(255,255,255,0.06));
+background: var(--nav-bg, rgba(10,8,8,0.95));
+backdrop-filter: blur(20px);
+gap: 0.5rem;
+max-width: 700px;
+margin: 0 auto;
+width: 100%;
+flex-shrink: 0;
+z-index: 20;
+}
+.composer input {
+flex: 1;
+background: var(--bg-elev-2, rgba(255,255,255,0.06));
+border: 1px solid var(--border, rgba(255,255,255,0.08));
+border-radius: 60px;
+padding: 0.75rem 1.2rem;
+color: var(--text, #f4efe8);
+font-family: inherit;
+font-size: 0.92rem;
+min-width: 0;
+}
+.composer input::placeholder { color: var(--text-dim, #7a7068); }
+.composer input:focus { outline: none; border-color: var(--chat-color, #8b2e3e); }
+.composer button {
+background: var(--chat-color, #8b2e3e);
+color: #fff;
+border: none;
+border-radius: 60px;
+padding: 0 1.3rem;
+font-weight: 700;
+cursor: pointer;
+font-family: inherit;
+display: flex;
+align-items: center;
+transition: all 0.2s;
+flex-shrink: 0;
+}
+.composer button svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.composer button:hover { opacity: 0.9; }
+.composer button:disabled { opacity: 0.5; }
+
+.loading { text-align: center; padding: 3rem; color: var(--text-muted, #a89e94); }
+
+/* RENK PALETİ MODAL */
+.palette-backdrop {
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.7);
+backdrop-filter: blur(6px);
+z-index: 9998;
+display: none;
+align-items: center;
+justify-content: center;
+padding: 1rem;
+}
+.palette-backdrop.open { display: flex; }
+.palette {
+background: var(--bg, #0a0808);
+border: 1px solid var(--border, rgba(255,255,255,0.08));
+border-radius: 20px;
+max-width: 340px;
+width: 100%;
+padding: 1.5rem;
+box-shadow: var(--shadow-lg, 0 20px 50px rgba(0,0,0,0.5));
+}
+.palette h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--text, #f4efe8); margin-bottom: 0.3rem; }
+.palette p { font-size: 0.8rem; color: var(--text-muted, #a89e94); margin-bottom: 1.2rem; font-style: italic; }
+.palette-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; }
+.color-swatch {
+aspect-ratio: 1;
+border-radius: 14px;
+cursor: pointer;
+border: 3px solid transparent;
+transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.color-swatch:hover { transform: scale(1.08); }
+.color-swatch.active { border-color: var(--text, #f4efe8); transform: scale(1.05); }
+.color-swatch.active::after { content: '✓'; color: #fff; font-weight: 900; font-size: 1.4rem; text-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+.color-bordo { background: linear-gradient(135deg, #8b2e3e, #6b1f2e); }
+.color-blue { background: linear-gradient(135deg, #3b82f6, #1e40af); }
+.color-yellow { background: linear-gradient(135deg, #f59e0b, #b45309); }
+.color-green { background: linear-gradient(135deg, #10b981, #047857); }
+.color-purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.color-pink { background: linear-gradient(135deg, #ec4899, #be185d); }
+.palette-close {
+background: transparent;
+color: var(--text-muted, #a89e94);
+border: 1px solid var(--border, rgba(255,255,255,0.08));
+border-radius: 60px;
+padding: 0.6rem 1.2rem;
+font-family: inherit;
+font-size: 0.85rem;
+cursor: pointer;
+width: 100%;
+margin-top: 1rem;
+font-weight: 600;
+transition: all 0.2s;
+}
+.palette-close:hover { color: var(--bordo, #8b2e3e); border-color: var(--bordo, #8b2e3e); }
+@media (max-width: 640px) { .msg { max-width: 85%; } }
+</style>
+</head>
+<body>
+
+<header class="masthead" id="masthead" role="banner">
+<a href="index.html" class="brand" aria-label="Katran Dergi Ana Sayfa">
+<span class="brand-name"><span class="red">KATRAN</span> DERGİ</span>
+<span class="brand-tagline">edebiyat · sanat · düşünce</span>
+</a>
+<nav class="nav-links" role="navigation" aria-label="Ana navigasyon">
+<a href="index.html">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+Ana Sayfa
+</a>
+<a href="yazilar.html">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+Yazılar
+</a>
+<a href="akis.html">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+Akış
+</a>
+<a href="kolektif.html">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+Kolektif
+</a>
+<a href="hakkinda.html">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+Hakkında
+</a>
+<a href="forum.html">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+Forum
+</a>
+<span class="auth-side"><span class="auth-container" id="authContainer"><a href="giris.html" id="authLink" class="avatar-login-btn"><span id="authText">Giriş Yap</span></a></span></span>
+</nav>
+</header>
+
+<div class="top-nav" id="topNav">
+<div class="loading" style="padding:0;">Yükleniyor...</div>
+</div>
+
+<div class="messages" id="messages"></div>
+
+<div class="composer" id="composer">
+<input type="text" id="msgInput" placeholder="Mesaj yaz..." maxlength="1000" autocomplete="off">
+<button id="sendBtn">
+<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+</button>
+</div>
+
+<div class="palette-backdrop" id="paletteBackdrop">
+<div class="palette">
+<h3>Sohbet Rengi</h3>
+<p>Bu kişiyle olan sohbetin rengini seç.</p>
+<div class="palette-grid" id="paletteGrid"></div>
+<button class="palette-close" id="paletteClose">Kapat</button>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="tema.js"></script>
+<script src="avatares.js"></script>
+
+<script>
+(function() {
+'use strict';
+
+var SUPABASE_URL = 'https://bdxvgtxregsonbvhvdav.supabase.co';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkeHZndHhyZWdzb25idmh2ZGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0MzM4ODcsImV4cCI6MjEwNTAwOTg4N30.7gQGqcvDzTKpQyjnRkmcCrwPny3m5pfUOy4BWk7O0CQ';
+
+window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+var currentUser = null;
+var otherId = null;
+var otherProfile = null;
+
+var COLORS = [
+{ id: 'bordo', class: 'color-bordo', hex: '#8b2e3e', label: 'Bordo' },
+{ id: 'blue', class: 'color-blue', hex: '#3b82f6', label: 'Mavi' },
+{ id: 'yellow', class: 'color-yellow', hex: '#f59e0b', label: 'Sarı' },
+{ id: 'green', class: 'color-green', hex: '#10b981', label: 'Yeşil' },
+{ id: 'purple', class: 'color-purple', hex: '#8b5cf6', label: 'Mor' },
+{ id: 'pink', class: 'color-pink', hex: '#ec4899', label: 'Pembe' }
+];
+
+function escapeHtml(str) {
+if (!str) return '';
+return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function formatTime(dateStr) {
+var d = new Date(dateStr);
+return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+}
+
+function formatDateLabel(dateStr) {
+var d = new Date(dateStr);
+var today = new Date();
+var yesterday = new Date();
+yesterday.setDate(yesterday.getDate() - 1);
+if (d.toDateString() === today.toDateString()) return 'Bugün';
+if (d.toDateString() === yesterday.toDateString()) return 'Dün';
+var months = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function getColorKey() { return 'chat-color-' + otherId; }
+function getSavedColor() {
+try { return localStorage.getItem(getColorKey()) || 'bordo'; } catch(e) { return 'bordo'; }
+}
+function applyColor(colorId) {
+var color = COLORS.find(function(c) { return c.id === colorId; }) || COLORS[0];
+document.documentElement.style.setProperty('--chat-color', color.hex);
+try { localStorage.setItem(getColorKey(), colorId); } catch(e) {}
+}
+
+function renderPalette() {
+var current = getSavedColor();
+var grid = document.getElementById('paletteGrid');
+var html = '';
+COLORS.forEach(function(c) {
+html += '<div class="color-swatch ' + c.class + (c.id === current ? ' active' : '') + '" data-color="' + c.id + '" title="' + c.label + '"></div>';
+});
+grid.innerHTML = html;
+grid.querySelectorAll('.color-swatch').forEach(function(sw) {
+sw.addEventListener('click', function() {
+var colorId = this.getAttribute('data-color');
+applyColor(colorId);
+renderPalette();
+});
+});
+}
+
+(async function init() {
+var urlParams = new URLSearchParams(window.location.search);
+otherId = urlParams.get('id');
+if (!otherId) { window.location.href = 'mesajlar.html'; return; }
+
+var sessionRes = await supabaseClient.auth.getSession();
+if (!sessionRes.data.session) { window.location.href = 'giris.html'; return; }
+currentUser = sessionRes.data.session.user;
+if (otherId === currentUser.id) { window.location.href = 'mesajlar.html'; return; }
+
+var profRes = await supabaseClient.from('profiles').select('id, full_name, username, avatar, status').eq('id', otherId).single();
+if (profRes.error || !profRes.data || profRes.data.status !== 'approved') {
+document.getElementById('topNav').innerHTML = '<a href="mesajlar.html" class="back-link">←</a><div class="loading" style="padding:0;">Kullanıcı bulunamadı.</div>';
+return;
+}
+otherProfile = profRes.data;
+
+applyColor(getSavedColor());
+renderHeader();
+renderPalette();
+
+await supabaseClient.from('messages').update({ is_read: true }).eq('sender_id', otherId).eq('receiver_id', currentUser.id).eq('is_read', false);
+
+await loadMessages();
+
+document.getElementById('sendBtn').addEventListener('click', sendMessage);
+document.getElementById('msgInput').addEventListener('keydown', function(e) {
+if (e.key === 'Enter') sendMessage();
+});
+
+document.getElementById('topNav').addEventListener('click', function(e) {
+if (e.target.closest('.color-btn')) {
+document.getElementById('paletteBackdrop').classList.add('open');
+}
+});
+document.getElementById('paletteClose').addEventListener('click', function() {
+document.getElementById('paletteBackdrop').classList.remove('open');
+});
+document.getElementById('paletteBackdrop').addEventListener('click', function(e) {
+if (e.target === this) this.classList.remove('open');
+});
+
+supabaseClient.channel('messages-channel')
+.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, function(payload) {
+var m = payload.new;
+if ((m.sender_id === otherId && m.receiver_id === currentUser.id) || (m.sender_id === currentUser.id && m.receiver_id === otherId)) {
+loadMessages();
+if (m.sender_id === otherId) {
+supabaseClient.from('messages').update({ is_read: true }).eq('id', m.id);
+}
+}
+})
+.subscribe();
+})();
+
+function renderHeader() {
+var tryRender = function() {
+if (window.renderAvatar) {
+document.getElementById('topNav').innerHTML =
+'<a href="mesajlar.html" class="back-link"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></a>' +
+'<a href="kullanici.html?id=' + otherId + '" class="chat-user">' +
+window.renderAvatar(otherProfile, 38) +
+'<div class="chat-info">' +
+'<div class="chat-name">' + escapeHtml(otherProfile.full_name) + '</div>' +
+'<div class="chat-username">@' + escapeHtml(otherProfile.username) + '</div>' +
+'</div></a>' +
+'<button class="color-btn" title="Sohbet Rengi">' +
+'<svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>' +
+'</button>';
+} else {
+setTimeout(tryRender, 50);
+}
+};
+tryRender();
+}
+
+async function loadMessages() {
+var res = await supabaseClient
+.from('messages')
+.select('*')
+.or('and(sender_id.eq.' + currentUser.id + ',receiver_id.eq.' + otherId + '),and(sender_id.eq.' + otherId + ',receiver_id.eq.' + currentUser.id + ')')
+.order('created_at', { ascending: true })
+.limit(200);
+
+var container = document.getElementById('messages');
+var msgs = res.data || [];
+
+if (!msgs.length) {
+container.innerHTML = '<div class="loading">Henüz mesaj yok. İlk mesajı sen yaz!</div>';
+return;
+}
+
+var html = '';
+var lastDate = '';
+msgs.forEach(function(m) {
+var dateLabel = formatDateLabel(m.created_at);
+if (dateLabel !== lastDate) {
+html += '<div class="date-label">' + dateLabel + '</div>';
+lastDate = dateLabel;
+}
+
+var cls = m.sender_id === currentUser.id ? 'sent' : 'received';
+html += '<div class="msg ' + cls + '">';
+html += escapeHtml(m.content);
+html += '<div class="msg-time">' + formatTime(m.created_at) + '</div>';
+html += '</div>';
+});
+container.innerHTML = html;
+container.scrollTop = container.scrollHeight;
+}
+
+async function sendMessage() {
+var input = document.getElementById('msgInput');
+var content = input.value.trim();
+if (!content) return;
+
+var btn = document.getElementById('sendBtn');
+btn.disabled = true;
+
+var res = await supabaseClient.from('messages').insert([{ sender_id: currentUser.id, receiver_id: otherId, content: content }]);
+
+btn.disabled = false;
+if (res.error) { alert('Hata: ' + res.error.message); return; }
+input.value = '';
+await loadMessages();
+}
+})();
+</script>
+
+<footer class="site-footer" role="contentinfo">
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-content">
+<div class="footer-brand"><span class="red">Katran</span> Dergi</div>
+<div class="footer-divider" aria-hidden="true"></div>
+<p>&copy; 2025 — Kırmızı karanfil ektik, katranın bağrına.</p>
+</div>
+</footer>
+<script src="auth-bar.js"></script>
+</body>
+</html>

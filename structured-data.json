@@ -1,0 +1,58 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Periodical",
+      "@id": "https://katrandergi.org/#periodical",
+      "name": "Katran Dergi",
+      "description": "Katran Dergi - Edebiyat, sanat ve özgür düşünce alanında yayın yapan süreli yayın. 'Kırmızı karanfil ektik, katranın bağrına' mottosuyla çıkan dergi.",
+      "url": "https://katrandergi.org",
+      "issn": "DERGİ-ISSN-NUMARANIZ",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Katran Dergi",
+        "description": "Edebiyat, sanat ve özgür düşünce dergisi",
+        "url": "https://katrandergi.org",
+        "logo": "https://katrandergi.org/images/logo.png"
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://katrandergi.org"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://katrandergi.org/#website",
+      "url": "https://katrandergi.org",
+      "name": "Katran Dergi",
+      "description": "Edebiyat, sanat ve özgür düşünce dergisi",
+      "publisher": {
+        "@id": "https://katrandergi.org/#periodical"
+      },
+      "inLanguage": "tr-TR",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://katrandergi.org/arama?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://katrandergi.org/#organization",
+      "name": "Katran Dergi",
+      "url": "https://katrandergi.org",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://katrandergi.org/images/logo.png",
+        "width": 300,
+        "height": 300
+      },
+      "description": "Edebiyat, sanat ve özgür düşünce dergisi",
+      "email": "katrandergi@gmail.com",
+      "sameAs": []
+    }
+  ]
+}

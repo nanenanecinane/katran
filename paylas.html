@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"/>
+<script>
+(function() {
+  try {
+    var t = localStorage.getItem('katran-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Paylaş • Katran Dergi</title>
+<link rel="stylesheet" href="tema.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+font-family: 'Inter', -apple-system, sans-serif;
+background: var(--bg, #0a0808);
+color: var(--text, #f4efe8);
+min-height: 100vh;
+padding: 0 0 2rem;
+transition: background 0.3s ease, color 0.3s ease;
+}
+.container { max-width: 460px; width: calc(100% - 2rem); margin: 4rem auto 2rem; text-align: center; }
+h1 {
+font-family: 'Playfair Display', serif;
+font-size: 1.7rem;
+font-weight: 900;
+margin-bottom: 2rem;
+color: var(--text, #f4efe8);
+}
+h1 .red { color: var(--bordo, #8b2e3e); }
+.options { display: flex; flex-direction: column; gap: 0.7rem; }
+.option {
+background: var(--bg-elev, rgba(255,255,255,0.03));
+border: 1px solid var(--border, rgba(255,255,255,0.08));
+border-radius: 18px;
+padding: 1.2rem 1.3rem;
+text-decoration: none;
+color: var(--text, #f4efe8);
+display: flex;
+align-items: center;
+gap: 1rem;
+transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+text-align: left;
+cursor: pointer;
+font-family: inherit;
+width: 100%;
+}
+.option:hover {
+border-color: var(--bordo, #8b2e3e);
+background: var(--bordo-glow, rgba(139,46,62,0.15));
+transform: translateY(-2px);
+}
+.option-icon {
+width: 48px;
+height: 48px;
+border-radius: 14px;
+background: linear-gradient(135deg, var(--bordo, #8b2e3e), var(--bordo-dark, #6b1f2e));
+display: flex;
+align-items: center;
+justify-content: center;
+color: #fff;
+flex-shrink: 0;
+transition: transform 0.25s;
+}
+.option:hover .option-icon { transform: scale(1.08) rotate(-4deg); }
+.option-icon svg {
+width: 22px;
+height: 22px;
+stroke: currentColor;
+fill: none;
+stroke-width: 2;
+stroke-linecap: round;
+stroke-linejoin: round;
+}
+.option-title {
+font-family: 'Playfair Display', serif;
+font-size: 1.1rem;
+font-weight: 700;
+color: var(--text, #f4efe8);
+}
+.cancel-link {
+display: inline-block;
+margin-top: 1.8rem;
+color: var(--text-muted, #a89e94);
+text-decoration: none;
+font-size: 0.85rem;
+transition: color 0.2s;
+}
+.cancel-link:hover { color: var(--bordo, #8b2e3e); }
+.toast {
+position: fixed;
+bottom: 2rem;
+left: 50%;
+transform: translateX(-50%) translateY(100px);
+background: var(--bordo, #8b2e3e);
+color: #fff;
+padding: 0.8rem 1.5rem;
+border-radius: 60px;
+font-weight: 600;
+font-size: 0.9rem;
+transition: transform 0.3s;
+z-index: 9999;
+max-width: 90%;
+text-align: center;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.error { background: #e03131; }
+@media (max-width: 480px) {
+h1 { font-size: 1.5rem; margin-bottom: 1.5rem; }
+.option { padding: 1rem 1.1rem; border-radius: 16px; }
+.option-icon { width: 44px; height: 44px; border-radius: 12px; }
+.option-icon svg { width: 20px; height: 20px; }
+.option-title { font-size: 1rem; }
+}
+</style>
+</head>
+<body>
+<header class="masthead" id="masthead" role="banner">
+<a href="index.html" class="brand" aria-label="Katran Dergi Ana Sayfa">
+<span class="brand-name"><span class="red">KATRAN</span> DERGİ</span>
+<span class="brand-tagline">edebiyat · sanat · düşünce</span>
+</a>
+<nav class="nav-links" role="navigation" aria-label="Ana navigasyon">
+<a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Ana Sayfa</a>
+<a href="yazilar.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Yazılar</a>
+<a href="akis.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Akış</a>
+<a href="kolektif.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Kolektif</a>
+<a href="hakkinda.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg> Hakkında</a>
+<a href="forum.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Forum</a>
+<span class="auth-side"><span class="auth-container" id="authContainer"><a href="giris.html" id="authLink" class="avatar-login-btn"><span id="authText">Giriş Yap</span></a></span></span>
+</nav>
+</header>
+
+<div class="container">
+<h1><span class="red">Ne</span> paylaşmak istersin?</h1>
+
+<div class="options">
+
+<a href="gonderi.html" class="option">
+<div class="option-icon">
+<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+</div>
+<div class="option-title">Gönderi</div>
+</a>
+
+<a href="alinti.html" class="option">
+<div class="option-icon">
+<svg viewBox="0 0 24 24"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+</div>
+<div class="option-title">Alıntı</div>
+</a>
+
+<a href="kitaplar.html" class="option">
+<div class="option-icon">
+<svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+</div>
+<div class="option-title">Kitap</div>
+</a>
+
+<button class="option" id="shareProfileBtn">
+<div class="option-icon">
+<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+</div>
+<div class="option-title">Profil</div>
+</button>
+
+</div>
+
+<a href="akis.html" class="cancel-link">← Vazgeç</a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="tema.js"></script>
+<script src="avatares.js"></script>
+
+<script>
+(function() {
+'use strict';
+
+var SUPABASE_URL = 'https://bdxvgtxregsonbvhvdav.supabase.co';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkeHZndHhyZWdzb25idmh2ZGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0MzM4ODcsImV4cCI6MjEwNTAwOTg4N30.7gQGqcvDzTKpQyjnRkmcCrwPny3m5pfUOy4BWk7O0CQ';
+
+window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function toast(msg, isError) {
+var t = document.getElementById('toast');
+t.textContent = msg;
+t.className = 'toast show' + (isError ? ' error' : '');
+setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+
+document.getElementById('shareProfileBtn').addEventListener('click', async function() {
+  var sessionRes = await supabaseClient.auth.getSession();
+  if (!sessionRes.data.session) {
+    toast('Giriş yapmalısın', true);
+    return;
+  }
+  var user = sessionRes.data.session.user;
+  var profRes = await supabaseClient.from('profiles').select('full_name, username').eq('id', user.id).single();
+  var profile = profRes.data || { full_name: 'Ben', username: '' };
+  
+  var profileUrl = window.location.origin + '/kullanici.html?id=' + user.id;
+  var shareText = profile.full_name + ' (@' + profile.username + ') — Katran Dergi\'de profilim:';
+  
+  try {
+    await navigator.clipboard.writeText(profileUrl);
+  } catch(e) {
+    var tmp = document.createElement('textarea');
+    tmp.value = profileUrl;
+    document.body.appendChild(tmp);
+    tmp.select();
+    document.execCommand('copy');
+    tmp.remove();
+  }
+  
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Katran Dergi — Profilim',
+        text: shareText,
+        url: profileUrl
+      });
+      toast('✅ Paylaşıldı');
+      return;
+    } catch(e) {
+      if (e.name === 'AbortError') return;
+    }
+  }
+  toast('✅ Link kopyalandı');
+});
+})();
+</script>
+<footer class="site-footer" role="contentinfo">
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-particle" aria-hidden="true"></div>
+<div class="footer-content">
+<div class="footer-brand"><span class="red">Katran</span> Dergi</div>
+<div class="footer-divider" aria-hidden="true"></div>
+<p>&copy; 2025 — Kırmızı karanfil ektik, katranın bağrına.</p>
+</div>
+</footer>
+<script src="auth-bar.js"></script>
+</body>
+</html>

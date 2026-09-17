@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /private/
+Disallow: /tmp/
+
+# SEO Dostu Tarama
+Crawl-delay: 1
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.gif
+Allow: /*.pdf
+
+# Site Haritası
+Sitemap: https://katrandergi.org/sitemap.xml
+Sitemap: https://katrandergi.org/sitemap-news.xml
+
+# Özel Botlar
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /

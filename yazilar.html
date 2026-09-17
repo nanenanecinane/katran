@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <meta charset="utf-8"/>
+    <script>
+    (function() {
+      // FOUC önleyici: temalar aydınlık + katran; eski 'dark' otomatik göçer
+      try {
+        var t = localStorage.getItem('katran-theme') || localStorage.getItem('theme') || 'katran';
+        if (t === 'dark') t = 'katran';
+        if (t !== 'light' && t !== 'katran') t = 'katran';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'katran');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Katran Dergi - Yazılar</title>
+    
+    <meta name="description" content="Katran Dergi yazıları - Sessiz Zaman ve Genç Tanrı'dan Kaçış makaleleri. Felsefe, siyaset ve edebiyat üzerine derin analizler.">
+    <meta name="keywords" content="katran dergi yazıları, siyaset, felsefe, carl schmitt, byung-chul han, makale">
+    <meta name="author" content="Katran Dergi">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <meta property="og:title" content="Katran Dergi - Yazılar">
+    <meta property="og:description" content="Sessiz Zaman ve Genç Tanrı'dan Kaçış - Felsefe ve siyaset üzerine derin analizler.">
+    <meta property="og:type" content="website">
+    
+    <style>
+        /* ============================================================
+           1. RESET & DEĞİŞKENLER — ANA SİTE İLE AYNI
+           ============================================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --katran: #0a0808;
+            --karanfil: #b04455;
+            --karanfil-dark: #8b2e3e;
+            --karanfil-glow: rgba(224, 49, 49, 0.25);
+            --karanfil-subtle: rgba(224, 49, 49, 0.06);
+            --kagit: #f4efe8;
+            --kagit-dark: #e6ded5;
+            --toz: #a89e94;
+            --altin: #d4a843;
+            --muted: #7a7068;
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Inter', sans-serif;
+            --transition-smooth: 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            --shadow-soft: 0 20px 60px -20px rgba(0, 0, 0, 0.08);
+            --shadow-strong: 0 30px 80px -20px rgba(0, 0, 0, 0.15);
+            --border-radius-card: 20px;
+            --border-radius-btn: 60px;
+        }
+
+        /* Dark Mode */
+        [data-theme="katran"] {
+            --katran: #f8ece8;
+            --kagit: #0d0405;
+            --kagit-dark: #17090c;
+            --toz: #8a6068;
+            --muted: #c8a0a8;
+            --shadow-soft: 0 20px 60px -20px rgba(255, 255, 255, 0.05);
+            --shadow-strong: 0 30px 80px -20px rgba(255, 255, 255, 0.08);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--kagit);
+            color: var(--katran);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            transition: background 0.6s ease, color 0.6s ease;
+        }
+
+        /* ============================================================
+           2. CUSTOM SCROLLBAR
+           ============================================================ */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--kagit);
+            border-radius: 20px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--karanfil);
+            border-radius: 20px;
+            transition: var(--transition-smooth);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--karanfil-dark);
+        }
+
+        /* ============================================================
+           3. SELECTION
+           ============================================================ */
+        ::selection {
+            background: var(--karanfil);
+            color: var(--kagit);
+        }
+
+        /* ============================================================
+           5. SCROLL PROGRESS
+           ============================================================ */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--karanfil), var(--karanfil-dark));
+            z-index: 9997;
+            transition: width 0.1s ease;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 0 20px var(--karanfil-glow);
+        }
+
+        /* ============================================================
+           6. THEME TOGGLE
+           ============================================================ */
+        .theme-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--karanfil);
+            background: var(--kagit);
+            color: var(--katran);
+            font-size: 1.4rem;
+            cursor: pointer;
+            z-index: 999;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: var(--shadow-strong);
+        }
+        .theme-toggle svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ============================================================
+           7. SITE WRAPPER
+           ============================================================ */
+        .site-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            opacity: 1;
+            animation: siteFadeIn 1s ease forwards;
+        }
+        @keyframes siteFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================================
+           8. BACKGROUND AMBIENT
+           ============================================================ */
+        .bg-ambient {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .bg-ambient .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: orbDrift 20s ease-in-out infinite alternate;
+        }
+        .bg-ambient .orb:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            top: -10%;
+            left: -5%;
+            background: rgba(224, 49, 49, 0.04);
+            animation-duration: 25s;
+        }
+        .bg-ambient .orb:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            bottom: -10%;
+            right: -5%;
+            background: rgba(224, 49, 49, 0.03);
+            animation-duration: 30s;
+            animation-delay: 5s;
+        }
+        .bg-ambient .orb:nth-child(3) {
+            width: 300px;
+            height: 300px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(224, 49, 49, 0.02);
+            animation-duration: 35s;
+            animation-delay: 10s;
+        }
+
+        @keyframes orbDrift {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(60px, -40px) scale(1.1);
+            }
+            66% {
+                transform: translate(-30px, 50px) scale(0.9);
+            }
+            100% {
+                transform: translate(40px, -20px) scale(1.05);
+            }
+        }
+
+        /* ============================================================
+           9. HEADER — ANA SİTE İLE AYNI
+           ============================================================ */
+        .masthead {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.8rem 0 1.8rem;
+            margin-bottom: 3rem;
+            position: sticky;
+            top: 0;
+            background: rgba(244, 239, 232, 0.72);
+            backdrop-filter: blur(24px) saturate(1.4);
+            -webkit-backdrop-filter: blur(24px) saturate(1.4);
+            z-index: 100;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            transition: var(--transition-smooth);
+            border-radius: 0 0 20px 20px;
+        }
+        [data-theme="katran"] .masthead {
+            background: rgba(13, 4, 5, 0.85);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .masthead.scrolled {
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.04);
+            background: rgba(244, 239, 232, 0.88);
+            padding: 1.2rem 0;
+        }
+        [data-theme="katran"] .masthead.scrolled {
+            background: rgba(13, 4, 5, 0.92);
+        }
+
+        .brand {
+            display: flex;
+            align-items: baseline;
+            gap: 0.75rem;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            position: relative;
+        }
+        .brand::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--karanfil);
+            transition: var(--transition-smooth);
+        }
+        .brand:hover::after {
+            width: 100%;
+        }
+        .brand:hover {
+            opacity: 0.85;
+        }
+
+        .brand-name {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            color: var(--katran);
+            transition: var(--transition-smooth);
+        }
+        .brand-name .red {
+            color: var(--karanfil);
+            transition: var(--transition-smooth);
+        }
+        .brand:hover .brand-name .red {
+            text-shadow: 0 0 30px rgba(224, 49, 49, 0.15);
+        }
+
+        .brand-tagline {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: var(--toz);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            border-left: 1px solid var(--toz);
+            padding-left: 0.8rem;
+            display: none;
+            transition: var(--transition-smooth);
+        }
+        @media (min-width: 760px) {
+            .brand-tagline {
+                display: inline-block;
+            }
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.15rem;
+        }
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.78rem;
+            padding: 0.5rem 1.1rem;
+            border-radius: 40px;
+            transition: var(--transition-smooth);
+            letter-spacing: 0.02em;
+            position: relative;
+            background: transparent;
+            cursor: pointer;
+        }
+        .nav-links a svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            flex-shrink: 0;
+            transition: var(--transition-smooth);
+        }
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 40px;
+            background: var(--karanfil-subtle);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: var(--transition-smooth);
+        }
+        .nav-links a:hover::before {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--karanfil);
+            transition: var(--transition-smooth);
+            transform: translateX(-50%);
+        }
+        .nav-links a:hover::after {
+            width: 35%;
+        }
+        .nav-links a:hover {
+            color: var(--katran);
+        }
+        .nav-links a[aria-current="page"] {
+            color: var(--karanfil);
+        }
+        .nav-links a[aria-current="page"]::before {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .nav-links a[aria-current="page"]::after {
+            width: 35%;
+        }
+        .nav-links a:hover svg {
+            stroke: var(--karanfil);
+            transform: translateY(-1px);
+        }
+        .nav-links a span,
+        .nav-links a svg {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================================
+           10. YAZILAR HERO
+           ============================================================ */
+        .articles-hero {
+            text-align: center;
+            padding: 2rem 0 3rem;
+        }
+        .articles-hero h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(2.8rem, 6vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.05;
+            margin-bottom: 0.5rem;
+        }
+        .articles-hero h1 .highlight {
+            color: var(--karanfil);
+        }
+        .articles-hero .hero-sub {
+            font-size: 1.1rem;
+            color: var(--muted);
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ============================================================
+           11. SEARCH BAR
+           ============================================================ */
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto 2.5rem;
+        }
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .search-box .search-icon {
+            position: absolute;
+            left: 16px;
+            color: var(--muted);
+            opacity: 0.5;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 0.9rem 3rem 0.9rem 3.2rem;
+            border: 1.5px solid rgba(0, 0, 0, 0.06);
+            border-radius: 60px;
+            font-size: 0.95rem;
+            font-family: var(--font-sans);
+            background: var(--kagit);
+            color: var(--katran);
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-soft);
+        }
+        [data-theme="katran"] .search-box input {
+            border-color: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--karanfil);
+            box-shadow: 0 0 0 4px var(--karanfil-glow), var(--shadow-soft);
+        }
+        .search-box input::placeholder {
+            color: var(--toz);
+            font-weight: 300;
+        }
+
+        /* ============================================================
+           12. KÜTÜPHANE GRID
+           ============================================================ */
+        .library-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Kütüphane Kartı — Kitap Görünümü */
+        .library-card {
+            background: var(--kagit);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            border-radius: var(--border-radius-card);
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            position: relative;
+        }
+        [data-theme="katran"] .library-card {
+            border-color: rgba(255, 255, 255, 0.04);
+        }
+        .library-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        /* Kitap Kapağı (Fotoğraf Alanı) */
+        .library-card .book-cover {
+            width: 100%;
+            height: 220px;
+            background: var(--kagit-dark);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 3px solid var(--karanfil);
+        }
+        [data-theme="katran"] .library-card .book-cover {
+            background: var(--kagit-dark);
+        }
+        .library-card .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-smooth);
+        }
+        .library-card:hover .book-cover img {
+            transform: scale(1.03);
+        }
+
+        /* Kitap etiketi (kategori) */
+        .library-card .book-label {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--katran);
+            color: var(--kagit);
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+        [data-theme="katran"] .library-card .book-label {
+            background: var(--kagit);
+            color: var(--katran);
+        }
+        .library-card .book-label.politics {
+            background: #1a365d;
+            color: #fff;
+        }
+        .library-card .book-label.philosophy {
+            background: #2d1b69;
+            color: #fff;
+        }
+
+        /* Kitap Bilgileri */
+        .library-card .book-info {
+            padding: 1.8rem 1.8rem 1.5rem;
+        }
+        .library-card .book-info .book-title {
+            font-family: var(--font-serif);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--katran);
+            margin-bottom: 0.3rem;
+            line-height: 1.2;
+        }
+        .library-card .book-info .book-title .accent {
+            color: var(--karanfil);
+        }
+        .library-card .book-info .book-author {
+            font-size: 0.85rem;
+            color: var(--muted);
+            font-style: italic;
+            margin-bottom: 0.8rem;
+        }
+        .library-card .book-info .book-desc {
+            font-size: 0.95rem;
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+        .library-card .book-info .book-meta {
+            display: flex;
+            gap: 1.2rem;
+            font-size: 0.75rem;
+            color: var(--toz);
+            padding-top: 0.8rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        [data-theme="katran"] .library-card .book-info .book-meta {
+            border-top-color: rgba(255, 255, 255, 0.04);
+        }
+        .library-card .book-info .book-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* Kütüphane rafı efekti */
+        .library-shelf {
+            position: relative;
+        }
+        .library-shelf::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 5%;
+            right: 5%;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: 10px;
+        }
+        [data-theme="katran"] .library-shelf::after {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* ============================================================
+           13. MODAL — OKUMA PANELİ
+           ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .modal-overlay.visible {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-dialog {
+            background: var(--kagit);
+            border-radius: var(--border-radius-card);
+            max-width: 780px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2.5rem;
+            position: relative;
+            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.5);
+            transform: scale(0.95) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        [data-theme="katran"] .modal-dialog {
+            background: var(--kagit-dark);
+        }
+        .modal-overlay.visible .modal-dialog {
+            transform: scale(1) translateY(0);
+        }
+
+        /* Modal Scrollbar */
+        .modal-dialog::-webkit-scrollbar {
+            width: 4px;
+        }
+        .modal-dialog::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .modal-dialog::-webkit-scrollbar-thumb {
+            background: var(--karanfil);
+            border-radius: 10px;
+        }
+
+        .modal-close {
+            position: sticky;
+            top: 0;
+            float: right;
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: 50%;
+            font-size: 1.8rem;
+            color: var(--muted);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            margin-top: -0.5rem;
+            margin-right: -0.5rem;
+        }
+        [data-theme="katran"] .modal-close {
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .modal-close:hover {
+            background: var(--karanfil);
+            color: var(--kagit);
+            transform: rotate(90deg);
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.04);
+        }
+        [data-theme="katran"] .modal-header {
+            border-bottom-color: rgba(255, 255, 255, 0.04);
+        }
+        .modal-header .modal-title {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--katran);
+            margin-bottom: 0.3rem;
+            padding-right: 3rem;
+        }
+        .modal-header .modal-title .accent {
+            color: var(--karanfil);
+        }
+        .modal-header .modal-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--muted);
+            flex-wrap: wrap;
+        }
+        .modal-header .modal-meta .category-badge {
+            background: var(--karanfil-subtle);
+            color: var(--karanfil);
+            padding: 0.15rem 0.8rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .modal-body {
+            color: var(--katran);
+            line-height: 1.9;
+            font-size: 1rem;
+        }
+        .modal-body p {
+            margin-bottom: 1.2rem;
+        }
+        .modal-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ============================================================
+           14. FOOTER — ANA SİTE İLE AYNI
+           ============================================================ */
+        .site-footer {
+            background: var(--katran);
+            color: var(--kagit);
+            padding: 3rem 2rem 2rem;
+            margin: 3rem -2rem -2rem;
+            border-radius: 24px 24px 0 0;
+            border-top: 2px solid var(--karanfil);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="katran"] .site-footer {
+            background: var(--kagit-dark);
+            color: var(--katran);
+        }
+        .site-footer::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(224, 49, 49, 0.025), transparent 40%);
+            animation: footerOrb 15s linear infinite;
+        }
+        @keyframes footerOrb {
+            0% {
+                transform: translate(0, 0);
+            }
+            33% {
+                transform: translate(5%, 8%);
+            }
+            66% {
+                transform: translate(-3%, 4%);
+            }
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        .footer-content .footer-brand {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        .footer-content .footer-brand .red {
+            color: var(--karanfil);
+        }
+        .footer-content p {
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            letter-spacing: 0.02em;
+            font-weight: 300;
+        }
+        .footer-divider {
+            width: 50px;
+            height: 2px;
+            background: var(--karanfil);
+            margin: 1.2rem auto;
+            opacity: 0.2;
+            border-radius: 10px;
+            transition: var(--transition-smooth);
+        }
+        .footer-content:hover .footer-divider {
+            width: 80px;
+            opacity: 0.4;
+        }
+
+        .footer-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--karanfil);
+            opacity: 0;
+            animation: particleRise 12s linear infinite;
+        }
+        .footer-particle:nth-child(1) {
+            width: 4px;
+            height: 4px;
+            left: 10%;
+            bottom: 10%;
+            animation-delay: 0s;
+        }
+        .footer-particle:nth-child(2) {
+            width: 3px;
+            height: 3px;
+            left: 25%;
+            bottom: 20%;
+            animation-delay: 1.5s;
+        }
+        .footer-particle:nth-child(3) {
+            width: 5px;
+            height: 5px;
+            left: 45%;
+            bottom: 5%;
+            animation-delay: 3s;
+        }
+        .footer-particle:nth-child(4) {
+            width: 3px;
+            height: 3px;
+            left: 65%;
+            bottom: 15%;
+            animation-delay: 4.5s;
+        }
+        .footer-particle:nth-child(5) {
+            width: 6px;
+            height: 6px;
+            left: 80%;
+            bottom: 8%;
+            animation-delay: 6s;
+        }
+        .footer-particle:nth-child(6) {
+            width: 4px;
+            height: 4px;
+            left: 92%;
+            bottom: 25%;
+            animation-delay: 7.5s;
+        }
+        .footer-particle:nth-child(7) {
+            width: 3px;
+            height: 3px;
+            left: 55%;
+            bottom: 30%;
+            animation-delay: 9s;
+        }
+        .footer-particle:nth-child(8) {
+            width: 5px;
+            height: 5px;
+            left: 15%;
+            bottom: 35%;
+            animation-delay: 10.5s;
+        }
+
+        @keyframes particleRise {
+            0% {
+                opacity: 0;
+                transform: translateY(0) translateX(0) scale(0.5);
+            }
+            10% {
+                opacity: 0.15;
+            }
+            30% {
+                opacity: 0.25;
+            }
+            60% {
+                opacity: 0.15;
+                transform: translateY(-200px) translateX(30px) scale(0.8);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-400px) translateX(-20px) scale(0.2);
+            }
+        }
+
+        /* ============================================================
+           15. RESPONSIVE
+           ============================================================ */
+        @media (max-width: 860px) {
+            .nav-links a {
+                cursor: pointer;
+            }
+            .library-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .site-wrapper {
+                padding: 0 1rem;
+            }
+            .masthead {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.8rem;
+                padding: 1.2rem 0;
+                border-radius: 0 0 12px 12px;
+            }
+            .nav-links {
+                width: 100%;
+                justify-content: flex-start;
+                gap: 0.05rem;
+                flex-wrap: wrap;
+            }
+            .nav-links a {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.7rem;
+                gap: 3px;
+            }
+            .nav-links a svg {
+                width: 14px;
+                height: 14px;
+            }
+            .brand-name {
+                font-size: 1.8rem;
+            }
+
+            .articles-hero h1 {
+                font-size: 2.2rem;
+            }
+            .articles-hero .hero-sub {
+                font-size: 0.95rem;
+            }
+
+            .library-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .library-card .book-cover {
+                height: 180px;
+            }
+            .library-card .book-info {
+                padding: 1.2rem 1.2rem 1rem;
+            }
+            .library-card .book-info .book-title {
+                font-size: 1.2rem;
+            }
+
+            .modal-dialog {
+                padding: 1.5rem;
+                max-height: 95vh;
+            }
+            .modal-header .modal-title {
+                font-size: 1.5rem;
+                padding-right: 2rem;
+            }
+            .modal-close {
+                width: 36px;
+                height: 36px;
+                font-size: 1.4rem;
+            }
+
+        .auth-side {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 0.3rem;
+        }
+        .auth-container {
+            display: inline-flex;
+            align-items: center;
+        }
+        .auth-container a {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .auth-container a:hover {
+            transform: scale(1.08);
+        }
+        .avatar-login-btn {
+            background: var(--karanfil);
+            color: #fff;
+            font-size: 0.78rem;
+            font-weight: 700;
+            font-family: var(--font-sans);
+            padding: 0.5rem 1rem;
+            border-radius: 60px;
+            text-decoration: none;
+            transition: background 0.2s;
+            display: inline-block;
+        }
+        .avatar-login-btn:hover {
+            background: var(--karanfil-dark);
+        }
+
+        .theme-toggle {
+                bottom: 20px;
+                right: 20px;
+                width: 44px;
+                height: 44px;
+            }
+            .site-footer {
+                margin: 2rem -1rem -1rem;
+                border-radius: 16px 16px 0 0;
+                padding: 2rem 1rem 1.5rem;
+            }
+            .search-container {
+                margin: 0 auto 1.5rem;
+            }
+            .search-box input {
+                padding: 0.7rem 2.5rem 0.7rem 2.8rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .library-card .book-cover {
+                height: 160px;
+            }
+        }
+
+        /* ============================================================
+           16. UTILITY
+           ============================================================ */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .scroll-progress,
+            .theme-toggle,
+            .bg-ambient,
+            .footer-particle,
+            .modal-overlay {
+                display: none !important;
+            }
+            .masthead {
+                position: static !important;
+                backdrop-filter: none !important;
+                background: white !important;
+                border: 1px solid #ddd !important;
+            }
+            .library-card {
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+                break-inside: avoid;
+            }
+            .site-footer {
+                background: #333 !important;
+                color: white !important;
+                border-top: 1px solid #ddd !important;
+            }
+            .site-footer::before {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    SCROLL PROGRESS
+    ============================================================ -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- ============================================================
+    THEME TOGGLE
+    ============================================================ -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Tema değiştir">
+        <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+    </button>
+
+    <!-- ============================================================
+    AMBIENT BACKGROUND
+    ============================================================ -->
+    <div class="bg-ambient" aria-hidden="true">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <!-- ============================================================
+    SITE WRAPPER
+    ============================================================ -->
+    <div class="site-wrapper" id="siteWrapper">
+
+        <!-- ========== HEADER ========== -->
+        <header class="masthead" id="masthead" role="banner">
+            <a href="index.html" class="brand" aria-label="Katran Dergi Ana Sayfa">
+                <span class="brand-name"><span class="red">KATRAN</span> DERGİ</span>
+                <span class="brand-tagline">edebiyat · sanat · düşünce</span>
+            </a>
+            <nav class="nav-links" role="navigation" aria-label="Ana navigasyon">
+                <a href="index.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Ana Sayfa
+                </a>
+                <a href="yazilar.html" aria-current="page">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    Yazılar
+                </a>
+                <a href="akis.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    Akış
+                </a>
+                <a href="kolektif.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Kolektif
+                </a>
+                <a href="hakkinda.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    Hakkında
+                </a>
+                <a href="forum.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Forum
+                </a>
+                <span class="auth-side"><span class="auth-container" id="authContainer"><a href="giris.html" id="authLink" class="avatar-login-btn"><span id="authText">Giriş Yap</span></a></span></span>
+            </nav>
+        </header>
+
+        <!-- ========== MAIN ========== -->
+        <main role="main">
+
+            <!-- ===== HERO ===== -->
+            <section class="articles-hero">
+                <h1>Kitaplık</h1>
+                <p class="hero-sub">Her yazı bir kitabın analizi. Felsefe, siyaset ve edebiyat üzerine derin okumalar.</p>
+            </section>
+
+            <!-- ===== SEARCH ===== -->
+            <div class="search-container">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Yazılarda ara..." aria-label="Yazı ara">
+                </div>
+            </div>
+
+            <!-- ===== KÜTÜPHANE GRID ===== -->
+            <section class="library-grid" id="libraryGrid">
+
+                <!-- YAZI 1 — SESSİZ ZAMAN -->
+                <article class="library-card" data-which="yaz1" data-title="Sessiz Zaman" data-category="Siyaset">
+                    <div class="book-cover">
+                        <!-- ════════════════════════════════════════════════════════ -->
+                        <!-- FOTOĞRAF LİNKİNİ BURAYA KOYUN (YAZI 1)               -->
+                        <!-- Örnek: <img src="images (9).jpeg" alt="Sessiz Zaman"> -->
+                        <!-- ════════════════════════════════════════════════════════ -->
+                        <img src="images (9).jpeg" alt="Sessiz Zaman Kitap Kapağı">
+                        <span class="book-label politics">Siyaset</span>
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">SESSİZ <span class="accent">ZAMAN</span></h3>
+                        <div class="book-author">Carl Schmitt üzerinden egemenlik analizi</div>
+                        <p class="book-desc">Egemenlik, olağanüstü hal ve istibdat üzerine derin bir inceleme.</p>
+                        <div class="book-meta">
+                            <span>📖 15 dk okuma</span>
+                            <span>🏷️ Siyaset Felsefesi</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- YAZI 2 — GENÇ TANRI'DAN KAÇIŞ -->
+                <article class="library-card" data-which="yaz2" data-title="Genç Tanrı'dan Kaçış" data-category="Felsefe">
+                    <div class="book-cover">
+                        <!-- ════════════════════════════════════════════════════════ -->
+                        <!-- FOTOĞRAF LİNKİNİ BURAYA KOYUN (YAZI 2)               -->
+                        <!-- Örnek: <img src="images (11).jpeg" alt="Genç Tanrı'dan Kaçış"> -->
+                        <!-- ════════════════════════════════════════════════════════ -->
+                        <img src="images (11).jpeg" alt="Genç Tanrı'dan Kaçış Kitap Kapağı">
+                        <span class="book-label philosophy">Felsefe</span>
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">GENÇ TANRI'DAN <span class="accent">KAÇIŞ</span></h3>
+                        <div class="book-author">Byung-Chul Han'ın iç panoptikon kavramı üzerine</div>
+                        <p class="book-desc">Neoliberal psikopolitika, içsel gözetim ve dijital tanrılar üzerine bir eleştiri.</p>
+                        <div class="book-meta">
+                            <span>📖 12 dk okuma</span>
+                            <span>🏷️ Felsefe · Psikoloji</span>
+                        </div>
+                    </div>
+                </article>
+
+            </section>
+
+        </main>
+
+        <!-- ========== FOOTER ========== -->
+        <footer class="site-footer" role="contentinfo">
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+
+            <div class="footer-content">
+                <div class="footer-brand"><span class="red">Katran</span> Dergi</div>
+                <div class="footer-divider" aria-hidden="true"></div>
+                <p>&copy; 2025 — Kırmızı karanfil ektik, katranın bağrına.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- ========== MODAL ========== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <button class="modal-close" id="modalClose" aria-label="Kapat">&times;</button>
+
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Başlık</h2>
+                <div class="modal-meta">
+                    <span class="category-badge" id="modalCategory">Kategori</span>
+                    <span id="modalReadingTime">⏱ Okuma süresi</span>
+                </div>
+            </div>
+
+            <div class="modal-body" id="modalBody">
+                <!-- İçerik buraya gelecek -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== HIDDEN CONTENT (ORIJINAL METİNLER) ===== -->
+    <div id="yaz1-content" style="display:none">
+        <p>Bu metin, günümüz dünyasında siyasal iklimi anlamaya yönelik bir denemedir. Gençlerin siyaseti kendi düşünceleri üzerinden tartışması, fikir edinmesi için yine bir genç tarafından yazılmıştır. Herhangi bir parti veya figürü doğrudan suçlamaktan ziyade, tarihsel süreçleri ve Schmitt üzerinden egemenlik kavramını sorgulamak amacı taşır...</p>
+        <p>Tarih boyunca hükûmetler, kriz anlarında olağanüstü yetkiler talep etmiştir. Hepimizin bildiği OHAL'den söz ediyorum. Bugün bazı durumlar vardır ki, ne anayasal bir OHAL ilanı yapılır ne de yasal bir gerekçe sunulur. Fakat gündelik yaşam, yargı, medya ve toplumsal özgürlükler bir "olağanüstülük hali"ndeymiş gibi kısıtlanır.Bu, isimsiz bir olağanüstülük halidir. Ve bu durum, egemenliğin en net tanımlarından birini akla getirir: "Egemen olan, olağanüstü hale karar verendir." (Carl Schmitt)</p>
+        <p>Şimdi önemli gördüğüm bir noktaya değinmek istiyorum. Schmitt'e göre modern siyaset, sekülerleşmiş bir dindir. "Egemenlik", "halk iradesi", "anayasa" ve "OHAL" gibi kavramlar, yalnızca siyasi değil, aynı zamanda dini kökenli kavramlardır. Ortaçağ'da Tanrı adına hükmeden krallar, bugün "halk adına" hükmeden hükûmetlere dönüşmüştür. Ancak bu değişim yalnızca bir isim değişimidir. Çünkü egemen hâlâ aynıdır: Yasanın üstüne çıkabilen güç. Egemenlik, halkı değil yasayı kontrol edenin elindedir. Ve yasayı askıya alma yetkisi, yani OHAL, Tanrı'nın mucize yaratmasına benzer: Kuralın içinden konuşur, ama dilediğinde onun dışına çıkar.</p>
+        <p>Güvenlik vaadiyle olağanüstü rejim yaratılır. Bu aslında egemenliğin en köklü taktiklerindendir. Fakat görüyoruz ki oldukça eskimiştir. Çünkü OHAL ilanı, aynı zamanda bir kriz ilanıdır. Kriz ilanı ise iktidarın itibarına zarar verebilir. Bu yüzden artık OHAL'in kendisi değil, hayaleti dolaşmaktadır: İstibdat.</p>
+        <p>Buradan sonrası biraz hayal ürünü gibi gelecektir çünkü tuhaf bir bağlantı var. İstibdat dediğimiz şey tek bir yöneticinin halkı baskı ile yönetmesidir. Ama bugünkü baskı ne tam görünürdür, ne de adlandırılır. Kurumlar hâlâ yerindedir ama işlevleri sönmüştür. Yargı vardır ama bağımsızlığı tartışmalıdır. Medya vardır ama sesi kısılmaya çalışılır. OHAL ise ancak ölçülebilir tehditlerde başvurulan bir uygulamadır. OHAL durumunda özgürlük ve hakların çok önemli bir bölümü kısıtlanır. Ancak bugün yaşanan şey; ne bu ölçülebilir tehditlere dayanır ne de açıkça isimlendirilir. Hükûmet, bir kriz ilan etmeksizin kriz hali uygular. Bu uygulama tabi ki olağanüstü hâlde olduğu kadar ağır değildir. Ama OHAL provası gibidir. İktidar artık kendi küçük OHAL'ini yaratmıştır. Bunu isimlendirmez çünkü bu bir kriz itirafı olur. Bu itiraf, özellikle de kriz bir doğal afet değil de yönetimin suçu olduğunda tehlikelidir. Geçmişe baktığımızda bahsettiğimiz durumlardan dolayı OHAL ilan eden hükûmet itibarsızlaşmıştır, muhalefetin eline koz geçmiştr ve beklendiği üzere yönetici değişmiştir.</p>
+        <p>Ancak istibdat denen OHAL provası stratejiktir. Çünkü gerçek bir OHAL durumunda yönetimi devralma potansiyeli olan muhalifler yok edilir. Tüm bunlardan sonra ilan edilen OHAL hükûmet için tehlikeli değildir. Artık anayasanın hükmünce yasa düzenleme hükûmetin elindedir ve işte bu, tam egemenliktir. Bunu daha kısa anlatmam gerekirse: OHAL ilanı, iktidara hukuki meşruiyet kazandırırken, topluma da "kriz var" mesajı verir. Oysa modern otoriterlikler kriz itiraf etmek istemez. Krizin ismini koymadan, onun içeriğini yönetmeyi tercih eder. Çünkü isim koymak halkı harekete geçirebilir. Adını koyarsan düşmanı belirlemiş olursun; halk o düşmana karşı birleşebilir. Ama isim konmazsa, herkes yalnız kalır. Düşünün: Biri çıkıp "Normal değil bu" der fakat diğerleri görünür bir şey olmadığı için dikkate almaz. Böylece hükûmet, muhalifleri teker teker hedef alabilir. Bu, olağanüstü hâl tanımının sessiz ve parçalanmış bir versiyonudur.</p>
+        <p>Sonuç sessizliğin egemenliğidir... Carl Schmitt'in söylediği gibi, egemen olan, olağanüstü hâle karar verendir. Ama bugünün egemeni bu kararı görünür şekilde değil, simgesel bir suskunlukla verir. İsim koymaz, çünkü isim halkı uyandırır. O, halkın uyanmasından değil, unutmasından beslenir. Ve işte tam bu yüzden; Olağanüstü halin en tehlikeli biçimi, adının konmadığı istibdat zamanıdır. Umberto Eco, Ebedi Faşizm makalesinde "belirsizliğin iktidarı" diyerek bu duruma atıfta bulunmuştur.</p>
+    </div>
+
+    <div id="yaz2-content" style="display:none">
+        <p>Kitabı okurken sorgulamalar, Byung-Chul Han'ın kullandığı iç panoptikon kavramıyla başladı</p>
+        <p>Panoptikon, Foucault'un Gözetim Toplumu'nun bir parçasıdır.Bu da sistemin ulaşamadığı yer kalmadığı anlamına geliyor. Bir iç panoptikon ise pekâlâ kendimizi denetlememizi ve daha iyi bir ahlaka sahip olmamızı sağlar, değil mi? Değil. Bir iç panoptikon her hatanızda kafanıza vuran, sopası olan tanrı demektir. Dinler insanın hatasından dolayı genelde suçluluk duygusu içinde olup pişman olmasıyla ilişkiliyken bu tanrı, hatalarınızın mutlaka bedelini ödetir. Ve bu üstün bir ahlak sağlamaz, sonsuz bir tereddüttür yalnızca.</p>
+        <p>Foucault'nun tasvir ettiği disiplin toplumunun gardiyanı, dışarıdaydı; somut, görünür bir otoriteydi. Han ise, bu gardiyanın artık içimizde, kendi benliğimizin derinliklerine yerleştiğini söyler. Bu, gözetimin öznenin içselleştirilmesidir. Ancak bu içselleştirme, Kant'ın ahlaki otonomisinden radikal bir şekilde ayrılır. Kant için iç ses, evrensel ahlak yasasının rehberliğinde özgür bir seçim yapmamızı sağlardı. Oysa bu yeni içsel gardiyan, özgürlüğümüzü değil, kendi kendini optimize etme zorunluluğunu içselleştirmemizi sağlar. Bu, Deleuze ve Guattari'nin "arzunun makineleşmesi" kavramını akla getirir; arzularımız bile sistem tarafından üretilir ve yönlendirilir. Ve her arzumuz sistemi besler.</p>
+        <p>Peki bu "sopası olan tanrı"nın cezası nedir? Artık fiziksel değil, duygusaldır. Mark Fisher'ın "hayaletli gerçekçilik" olarak tarif ettiği şeyin tam kalbinde yatar: Görünmez bir şey tarafından vurulduğunuzu bilirsiniz, ama kimin veya neyin vurduğunu asla bilemezsiniz. Sosyal medya platformlarının algoritmaları, bu tanrının en kusursuz tapınaklarıdır. Her "beğenilmeme", her "takip edilmeme" hali, bu tanrının sessiz, dijital sopasının bir darbesidir. Aslında küçük bir sorun değildir. Yetersizlik hissini doruklara çıkarır ve bu durum depresyona kapı aralar. Biraz da aslında Hegel'in Köle-Efendi diyalektiğinin son aşamasıdır: Efendi artık dışarıda bir başkası değil, kendi içimizdeki "ideal ben" imajıdır ve biz, asla ona yetişemeyecek olan sürekli başarısız köleleriz.</p>
+        <p>Kitabı okurken "bu lanet olası sistem nasıl yıkılabilir? Yıkılmazsa biz nasıl yaşayabiliriz?" diye defalarca kez düşündüm. Bu noktada bir metafor kullanmak uygun geldi. Umarım yanılmıyorumdur. Şimdi zihninizde, ellerinizi kullanmadan yuvarlaklar çizin. Aynı yörüngede, üst üste yuvarlaklar. Bir zaman sonra o yörüngeden çıkamayacaksınız. Örneğin yuvarlak çizerken bir anda düz çizgi çizmek için kendinizi çok zorlayacaksınız. İşte bunun gibi zihin de bu içsel panoptikonun yörüngesine girmiştir. Sınırlar bellidir. Wittgenstein'ın dediği gibi, "Dilin sınırları, dünyamın sınırlarıdır." Neoliberal psikopolitika ise bize yeni bir dil dayatır: "Verimlilik", "esneklik", "girişimcilik". Bu dilin sınırları içinde düşünmeye başladığımızda, tıpkı bir yuvarlak çizerken düz bir çizgiyi hayal edememek gibi, bu sistemin dışında bir varoluşu düşünemez hale geliriz. Bu, Marcuse'un "tek boyutlu insan"ının güncellenmiş, dijital bir versiyonudur. Sistem, Herbert Marcuse'un uyardığı gibi, bize eleştirel düşüncenin araçlarını değil, onun yerine geçecek "positive vibes" (olumlu titreşimler) ve "self-care" (öz bakım) rutinleri sunar; böylece gerçek bir muhalefet imkansız hale gelir.</p>
+        <p>Peki bu "Tanrı" nasıl alt edilebilir? Onun zayıf noktası, onu besleyen enerji kaynağıdır: Para ve onun dayattığı değerler dizisi. Jean Baudrillard'ın "simülakrlar" olarak adlandırdığı şey, bu değerlerin gerçekliğin yerini almasıdır. Gerçek dayanışma, simülakr dayanışmanın (örneğin, bir "beğeni" butonu) yerini almıştır. Aslında neoliberal psikopolitika dediğimiz kapitalizmin yeni bir versiyonudur. Dolayısıyla komünizm gibi eski ideolojilerin bu yeni sisteme karşı gelmesi olanaksızdır. Kaldı ki yeni bir ideolojiye gerek var mı emin değilim. Çünkü sistem o kadar otonom ki yönettiğini sananlar bile bu tanrıya kulluk ediyor. Yine de çözüm üretmek adettendir. Para dedik. Evet, bizim para kazanma ihtiyacımızdan beslenir bu tanrı. Bu durumda aslında gönüllü insanlarla 'emeğin bedavalaştırılması' yoluna gitmek tanrıdan bizi bağımsızlaştıracaktır. Ücretsiz ve bağımsız hizmet vermek, tıpkı bir hayırsever gibi davranmak ve bunu en ilkel yöntemlerle yapmak gerekir. Ivan Illich'in "şenlikli otonomi" kavramına yakınsar; insanların kurumsal ve piyasa bağımlılığından kurtularak, birbirlerine dayalı topluluklar inşa etmesi. Sistem, her şeyi bir metaya, bir "değişim değeri"ne dönüştürerek ayakta durur. Emeğimizi bedavaya sunmak, onun bu temel dönüştürme mekanizmasını devre dışı bırakır. Bu, bir "sembolik intihar" değil, sembolik bir yeniden doğuştur. Yine bu şekilde sistemin bize tanımladığı 'zaman' kavramının dışına çıkarız. Çünkü sistem her dakikamıza bir fiyat etiketi biçer. Elbette bunun hayata geçirilebilir olmadığının farkındayım. Ancak aslında bu bir dayanışma projesi. Hem zamanında ortaya atılan birçok fikir hayata geçirilemez olarak görüldü. Amaç üç beş kişiyi bile olsa bu sistemden çekip bağımsız bir şekilde topluma kazandırmak. Kendim de dahil. Ama bir şey var: Sistem yıkılınca ya da biz dışına çıkınca ne olabilir? Bu sistemin yararları var(çağı antidepresan çağı yapması dışında tabi) ve bu yararları göz ardı etmek körü körüne anarşizm olur. Bu son soru, en önemli olanı. Çünkü her devrim, "Peki sonrasında?" sorusuyla yüzleşmek zorundadır. Evet, sistemin "yararları" var: İletişim, lojistik, tıbbi ilerlemeler... Ancak bu, bir tutsağın gardiyanının kendine sunduğu yemek ve barınaktan "yararlanması" gibidir. Bu "yararlar", bizi sistemin içinde tutmak için kullanılan araçlardır. Burada asıl soru şudur: Bu "yararlar"ın bedeli, ruhumuzun metalaşması mıdır?</p>
+        <p>"Emeğin bedavalaştırılması" fikri hayata geçirilemez görünüyor, çünkü biz hâlâ o yuvarlağın içinde düşünüyoruz. Sistemin bize dayattığı "akıl", her şeyin bir maliyet-fayda analizine tabi tutulmasını söyler. Oysa bu proje, bir "akıl" projesi değil, bir irade projesidir. Bu, Albert Camus'un "absürt"üne verilen bir cevap gibidir: Evren absürttür, sistem absürttür, ancak bu absürtlüğün karşısında isyan ederek, kendi değerlerimizi yaratırız. Ücretsiz dağıtılan bir dergi, bir doktorun karşılıksız hizmeti, bir tamircinin karşılıksız tamiratı bu saçma sisteme karşı bir dürüstlük eylemidir.</p>
+        <p>Peki ya yararı? Buradaki "yarar", sistemin tanımladığı anlamda (kâr, verimlilik, büyüme) asla ölçülemez.Buradaki yarar, içseldir. O "sopası olan tanrı"nın sesini bir anlığına susturabilmektir. O yuvarlak yörüngeden çıkıp, zihnimizde düz bir çizgi çizebilmektir. Bu yüzden gönüllülük esasına dayalı bir fikirdir.</p>
+        <p>Sonuç olarak, bu içsel Tanrı ile mücadele, bireysel bir mesele değil, kolektif bir direniş stratejisidir. Bu, Byung-Chul Han'ın psikopolitikasını çürütmez sadece onun ulaştığı umutsuz noktadan bir çıkış yolu ve bir "yuvarlak yörüngeden çıkış" önerisidir.</p>
+    </div>
+
+    <!-- ============================================================
+    SCRIPT
+    ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // =========================================================
+            // 1. SCROLL PROGRESS
+            // =========================================================
+            const scrollProgress = document.getElementById('scrollProgress');
+            window.addEventListener('scroll', function() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const progress = (scrollTop / docHeight) * 100;
+                scrollProgress.style.width = progress + '%';
+            }, { passive: true });
+
+            // =========================================================
+            // 3. THEME TOGGLE
+            // =========================================================
+            const themeToggle = document.getElementById('themeToggle');
+            const html = document.documentElement;
+
+            // Site geneliyle ortak anahtar; temalar: aydınlık + katran (tema.js ile aynı)
+            function readTheme() {
+                try {
+                    var t = localStorage.getItem('katran-theme') || localStorage.getItem('theme') || 'katran';
+                    if (t === 'dark') t = 'katran';
+                    return (t === 'light') ? 'light' : 'katran';
+                } catch (e) { return 'katran'; }
+            }
+            function writeTheme(v) {
+                try {
+                    localStorage.setItem('katran-theme', v);
+                    localStorage.setItem('theme', v);
+                } catch (e) {}
+            }
+            var MOON_SVG = '<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+            var SUN_SVG = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+
+            if (readTheme() !== 'light') {
+                html.setAttribute('data-theme', 'katran');
+                themeToggle.innerHTML = MOON_SVG;
+            } else {
+                themeToggle.innerHTML = SUN_SVG;
+            }
+
+            themeToggle.addEventListener('click', function() {
+                const isKatran = html.getAttribute('data-theme') !== 'light';
+                if (isKatran) {
+                    html.setAttribute('data-theme', 'light');
+                    writeTheme('light');
+                    this.innerHTML = SUN_SVG;
+                } else {
+                    html.setAttribute('data-theme', 'katran');
+                    writeTheme('katran');
+                    this.innerHTML = MOON_SVG;
+                }
+            });
+
+            // =========================================================
+            // 4. HEADER SCROLL EFFECT
+            // =========================================================
+            const masthead = document.getElementById('masthead');
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 60) {
+                    masthead.classList.add('scrolled');
+                } else {
+                    masthead.classList.remove('scrolled');
+                }
+            }, { passive: true });
+
+            // =========================================================
+            // 5. MODAL SYSTEM
+            // =========================================================
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalClose = document.getElementById('modalClose');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalCategory = document.getElementById('modalCategory');
+            const modalReadingTime = document.getElementById('modalReadingTime');
+            const modalBody = document.getElementById('modalBody');
+
+            const cardData = {
+                yaz1: {
+                    title: 'SESSİZ ZAMAN',
+                    category: 'Siyaset',
+                    readingTime: '⏱ 15 dk okuma',
+                    contentId: 'yaz1-content'
+                },
+                yaz2: {
+                    title: 'GENÇ TANRI\'DAN KAÇIŞ',
+                    category: 'Felsefe',
+                    readingTime: '⏱ 12 dk okuma',
+                    contentId: 'yaz2-content'
+                }
+            };
+
+            function openModal(which) {
+                const data = cardData[which];
+                if (!data) return;
+
+                const contentEl = document.getElementById(data.contentId);
+                if (!contentEl) return;
+
+                modalTitle.textContent = data.title;
+                modalCategory.textContent = data.category;
+                modalReadingTime.textContent = data.readingTime;
+                modalBody.innerHTML = contentEl.innerHTML;
+
+                modalOverlay.classList.add('visible');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                modalOverlay.classList.remove('visible');
+                document.body.style.overflow = 'auto';
+            }
+
+            // Kart tıklamaları
+            document.querySelectorAll('.library-card').forEach(function(card) {
+                card.addEventListener('click', function() {
+                    const which = this.dataset.which;
+                    if (which) openModal(which);
+                });
+            });
+
+            // Kapatma butonu
+            modalClose.addEventListener('click', closeModal);
+
+            // Overlay tıklaması
+            modalOverlay.addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+
+            // ESC tuşu
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeModal();
+            });
+
+            // =========================================================
+            // 6. SEARCH
+            // =========================================================
+            const searchInput = document.getElementById('searchInput');
+            const cards = document.querySelectorAll('.library-card');
+
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                let found = false;
+
+                cards.forEach(function(card) {
+                    const title = card.dataset.title ? card.dataset.title.toLowerCase() : '';
+                    const category = card.dataset.category ? card.dataset.category.toLowerCase() : '';
+                    const desc = card.querySelector('.book-desc') ?
+                        card.querySelector('.book-desc').textContent.toLowerCase() : '';
+
+                    if (title.includes(query) || category.includes(query) || desc.includes(query)) {
+                        card.style.display = '';
+                        found = true;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Arama sonucu yoksa mesaj göster
+                const existingMsg = document.getElementById('noResultMsg');
+                if (!found && query.length > 0) {
+                    if (!existingMsg) {
+                        const msg = document.createElement('p');
+                        msg.id = 'noResultMsg';
+                        msg.style.cssText =
+                            'text-align:center; padding:3rem 1rem; color:var(--muted); font-size:1.1rem; grid-column:1/-1;';
+                        msg.textContent = '🔍 Aradığınız kelimeye uygun yazı bulunamadı.';
+                        document.getElementById('libraryGrid').appendChild(msg);
+                    }
+                } else if (existingMsg) {
+                    existingMsg.remove();
+                }
+            });
+
+            // =========================================================
+            // 7. CONSOLE ART
+            // =========================================================
+            console.log('%c✦ KATRAN DERGİ — KİTAPLIK ✦', 'font-size: 28px; font-weight: 900; color: #b04455;');
+            console.log('%cKırmızı karanfil ektik, katranın bağrına.', 'font-size: 16px; font-style: italic; color: #7a7068;');
+            console.log('%c📚 2 Kitap Analizi | Sessiz Zaman · Genç Tanrı\'dan Kaçış', 'font-size: 14px; color: #a89e94;');
+            console.log('%c🖼️ Kapak fotoğrafları yerel dosyalardan yükleniyor', 'font-size: 12px; color: #d4a843;');
+
+        })();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="avatares.js"></script>
+    <script>
+    (function() {
+        'use strict';
+        // Üst bar giriş/avatar göstergesi (ana proje istemcisi)
+        var MASTHEAD_SUPABASE_URL = 'https://bdxvgtxregsonbvhvdav.supabase.co';
+        var MASTHEAD_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkeHZndHhyZWdzb25idmh2ZGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0MzM4ODcsImV4cCI6MjEwNTAwOTg4N30.7gQGqcvDzTKpQyjnRkmcCrwPny3m5pfUOy4BWk7O0CQ';
+        function paintMastheadAuth(profile) {
+            var link = document.getElementById('authLink');
+            if (!link || !profile) return;
+            var name = profile.full_name || profile.username || 'Üye';
+            link.href = 'profil.html';
+            link.title = name;
+            if (window.renderAvatar) {
+                link.innerHTML = window.renderAvatar(profile, 36);
+                link.classList.remove('avatar-login-btn');
+            } else {
+                link.innerHTML = '<span id="authText">' + name.split(' ')[0] + '</span>';
+            }
+        }
+        async function initMastheadAuth() {
+            try {
+                if (!window.supabase) return;
+                var client = window.supabase.createClient(MASTHEAD_SUPABASE_URL, MASTHEAD_SUPABASE_KEY);
+                var s = await client.auth.getSession();
+                var session = s.data.session;
+                if (!session) return;
+                var r = await client.from('profiles').select('full_name, username, avatar, status').eq('id', session.user.id).single();
+                if (r.data && r.data.status !== 'pending') paintMastheadAuth(r.data);
+            } catch (e) {}
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initMastheadAuth);
+        else initMastheadAuth();
+    })();
+    </script>
+
+<script src="auth-bar.js"></script>
+</body>
+</html>

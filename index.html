@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <meta charset="utf-8"/>
+    <script>
+    (function() {
+      // FOUC önleyici: temalar aydınlık + katran; eski 'dark' otomatik göçer
+      try {
+        var t = localStorage.getItem('katran-theme') || localStorage.getItem('theme') || 'katran';
+        if (t === 'dark') t = 'katran';
+        if (t !== 'light' && t !== 'katran') t = 'katran';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'katran');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Katran Dergi</title>
+
+    <meta name="description" content="Katran Dergi - Kırmızı karanfil ektik, katranın bağrına. Edebiyat, sanat ve özgür düşüncenin buluşma noktası.">
+    <meta name="author" content="Katran Dergi">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="site.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* ============================================================
+           1. RESET & DEĞİŞKENLER (varsayılan: katran)
+           ============================================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --katran: #f8ece8;
+            --karanfil: #b04455;
+            --karanfil-dark: #8b2e3e;
+            --karanfil-glow: rgba(176, 68, 85, 0.3);
+            --karanfil-subtle: rgba(176, 68, 85, 0.08);
+            --kagit: #0d0405;
+            --kagit-dark: #17090c;
+            --toz: #8a6068;
+            --altin: #e8b860;
+            --muted: #c8a0a8;
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Inter', sans-serif;
+            --transition-smooth: 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            --shadow-soft: 0 20px 60px -20px rgba(139, 46, 62, 0.3);
+            --shadow-strong: 0 30px 80px -20px rgba(139, 46, 62, 0.4);
+            --border-radius-card: 20px;
+            --border-radius-btn: 60px;
+        }
+
+        /* Aydınlık Mod */
+        [data-theme="light"] {
+            --katran: #0a0808;
+            --kagit: #f4efe8;
+            --kagit-dark: #e6ded5;
+            --toz: #a89e94;
+            --muted: #7a7068;
+            --shadow-soft: 0 20px 60px -20px rgba(0, 0, 0, 0.08);
+            --shadow-strong: 0 30px 80px -20px rgba(0, 0, 0, 0.15);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--kagit);
+            color: var(--katran);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            transition: background 0.6s ease, color 0.6s ease;
+        }
+
+        /* ============================================================
+           2. SELECTION + SCROLLBAR
+           ============================================================ */
+        ::selection {
+            background: var(--karanfil);
+            color: var(--kagit);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--kagit);
+            border-radius: 20px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--karanfil);
+            border-radius: 20px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--karanfil-dark);
+        }
+
+        /* ============================================================
+           3. SCROLL PROGRESS
+           ============================================================ */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--karanfil), var(--karanfil-dark));
+            z-index: 9997;
+            transition: width 0.1s ease;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 0 20px var(--karanfil-glow);
+        }
+
+        /* ============================================================
+           4. THEME TOGGLE (diğer sayfalarla aynı)
+           ============================================================ */
+        .theme-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--karanfil);
+            background: var(--kagit);
+            color: var(--katran);
+            font-size: 1.4rem;
+            cursor: pointer;
+            z-index: 999;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: var(--shadow-strong);
+        }
+        .theme-toggle svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ============================================================
+           5. SITE WRAPPER + AMBIENT
+           ============================================================ */
+        .site-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        .bg-ambient {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .bg-ambient .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: orbDrift 20s ease-in-out infinite alternate;
+        }
+        .bg-ambient .orb:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            top: -10%;
+            left: -5%;
+            background: rgba(176, 68, 85, 0.06);
+            animation-duration: 25s;
+        }
+        .bg-ambient .orb:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            bottom: -10%;
+            right: -5%;
+            background: rgba(176, 68, 85, 0.05);
+            animation-duration: 30s;
+            animation-delay: 5s;
+        }
+
+        @keyframes orbDrift {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(60px, -40px) scale(1.1);
+            }
+            66% {
+                transform: translate(-30px, 50px) scale(0.9);
+            }
+            100% {
+                transform: translate(40px, -20px) scale(1.05);
+            }
+        }
+
+        /* ============================================================
+           6. HEADER — site.css içinde (tek kaynak)
+           ============================================================ */
+
+        /* ============================================================
+           7. KARŞILAMA + HERO
+           ============================================================ */
+        .greeting {
+            text-align: center;
+            padding: 0.5rem 0 0;
+            display: none;
+        }
+        .greeting.show {
+            display: block;
+        }
+        .greeting-inner {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            font-size: 0.95rem;
+            color: var(--muted);
+            font-style: italic;
+        }
+        .greeting-inner .name {
+            color: var(--karanfil);
+            font-weight: 700;
+            font-style: normal;
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 2rem 0 3rem;
+        }
+        .hero h1 {
+            font-family: var(--font-serif);
+            font-weight: 900;
+            font-size: clamp(2.5rem, 8vw, 5.5rem);
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            color: var(--katran);
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 .line {
+            display: block;
+        }
+        .hero h1 .accent {
+            font-style: italic;
+            font-weight: 400;
+            color: var(--karanfil);
+        }
+        .hero .desc {
+            font-size: 1.05rem;
+            color: var(--muted);
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        /* ============================================================
+           8. BÖLÜM BAŞLIKLARI + KARTLAR
+           ============================================================ */
+        .section-title {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--katran);
+            margin-bottom: 0.3rem;
+            letter-spacing: -0.02em;
+        }
+        .section-sub {
+            font-size: 0.8rem;
+            font-style: italic;
+            color: var(--muted);
+            margin-bottom: 2rem;
+            display: block;
+        }
+
+        .card {
+            background: var(--kagit);
+            border: 1px solid rgba(176, 68, 85, 0.25);
+            border-radius: var(--border-radius-card);
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-soft);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="light"] .card {
+            border-color: rgba(0, 0, 0, 0.04);
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--karanfil), var(--karanfil-dark));
+        }
+        .card:hover {
+            box-shadow: var(--shadow-strong);
+        }
+
+        .issue-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        .issue-cover {
+            position: relative;
+        }
+        .issue-cover img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 4px;
+            box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            display: block;
+        }
+        .issue-cover:hover img {
+            transform: rotate(-1.5deg) scale(1.02);
+        }
+        .issue-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+        .issue-num {
+            font-family: var(--font-serif);
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--katran);
+            line-height: 1;
+            margin-bottom: 1.5rem;
+        }
+        .issue-num .small {
+            font-size: 1.5rem;
+            font-style: italic;
+            font-weight: 400;
+            color: var(--muted);
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.9rem 2rem;
+            background: var(--katran);
+            color: var(--kagit);
+            border: 2px solid var(--katran);
+            border-radius: var(--border-radius-btn);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            letter-spacing: 0.02em;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--karanfil), var(--karanfil-dark));
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+        .btn:hover::before {
+            opacity: 1;
+        }
+        .btn:hover {
+            border-color: var(--karanfil);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px -12px rgba(176, 68, 85, 0.3);
+        }
+        .btn span,
+        .btn .arrow {
+            position: relative;
+            z-index: 1;
+        }
+        .btn .arrow {
+            margin-left: auto;
+            font-size: 1.1rem;
+            transition: transform 0.25s;
+        }
+        .btn:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--muted);
+            border-color: var(--muted);
+        }
+        .btn-secondary:hover {
+            border-color: var(--katran);
+            color: var(--katran);
+        }
+
+        /* ============================================================
+           9. ARŞİV
+           ============================================================ */
+        .archive {
+            padding: 1rem 0 3rem;
+        }
+        .archive-list {
+            display: flex;
+            flex-direction: column;
+        }
+        .archive-row {
+            display: grid;
+            grid-template-columns: 60px 1fr auto;
+            gap: 1.5rem;
+            align-items: center;
+            padding: 1.2rem 0;
+            border-bottom: 1px solid rgba(176, 68, 85, 0.25);
+            text-decoration: none;
+            color: var(--katran);
+            transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+        }
+        [data-theme="light"] .archive-row {
+            border-bottom-color: rgba(0, 0, 0, 0.08);
+        }
+        .archive-row::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--karanfil);
+            transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: translateY(-50%);
+        }
+        .archive-row:hover::before {
+            width: 40px;
+        }
+        .archive-row:hover {
+            padding-left: 60px;
+            color: var(--karanfil);
+        }
+        .archive-row .num {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            font-weight: 900;
+            font-style: italic;
+            color: var(--toz);
+            transition: color 0.2s;
+        }
+        .archive-row:hover .num {
+            color: var(--karanfil);
+        }
+        .archive-row .info .month {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 0.15rem;
+        }
+        .archive-row .info .year {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--katran);
+            transition: color 0.2s;
+        }
+        .archive-row:hover .info .year {
+            color: var(--karanfil);
+        }
+        .archive-row .action {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--toz);
+            transition: all 0.2s;
+        }
+        .archive-row:hover .action {
+            color: var(--karanfil);
+            letter-spacing: 0.25em;
+        }
+
+        /* ============================================================
+           10. İLETİŞİM
+           ============================================================ */
+        .contact {
+            padding: 1rem 0 3rem;
+            text-align: center;
+        }
+        .contact h3 {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            color: var(--katran);
+        }
+        .contact p {
+            color: var(--muted);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        .contact-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+        }
+        .contact-icon-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--kagit-dark);
+            border: 1px solid rgba(176, 68, 85, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .contact-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .contact-icon:hover {
+            transform: translateY(-6px) scale(1.08);
+            border-color: var(--karanfil);
+            color: #fff;
+            background: var(--karanfil);
+            box-shadow: 0 12px 30px -8px var(--karanfil-glow);
+        }
+        .contact-icon.instagram:hover {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            border-color: transparent;
+        }
+        .contact-icon-label {
+            font-size: 0.7rem;
+            color: var(--toz);
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            display: block;
+        }
+
+        /* ============================================================
+           11. FOOTER — site.css içinde (tek kaynak)
+           ============================================================ */
+
+        /* ============================================================
+           12. LOADER
+           ============================================================ */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--kagit);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        #loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .loader-bug {
+            width: 140px;
+            height: 140px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bugFloat 2.5s ease-in-out infinite;
+        }
+        .loader-bug img,
+        .loader-bug svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px rgba(176, 68, 85, 0.4));
+        }
+        .loader-bug::before {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(176, 68, 85, 0.25) 0%, transparent 70%);
+            animation: bugGlow 2s ease-in-out infinite;
+        }
+        @keyframes bugFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-8px) rotate(-2deg);
+            }
+            75% {
+                transform: translateY(-8px) rotate(2deg);
+            }
+        }
+        @keyframes bugGlow {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.15);
+                opacity: 0.9;
+            }
+        }
+        .loader-title {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--katran);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .loader-title .red {
+            color: var(--karanfil);
+            text-shadow: 0 0 20px rgba(176, 68, 85, 0.5);
+        }
+        .loader-sub {
+            color: var(--muted);
+            font-size: 0.85rem;
+            font-style: italic;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+        }
+        .loader-bar {
+            width: 120px;
+            height: 2px;
+            background: var(--kagit-dark);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .loader-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--karanfil), var(--karanfil-dark));
+            border-radius: 10px;
+            animation: progressFill 0.7s ease-in-out forwards;
+        }
+        @keyframes progressFill {
+            0% {
+                width: 0%;
+            }
+            30% {
+                width: 30%;
+            }
+            60% {
+                width: 65%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+        .loader-bug-fallback {
+            font-size: 5rem;
+            color: var(--karanfil);
+            display: none;
+        }
+        .loader-bug.no-svg img,
+        .loader-bug.no-svg svg {
+            display: none;
+        }
+        .loader-bug.no-svg .loader-bug-fallback {
+            display: block;
+        }
+
+        /* ============================================================
+           13. RESPONSIVE
+           ============================================================ */
+        @media (max-width: 860px) {
+            .nav-links a {
+                cursor: pointer;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .site-wrapper {
+                padding: 0 1rem;
+            }
+            .hero h1 {
+                font-size: clamp(2.2rem, 12vw, 3.5rem);
+            }
+            .card {
+                padding: 1.5rem;
+            }
+            .issue-body {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .issue-cover img {
+                max-width: 100%;
+            }
+            .issue-num {
+                font-size: 3rem;
+            }
+            .archive-row {
+                grid-template-columns: 40px 1fr auto;
+                gap: 0.8rem;
+                padding: 1rem 0;
+            }
+            .archive-row:hover {
+                padding-left: 40px;
+            }
+            .archive-row .info .year {
+                font-size: 1.3rem;
+            }
+            .archive-row .action {
+                font-size: 0.65rem;
+            }
+            .contact h3 {
+                font-size: 1.6rem;
+            }
+            .contact-icon {
+                width: 54px;
+                height: 54px;
+            }
+            .contact-icon svg {
+                width: 22px;
+                height: 22px;
+            }
+            .contact-icons {
+                gap: 1rem;
+            }
+            .greeting-inner {
+                font-size: 0.85rem;
+            }
+            .theme-toggle {
+                bottom: 20px;
+                right: 20px;
+                width: 44px;
+                height: 44px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    THEME TOGGLE
+    ============================================================ -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Tema değiştir">
+        <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+    </button>
+
+    <!-- ============================================================
+    AMBIENT BACKGROUND
+    ============================================================ -->
+    <div class="bg-ambient" aria-hidden="true">
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <!-- ============================================================
+    SCROLL PROGRESS
+    ============================================================ -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- ============================================================
+    LOADING SCREEN
+    ============================================================ -->
+    <div id="loader">
+        <div class="loader-bug" id="loaderBug">
+            <img src="gergedan.svg" alt="" onerror="this.parentElement.classList.add('no-svg');">
+            <div class="loader-bug-fallback">🪲</div>
+        </div>
+        <div class="loader-title"><span class="red">KATRAN</span> DERGİ</div>
+        <div class="loader-sub">Kırmızı karanfil ektik, katranın bağrına</div>
+        <div class="loader-bar">
+            <div class="loader-bar-fill"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    SITE WRAPPER
+    ============================================================ -->
+    <div class="site-wrapper" id="siteWrapper">
+
+        <!-- ========== HEADER ========== -->
+        <header class="masthead" id="masthead" role="banner">
+            <a href="index.html" class="brand" aria-label="Katran Dergi Ana Sayfa">
+                <span class="brand-name"><span class="red">KATRAN</span> DERGİ</span>
+                <span class="brand-tagline">edebiyat · sanat · düşünce</span>
+            </a>
+            <nav class="nav-links" role="navigation" aria-label="Ana navigasyon">
+                <a href="index.html" aria-current="page">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Ana Sayfa
+                </a>
+                <a href="yazilar.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    Yazılar
+                </a>
+                <a href="akis.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    Akış
+                </a>
+                <a href="kolektif.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Kolektif
+                </a>
+                <a href="hakkinda.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    Hakkında
+                </a>
+                <a href="forum.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Forum
+                </a>
+                <span class="auth-container" id="authContainer">
+                    <a href="giris.html" id="authLink" class="avatar-login-btn">
+                        <span id="authText">Giriş Yap</span>
+                    </a>
+                </span>
+            </nav>
+        </header>
+
+        <!-- ========== MAIN ========== -->
+        <main role="main">
+
+            <!-- Karşılama -->
+            <section class="greeting" id="greeting">
+                <div class="greeting-inner">
+                    Hoş geldin <span class="name" id="greetName">—</span>, son sayıyı okudun mu?
+                </div>
+            </section>
+
+            <!-- Hero -->
+            <section class="hero">
+                <h1>
+                    <span class="line">Kırmızı karanfil</span>
+                    <span class="line accent">ektik,</span>
+                    <span class="line">katranın</span>
+                    <span class="line accent">bağrına</span>
+                </h1>
+                <p class="desc">Edebiyat, sanat ve özgür düşüncenin buluşma noktası.</p>
+            </section>
+
+            <!-- Son Sayı -->
+            <section class="card">
+                <div class="section-title">Son Sayı</div>
+                <span class="section-sub">güncel sayı</span>
+                <div class="issue-body">
+                    <div class="issue-cover">
+                        <img src="https://i.hizliresim.com/5hcffr6w.png" alt="Katran Dergi 6. Sayı Kapağı">
+                    </div>
+                    <div class="issue-actions">
+                        <div class="issue-num">
+                            <span class="small">Sayı</span>6
+                        </div>
+                        <a href="KATRAN SAYI 6.pdf" target="_blank" class="btn">
+                            <span>Ana Dergi PDF</span>
+                            <span class="arrow">→</span>
+                        </a>
+                        <a href="https://online.fliphtml5.com/katrandergi1/KATRAN-SAYI-6/" target="_blank" class="btn btn-secondary">
+                            <span>Flipbook</span>
+                            <span class="arrow">→</span>
+                        </a>
+                        <a href="hikaye eki.pdf" target="_blank" class="btn btn-secondary">
+                            <span>Hikâye Eki</span>
+                            <span class="arrow">→</span>
+                        </a>
+                        <a href="Dosya eki.pdf" target="_blank" class="btn btn-secondary">
+                            <span>Dosya Eki</span>
+                            <span class="arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Arşiv -->
+            <section class="archive">
+                <div class="section-title">Arşiv</div>
+                <span class="section-sub">geçmiş sayılar</span>
+                <div class="archive-list">
+
+                    <a href="katran sayiii-5.pdf" target="_blank" class="archive-row">
+                        <span class="num">05</span>
+                        <span class="info">
+                            <span class="month">Temmuz</span>
+                            <span class="year">2026</span>
+                        </span>
+                        <span class="action">PDF →</span>
+                    </a>
+
+                    <a href="Katran Sayı-4(1).pdf" target="_blank" class="archive-row">
+                        <span class="num">04</span>
+                        <span class="info">
+                            <span class="month">Ocak</span>
+                            <span class="year">2026</span>
+                        </span>
+                        <span class="action">PDF →</span>
+                    </a>
+
+                    <a href="Katran Sayı-3(Ekim-2025)(1)_compressed.pdf" target="_blank" class="archive-row">
+                        <span class="num">03</span>
+                        <span class="info">
+                            <span class="month">Ekim</span>
+                            <span class="year">2025</span>
+                        </span>
+                        <span class="action">PDF →</span>
+                    </a>
+
+                    <a href="Katran Sayı-2 (Eylül-2025) (2)_compressed.pdf" target="_blank" class="archive-row">
+                        <span class="num">02</span>
+                        <span class="info">
+                            <span class="month">Eylül</span>
+                            <span class="year">2025</span>
+                        </span>
+                        <span class="action">PDF →</span>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- İletişim -->
+            <section class="contact">
+                <h3>İletişim</h3>
+                <p>Düşüncelerinizi ve yazılarınızı bekliyoruz.</p>
+
+                <div class="contact-icons">
+                    <div class="contact-icon-wrap">
+                        <a href="mailto:katrandergi@gmail.com" class="contact-icon" title="E-posta Gönder">
+                            <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        </a>
+                        <span class="contact-icon-label">E-posta</span>
+                    </div>
+
+                    <div class="contact-icon-wrap">
+                        <a href="https://share.google/LsvIUW2xiNENfm0aO" target="_blank" rel="noopener" class="contact-icon instagram" title="Instagram'da @katrandergi">
+                            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                        </a>
+                        <span class="contact-icon-label">@katrandergi</span>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- ========== FOOTER ========== -->
+        <footer class="site-footer" role="contentinfo">
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+            <div class="footer-particle" aria-hidden="true"></div>
+
+            <div class="footer-content">
+                <div class="footer-brand"><span class="red">Katran</span> Dergi</div>
+                <div class="footer-divider" aria-hidden="true"></div>
+                <p>&copy; 2025 — Kırmızı karanfil ektik, katranın bağrına.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="avatares.js"></script>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // =========================================================
+        // 1. LOADING SCREEN
+        // =========================================================
+        var loader = document.getElementById('loader');
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (loader) {
+                    loader.classList.add('hidden');
+                    setTimeout(function() {
+                        if (loader.parentNode) {
+                            loader.style.display = 'none';
+                        }
+                    }, 800);
+                }
+            }, 700);
+        });
+        setTimeout(function() {
+            if (loader && !loader.classList.contains('hidden')) {
+                loader.classList.add('hidden');
+                setTimeout(function() {
+                    if (loader.parentNode) {
+                        loader.style.display = 'none';
+                    }
+                }, 800);
+            }
+        }, 4000);
+
+        // =========================================================
+        // 2. SCROLL PROGRESS
+        // =========================================================
+        var scrollProgress = document.getElementById('scrollProgress');
+        window.addEventListener('scroll', function() {
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            scrollProgress.style.width = progress + '%';
+        }, { passive: true });
+
+        // =========================================================
+        // 3. THEME TOGGLE (diğer sayfalarla aynı)
+        // =========================================================
+        var MOON_SVG = '<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+        var SUN_SVG = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+
+        function readTheme() {
+            try {
+                var t = localStorage.getItem('katran-theme') || localStorage.getItem('theme') || 'katran';
+                if (t === 'dark') t = 'katran';
+                return (t === 'light') ? 'light' : 'katran';
+            } catch (e) { return 'katran'; }
+        }
+        function writeTheme(v) {
+            try {
+                localStorage.setItem('katran-theme', v);
+                localStorage.setItem('theme', v);
+            } catch (e) {}
+        }
+
+        var themeToggle = document.getElementById('themeToggle');
+        var html = document.documentElement;
+        if (themeToggle) {
+            if (readTheme() !== 'light') {
+                html.setAttribute('data-theme', 'katran');
+                themeToggle.innerHTML = MOON_SVG;
+            } else {
+                themeToggle.innerHTML = SUN_SVG;
+            }
+            themeToggle.addEventListener('click', function() {
+                var isKatran = html.getAttribute('data-theme') !== 'light';
+                if (isKatran) {
+                    html.setAttribute('data-theme', 'light');
+                    writeTheme('light');
+                    this.innerHTML = SUN_SVG;
+                } else {
+                    html.setAttribute('data-theme', 'katran');
+                    writeTheme('katran');
+                    this.innerHTML = MOON_SVG;
+                }
+            });
+        }
+
+        // =========================================================
+        // 4. HEADER SCROLL EFFECT
+        // =========================================================
+        var masthead = document.getElementById('masthead');
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 60) {
+                masthead.classList.add('scrolled');
+            } else {
+                masthead.classList.remove('scrolled');
+            }
+        }, { passive: true });
+
+        // =========================================================
+        // 5. SUPABASE — OTURUM + KARŞILAMA
+        // =========================================================
+        var SUPABASE_URL = 'https://bdxvgtxregsonbvhvdav.supabase.co';
+        var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkeHZndHhyZWdzb25idmh2ZGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0MzM4ODcsImV4cCI6MjEwNTAwOTg4N30.7gQGqcvDzTKpQyjnRkmcCrwPny3m5pfUOy4BWk7O0CQ';
+
+        var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function checkLogin() {
+            try {
+                var sessionRes = await supabaseClient.auth.getSession();
+                var session = sessionRes.data.session;
+
+                if (session) {
+                    var profileRes = await supabaseClient
+                        .from('profiles')
+                        .select('full_name, username, avatar, status')
+                        .eq('id', session.user.id)
+                        .single();
+
+                    var profile = profileRes.data;
+                    var authLink = document.getElementById('authLink');
+
+                    if (profile && profile.status === 'approved') {
+                        var firstName = (profile.full_name || '').split(' ')[0];
+                        document.getElementById('greetName').textContent = firstName;
+                        document.getElementById('greeting').classList.add('show');
+
+                        var tryRender = function() {
+                            if (window.renderAvatar) {
+                                authLink.outerHTML = '<a href="profil.html" id="authLink" title="' + (profile.full_name || '') + '">' + window.renderAvatar(profile, 40) + '</a>';
+                            } else {
+                                setTimeout(tryRender, 50);
+                            }
+                        };
+                        tryRender();
+                    } else {
+                        authLink.href = 'giris.html';
+                    }
+                }
+            } catch (err) {
+                console.log('Oturum kontrol hatası:', err);
+            }
+        }
+        checkLogin();
+
+        // =========================================================
+        // 6. CONSOLE ART
+        // =========================================================
+        console.log('%c✦ KATRAN DERGİ ✦', 'font-size: 28px; font-weight: 900; color: #b04455;');
+        console.log('%cKırmızı karanfil ektik, katranın bağrına.', 'font-size: 16px; font-style: italic; color: #8a6068;');
+
+    })();
+    </script>
+</body>
+</html>
