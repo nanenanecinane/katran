@@ -2,13 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <!-- Ana Sayfa -->
-  <url>
-    <loc>https://katrandergi.org/</loc>
-    <lastmod>2026-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-
   <!-- İçerik Sayfaları -->
   <url>
     <loc>https://katrandergi.org/yazilar.html</loc>

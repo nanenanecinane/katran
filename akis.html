@@ -485,10 +485,6 @@ Kolektif
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
 Hakkında
 </a>
-<a href="forum.html">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-Forum
-</a>
 <span class="auth-side"><span id="notifContainer"></span><span class="auth-container" id="authContainer"><a href="giris.html" id="authLink" class="avatar-login-btn"><span id="authText">Giriş Yap</span></a></span></span>
 </nav>
 </header>
@@ -699,7 +695,7 @@ return map;
 }
 
 async function loadPosts() {
-var res = await supabaseClient.from('posts').select('*').neq('type', 'forum').order('created_at', { ascending: false }).limit(50);
+var res = await supabaseClient.from('posts').select('*').order('created_at', { ascending: false }).limit(50);
 if (res.error) { document.getElementById('postsContainer').innerHTML = '<div class="empty">Hata: ' + escapeHtml(res.error.message) + '</div>'; return; }
 allPosts = res.data || [];
 if (!allPosts.length) { document.getElementById('postsContainer').innerHTML = '<div class="empty">Henüz gönderi yok. İlk paylaşan sen ol!</div>'; return; }
