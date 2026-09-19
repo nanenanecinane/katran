@@ -42,6 +42,13 @@
     } catch (e) {}
   }
 
+  function unhide() {
+    try {
+      var box = document.getElementById('authContainer');
+      if (box) box.classList.add('auth-ready');
+    } catch (e) {}
+  }
+
   function paint(profile) {
     var link = document.getElementById('authLink');
     if (!link || !profile) return;
@@ -55,12 +62,14 @@
       var span = document.getElementById('authText');
       if (span) span.textContent = String(name).split(' ')[0];
     }
+    unhide();
   }
 
   function reset() {
     var box = document.getElementById('authContainer');
     if (box) box.innerHTML = LOGIN_HTML;
     clearCache();
+    unhide();
   }
 
   function getClient() {
@@ -84,7 +93,7 @@
   async function init() {
     try {
       var client = getClient();
-      if (!client) return;
+      if (!client) { unhide(); return; }
       var res = await client.auth.getSession();
       var session = res.data.session;
       if (!session) {
@@ -102,7 +111,7 @@
       } else {
         reset();
       }
-    } catch (e) {}
+    } catch (e) { unhide(); }
   }
 
   if (document.readyState === 'loading') {

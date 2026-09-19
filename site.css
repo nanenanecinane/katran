@@ -165,6 +165,10 @@
 .masthead .auth-container {
   display: inline-flex;
   align-items: center;
+  visibility: hidden;
+}
+.masthead .auth-container.auth-ready {
+  visibility: visible;
 }
 .masthead .auth-container a {
   display: inline-flex;

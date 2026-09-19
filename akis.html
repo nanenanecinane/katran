@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="avatares.js"></script>
 <link rel="stylesheet" href="site.css">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -488,6 +489,25 @@ Hakkında
 <span class="auth-side"><span id="notifContainer"></span><span class="auth-container" id="authContainer"><a href="giris.html" id="authLink" class="avatar-login-btn"><span id="authText">Giriş Yap</span></a></span></span>
 </nav>
 </header>
+<script>
+/* Erken avatar: onbellekten eszamanli bas (ilk boyadan once) */
+(function() {
+  try {
+    var p = JSON.parse(localStorage.getItem('katran-auth-cache') || 'null');
+    if (!p || (!p.full_name && !p.username)) return;
+    if (!window.renderAvatar) return;
+    var link = document.getElementById('authLink');
+    if (!link) return;
+    var name = p.full_name || p.username;
+    link.href = 'profil.html';
+    link.title = name;
+    link.innerHTML = window.renderAvatar(p, 36);
+    link.classList.remove('avatar-login-btn');
+    var box = document.getElementById('authContainer');
+    if (box) box.classList.add('auth-ready');
+  } catch (e) {}
+})();
+</script>
 
 <div class="container">
 <div class="tabs" id="feedTabs" style="display:none;">
@@ -559,7 +579,6 @@ Takip
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="tema.js"></script>
-<script src="avatares.js"></script>
 
 <script>
 (function() {

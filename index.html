@@ -1156,6 +1156,13 @@
             } catch (e) {}
         }
 
+        function unhideAuth() {
+            try {
+                var box = document.getElementById('authContainer');
+                if (box) box.classList.add('auth-ready');
+            } catch (e) {}
+        }
+
         async function checkLogin() {
             // Önbellekten anında bas
             var cached = readAuthCache();
@@ -1167,6 +1174,7 @@
                 if (authLinkEl && window.renderAvatar) {
                     authLinkEl.outerHTML = '<a href="profil.html" id="authLink" title="' + (cached.full_name || '') + '">' + window.renderAvatar(cached, 40) + '</a>';
                 }
+                unhideAuth();
             }
             try {
                 var sessionRes = await supabaseClient.auth.getSession();
@@ -1196,12 +1204,17 @@
                             }
                         };
                         tryRender();
+                        unhideAuth();
                     } else {
                         authLink.href = 'giris.html';
+                        unhideAuth();
                     }
+                } else {
+                    unhideAuth();
                 }
             } catch (err) {
                 console.log('Oturum kontrol hatası:', err);
+                unhideAuth();
             }
         }
         checkLogin();
