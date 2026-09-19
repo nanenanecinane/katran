@@ -1139,7 +1139,35 @@
 
         var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        function readAuthCache() {
+            try {
+                var p = JSON.parse(localStorage.getItem('katran-auth-cache') || 'null');
+                if (!p || (!p.full_name && !p.username)) return null;
+                return p;
+            } catch (e) { return null; }
+        }
+        function writeAuthCache(profile) {
+            try {
+                localStorage.setItem('katran-auth-cache', JSON.stringify({
+                    full_name: profile.full_name || '',
+                    username: profile.username || '',
+                    avatar: profile.avatar || 'harf'
+                }));
+            } catch (e) {}
+        }
+
         async function checkLogin() {
+            // Önbellekten anında bas
+            var cached = readAuthCache();
+            if (cached) {
+                var firstName = ((cached.full_name || '').split(' ')[0]) || cached.username;
+                document.getElementById('greetName').textContent = firstName;
+                document.getElementById('greeting').classList.add('show');
+                var authLinkEl = document.getElementById('authLink');
+                if (authLinkEl && window.renderAvatar) {
+                    authLinkEl.outerHTML = '<a href="profil.html" id="authLink" title="' + (cached.full_name || '') + '">' + window.renderAvatar(cached, 40) + '</a>';
+                }
+            }
             try {
                 var sessionRes = await supabaseClient.auth.getSession();
                 var session = sessionRes.data.session;
@@ -1155,6 +1183,7 @@
                     var authLink = document.getElementById('authLink');
 
                     if (profile && profile.status === 'approved') {
+                        writeAuthCache(profile);
                         var firstName = (profile.full_name || '').split(' ')[0];
                         document.getElementById('greetName').textContent = firstName;
                         document.getElementById('greeting').classList.add('show');

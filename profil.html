@@ -799,6 +799,7 @@ window.location.href = 'profil-duzenle.html';
 });
 document.getElementById('logoutBtn').addEventListener('click', async function() {
 await supabaseClient.auth.signOut();
+try { localStorage.removeItem('katran-auth-cache'); } catch (e) {}
 window.location.href = 'index.html';
 });
 
