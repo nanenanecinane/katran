@@ -25,7 +25,7 @@ font-family: 'Inter', -apple-system, sans-serif;
 background: var(--bg, #0a0808);
 color: var(--text, #f4efe8);
 min-height: 100vh;
-padding-bottom: 100px;
+padding-bottom: 90px;
 transition: background 0.3s ease, color 0.3s ease;
 overflow-x: hidden;
 }
@@ -98,7 +98,6 @@ position: relative;
 .post-meta { flex: 1; min-width: 0; }
 .post-name { font-weight: 700; font-size: 0.92rem; color: var(--text, #f4efe8); }
 .post-username { color: var(--text-muted, #a89e94); font-size: 0.78rem; }
-.post-time { color: var(--text-dim, #7a7068); font-size: 0.72rem; white-space: nowrap; }
 .post-menu {
 background: transparent;
 border: none;
@@ -172,20 +171,6 @@ transition: all 0.2s;
 background: linear-gradient(135deg, var(--bordo-glow, rgba(139,46,62,0.1)), var(--bg-elev, rgba(255,255,255,0.03)));
 border-color: var(--bordo, #8b2e3e);
 }
-.read-action {
-display: flex;
-align-items: center;
-gap: 0.5rem;
-font-size: 0.82rem;
-color: var(--text-muted, #a89e94);
-margin-bottom: 1rem;
-padding: 0.6rem 0.8rem;
-background: var(--bg-elev-2, rgba(255,255,255,0.06));
-border-radius: 10px;
-line-height: 1.5;
-}
-.read-action strong { color: var(--text, #f4efe8); font-weight: 700; }
-.read-action em { color: var(--bordo, #8b2e3e); font-style: italic; font-weight: 600; }
 .read-icon { width: 18px; height: 18px; stroke: var(--bordo, #8b2e3e); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 .book-preview {
 display: flex;
@@ -449,6 +434,9 @@ transition: transform 0.3s;
 z-index: 9999;
 max-width: 90%;
 text-align: center;
+}
+.toast:empty {
+display: none;
 }
 .toast.show { transform: translateX(-50%) translateY(0); }
 .toast.error { background: #e03131; }
@@ -773,7 +761,7 @@ if (post.is_repost && post.repost_of) {
   html += '<div class="original-header">';
   html += getAvatar(origAuthor, 32);
   html += '<span class="original-name">' + escapeHtml(origAuthor.full_name) + '</span>';
-  html += '<span class="original-time">' + timeAgo(orig.created_at) + '</span>';
+  html += '<span class="original-time">@' + escapeHtml(origAuthor.username || 'kullanici') + ' · ' + timeAgo(orig.created_at) + '</span>';
   html += '</div>';
   html += '<div class="original-content">' + escapeHtml(orig.content || '') + '</div>';
   html += '</div>';
@@ -795,7 +783,7 @@ if (post.repost_of && !post.is_repost) {
   html += '<div class="post-header">';
   html += '<a href="kullanici.html?id=' + post.user_id + '" class="post-avatar-link">' + getAvatar(author, 42) + '</a>';
   html += '<a href="kullanici.html?id=' + post.user_id + '" style="text-decoration:none;color:inherit;flex:1;min-width:0;">';
-  html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">' + timeAgo(post.created_at) + '</div></div></a>';
+  html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">@' + escapeHtml(author.username || 'kullanici') + ' · ' + timeAgo(post.created_at) + '</div></div></a>';
   if (isOwner) {
     html += '<button class="post-menu" onclick="toggleMenu(\'' + post.id + '\', event)">' + ICONS.more + '</button>';
     html += '<div class="dropdown" id="menu-' + post.id + '">';
@@ -814,7 +802,7 @@ if (post.repost_of && !post.is_repost) {
     html += '<div class="original-header">';
     html += getAvatar(origAuthor, 32);
     html += '<span class="original-name">' + escapeHtml(origAuthor.full_name) + '</span>';
-    html += '<span class="original-time">' + timeAgo(orig.created_at) + '</span>';
+    html += '<span class="original-time">@' + escapeHtml(origAuthor.username || 'kullanici') + ' · ' + timeAgo(orig.created_at) + '</span>';
     html += '</div>';
     html += '<div class="original-content">' + escapeHtml(orig.content || '') + '</div>';
     html += '</div>';
@@ -840,7 +828,7 @@ if (post.type === 'analysis') {
   html += '<div class="post-header">';
   html += '<a href="kullanici.html?id=' + post.user_id + '" class="post-avatar-link">' + getAvatar(author, 42) + '</a>';
   html += '<a href="kullanici.html?id=' + post.user_id + '" style="text-decoration:none;color:inherit;flex:1;min-width:0;">';
-  html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">' + timeAgo(post.created_at) + '</div></div></a>';
+  html += '<div class="post-meta"><div class="post-name"><strong>' + escapeHtml(author.full_name) + '</strong>, <em>' + escapeHtml(post.quote_book || 'bir kitap') + '</em> hakkında analiz yazdı</div><div class="post-username">@' + escapeHtml(author.username || 'kullanici') + ' · ' + timeAgo(post.created_at) + '</div></div></a>';
   if (isOwner) {
     html += '<button class="post-menu" onclick="toggleMenu(\'' + post.id + '\', event)">' + ICONS.more + '</button>';
     html += '<div class="dropdown" id="menu-' + post.id + '">';
@@ -849,9 +837,6 @@ if (post.type === 'analysis') {
     html += '<button onclick="openDmModal(\'' + post.id + '\')">' + ICONS.send + ' Mesaj Olarak Paylaş</button>';
     html += '</div>';
   }
-  html += '</div>';
-  html += '<div class="read-action">' + ICONS.pencil;
-  html += '<span><strong>' + escapeHtml(author.full_name) + '</strong>, <em>' + escapeHtml(post.quote_book || 'bir kitap') + '</em> hakkında analiz yazdı</span>';
   html += '</div>';
   if (targetBookId) html += '<a class="book-preview" href="kitap.html?id=' + targetBookId + '">';
   else html += '<div class="book-preview">';
@@ -891,7 +876,7 @@ if (post.type === 'quote') {
   html += '<div class="post-header">';
   html += '<a href="kullanici.html?id=' + post.user_id + '" class="post-avatar-link">' + getAvatar(author, 42) + '</a>';
   html += '<a href="kullanici.html?id=' + post.user_id + '" style="text-decoration:none;color:inherit;flex:1;min-width:0;">';
-  html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">' + timeAgo(post.created_at) + '</div></div></a>';
+  html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">@' + escapeHtml(author.username || 'kullanici') + ' · ' + timeAgo(post.created_at) + '</div></div></a>';
   if (isOwner) {
     html += '<button class="post-menu" onclick="toggleMenu(\'' + post.id + '\', event)">' + ICONS.more + '</button>';
     html += '<div class="dropdown" id="menu-' + post.id + '">';
@@ -941,7 +926,7 @@ html += '<div class="post-card read-card" data-post-id="' + post.id + '" data-ow
 html += '<div class="post-header">';
 html += '<a href="kullanici.html?id=' + post.user_id + '" class="post-avatar-link">' + getAvatar(author, 42) + '</a>';
 html += '<a href="kullanici.html?id=' + post.user_id + '" style="text-decoration:none;color:inherit;flex:1;min-width:0;">';
-html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">' + timeAgo(post.created_at) + '</div></div></a>';
+html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">@' + escapeHtml(author.username || 'kullanici') + ' · ' + timeAgo(post.created_at) + '</div></div></a>';
 if (isOwner) {
 html += '<button class="post-menu" onclick="toggleMenu(\'' + post.id + '\', event)">' + ICONS.more + '</button>';
 html += '<div class="dropdown" id="menu-' + post.id + '">';
@@ -951,9 +936,7 @@ html += '<button onclick="openDmModal(\'' + post.id + '\')">' + ICONS.send + ' M
 html += '</div>';
 }
 html += '</div>';
-html += '<div class="read-action">' + ICONS.checkCircle;
-html += '<span><strong>' + escapeHtml(author.full_name) + '</strong>, <em>' + escapeHtml(post.quote_book || 'bir kitabı') + '</em>\' okudu</span>';
-html += '</div>';
+
 if (targetBookId) html += '<a class="book-preview" href="kitap.html?id=' + targetBookId + '">';
 else html += '<div class="book-preview">';
 if (coverUrl) html += '<img class="book-preview-cover" src="' + escapeHtml(coverUrl) + '" alt="" onerror="this.outerHTML=\'<div class=&quot;book-preview-cover book-preview-placeholder&quot;>' + escapeHtml((post.quote_book || '?').charAt(0).toUpperCase()) + '</div>\'">';
@@ -984,8 +967,7 @@ html += '<div class="post-card" data-post-id="' + post.id + '" data-owner-id="' 
 html += '<div class="post-header">';
 html += '<a href="kullanici.html?id=' + post.user_id + '" class="post-avatar-link">' + getAvatar(author, 42) + '</a>';
 html += '<a href="kullanici.html?id=' + post.user_id + '" style="text-decoration:none;color:inherit;flex:1;min-width:0;">';
-html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">@' + escapeHtml(author.username) + '</div></div></a>';
-html += '<div class="post-time">' + timeAgo(post.created_at) + '</div>';
+html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">@' + escapeHtml(author.username || 'kullanici') + ' · ' + timeAgo(post.created_at) + '</div></div></a>';
 html += '<button class="post-menu" onclick="toggleMenu(\'' + post.id + '\', event)">' + ICONS.more + '</button>';
 html += '<div class="dropdown" id="menu-' + post.id + '">';
 if (isOwner) html += '<button onclick="deletePost(\'' + post.id + '\')" class="danger">' + ICONS.trash + ' Sil</button>';

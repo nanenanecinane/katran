@@ -62,7 +62,6 @@ border-color: var(--bordo);
 .post-meta { flex: 1; min-width: 0; }
 .post-name { font-weight: 700; font-size: 1rem; color: var(--text); }
 .post-username { color: var(--text-muted); font-size: 0.82rem; }
-.post-time { color: var(--text-dim); font-size: 0.78rem; white-space: nowrap; }
 .post-content { font-size: 1rem; line-height: 1.75; color: var(--text); margin-bottom: 1rem; white-space: pre-wrap; word-wrap: break-word; }
 
 .analysis-title {
@@ -203,6 +202,9 @@ transition: transform 0.3s;
 z-index: 9999;
 max-width: 90%;
 text-align: center;
+}
+.toast:empty {
+display: none;
 }
 .toast.show { transform: translateX(-50%) translateY(0); }
 .toast.error { background: #e03131; }
@@ -399,7 +401,7 @@ if (post.is_repost && post._original) {
   html += '<div class="read-action" style="background:transparent;padding:0 0 0.8rem 0;">' + ICONS.repost + ' <span><strong>' + escapeHtml(author.full_name) + '</strong> yeniden paylaştı</span></div>';
   html += '<div class="book-preview" style="cursor:pointer;" onclick="window.location.href=\'gonderi-detay.html?id=' + orig.id + '\'">';
   html += '<div style="flex:1;">';
-  html += '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">' + getAvatar(origAuthor, 32) + '<strong>' + escapeHtml(origAuthor.full_name) + '</strong><span style="color:var(--text-dim);font-size:0.75rem;">' + timeAgo(orig.created_at) + '</span></div>';
+  html += '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">' + getAvatar(origAuthor, 32) + '<strong>' + escapeHtml(origAuthor.full_name) + '</strong><span style="color:var(--text-dim);font-size:0.75rem;">@' + escapeHtml(origAuthor.username || 'kullanici') + ' · ' + timeAgo(orig.created_at) + '</span></div>';
   html += '<div style="color:var(--text-muted);line-height:1.6;">' + escapeHtml(orig.content || '') + '</div>';
   html += '</div></div>';
   html += renderActions();
@@ -422,7 +424,7 @@ if (post.repost_of && post._original && !post.is_repost) {
   if (post.content) html += '<div class="post-content">' + escapeHtml(post.content) + '</div>';
   html += '<div class="book-preview" style="cursor:pointer;" onclick="window.location.href=\'gonderi-detay.html?id=' + orig.id + '\'">';
   html += '<div style="flex:1;">';
-  html += '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">' + getAvatar(origAuthor, 32) + '<strong>' + escapeHtml(origAuthor.full_name) + '</strong><span style="color:var(--text-dim);font-size:0.75rem;">' + timeAgo(orig.created_at) + '</span></div>';
+  html += '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">' + getAvatar(origAuthor, 32) + '<strong>' + escapeHtml(origAuthor.full_name) + '</strong><span style="color:var(--text-dim);font-size:0.75rem;">@' + escapeHtml(origAuthor.username || 'kullanici') + ' · ' + timeAgo(orig.created_at) + '</span></div>';
   html += '<div style="color:var(--text-muted);line-height:1.6;">' + escapeHtml(orig.content || '') + '</div>';
   html += '</div></div>';
   html += renderActions();
@@ -441,9 +443,8 @@ if (post.type === 'analysis') {
   html += '<div class="post-header">';
   html += '<a href="kullanici.html?id=' + post.user_id + '" class="post-avatar-link">' + getAvatar(author, 48) + '</a>';
   html += '<a href="kullanici.html?id=' + post.user_id + '" style="text-decoration:none;color:inherit;flex:1;min-width:0;">';
-  html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">' + timeAgo(post.created_at) + '</div></div></a>';
+  html += '<div class="post-meta"><div class="post-name"><strong>' + escapeHtml(author.full_name) + '</strong>, <em>' + escapeHtml(post.quote_book || 'bir kitap') + '</em> hakkında analiz yazdı</div><div class="post-username">@' + escapeHtml(author.username || 'kullanici') + ' · ' + timeAgo(post.created_at) + '</div></div></a>';
   html += '</div>';
-  html += '<div class="read-action">' + ICONS.pencil + '<span><strong>' + escapeHtml(author.full_name) + '</strong>, <em>' + escapeHtml(post.quote_book || 'bir kitap') + '</em> hakkında analiz yazdı</span></div>';
   if (post.book_id) html += '<a class="book-preview" href="kitap.html?id=' + post.book_id + '">';
   else html += '<div class="book-preview">';
   if (coverUrl) html += '<img class="book-preview-cover" src="' + escapeHtml(coverUrl) + '" alt="" onerror="this.outerHTML=\'<div class=&quot;book-preview-cover book-preview-placeholder&quot;>' + escapeHtml((post.quote_book || '?').charAt(0).toUpperCase()) + '</div>\'">';
@@ -513,7 +514,7 @@ if (post.type === 'read') {
   html += '<a href="kullanici.html?id=' + post.user_id + '" style="text-decoration:none;color:inherit;flex:1;min-width:0;">';
   html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">' + timeAgo(post.created_at) + '</div></div></a>';
   html += '</div>';
-  html += '<div class="read-action">' + ICONS.checkCircle + '<span><strong>' + escapeHtml(author.full_name) + '</strong>, <em>' + escapeHtml(post.quote_book || 'bir kitabı') + '</em>\' okudu</span></div>';
+  
   if (post.book_id) html += '<a class="book-preview" href="kitap.html?id=' + post.book_id + '">';
   else html += '<div class="book-preview">';
   if (coverUrl) html += '<img class="book-preview-cover" src="' + escapeHtml(coverUrl) + '" alt="" onerror="this.outerHTML=\'<div class=&quot;book-preview-cover book-preview-placeholder&quot;>' + escapeHtml((post.quote_book || '?').charAt(0).toUpperCase()) + '</div>\'">';
@@ -542,8 +543,7 @@ html += '<div class="post-card" data-post-id="' + post.id + '" data-owner-id="' 
 html += '<div class="post-header">';
 html += '<a href="kullanici.html?id=' + post.user_id + '" class="post-avatar-link">' + getAvatar(author, 48) + '</a>';
 html += '<a href="kullanici.html?id=' + post.user_id + '" style="text-decoration:none;color:inherit;flex:1;min-width:0;">';
-html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">@' + escapeHtml(author.username) + '</div></div></a>';
-html += '<div class="post-time">' + timeAgo(post.created_at) + '</div>';
+html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">@' + escapeHtml(author.username || 'kullanici') + ' · ' + timeAgo(post.created_at) + '</div></div></a>';
 html += '</div>';
 html += '<div class="post-content">' + escapeHtml(post.content) + '</div>';
 html += renderActions();

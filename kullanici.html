@@ -199,6 +199,9 @@ z-index: 9999;
 max-width: 90%;
 text-align: center;
 }
+.toast:empty {
+display: none;
+}
 .toast.show { transform: translateX(-50%) translateY(0); }
 
 .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); z-index: 9998; display: none; align-items: center; justify-content: center; padding: 1rem; }

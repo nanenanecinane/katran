@@ -115,7 +115,7 @@
       '</div>';
 
     document.body.appendChild(nav);
-    document.body.style.paddingBottom = '90px';
+    document.body.style.paddingBottom = '80px';
   }
 
   // ---------- BAŞLAT ----------
