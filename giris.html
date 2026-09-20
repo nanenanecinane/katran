@@ -273,6 +273,15 @@ h1 { font-size: 1.5rem; }
 <button type="submit" class="btn" id="submitBtn">Giriş Yap</button>
 </form>
 
+<form id="recoveryForm" style="display:none;">
+<div class="form-group">
+<label for="newPassword">Yeni Şifre</label>
+<input type="password" id="newPassword" required minlength="6" placeholder="••••••••" autocomplete="new-password">
+<small class="field-hint" style="display:block;font-size:0.75rem;opacity:0.7;margin-top:0.4rem;">En az 6 karakter; bir büyük harf, bir küçük harf, bir rakam ve bir sembol (!, ?, * gibi) içermeli.</small>
+</div>
+<button type="submit" class="btn" id="recoveryBtn">Şifreyi Güncelle</button>
+</form>
+
 <p class="register-link">Hesabın yok mu? <a href="kayit.html">Başvur</a></p>
 </div>
 
@@ -307,6 +316,7 @@ messageDiv.textContent = msg;
 
 function translateError(message) {
 if (!message) return 'Bilinmeyen bir hata oluştu.';
+if (/weak|Password should/i.test(message)) return 'Mevcut şifren yeni güvenlik koşullarını karşılamıyor. "Şifremi unuttum" ile yeni bir şifre belirle.';
 var errors = {
 'Invalid login credentials': 'E-posta veya şifre hatalı.',
 'Email not confirmed': 'E-posta adresiniz henüz doğrulanmamış.',
@@ -382,6 +392,58 @@ window.location.href = 'akis.html';
 showError('💥 Sistem Hatası: ' + (err.message || err));
 submitBtn.disabled = false;
 submitBtn.textContent = 'Giriş Yap';
+}
+});
+
+function recoveryPasswordError(pw) {
+if (!pw || pw.length < 6) return '❌ Şifren en az 6 karakter olmalı.';
+if (!/[A-ZÇĞİÖŞÜ]/.test(pw)) return '❌ Şifren en az bir büyük harf içermeli.';
+if (!/[a-zçğıöşü]/.test(pw)) return '❌ Şifren en az bir küçük harf içermeli.';
+if (!/[0-9]/.test(pw)) return '❌ Şifren en az bir rakam içermeli.';
+if (!/[^A-Za-zÇĞİÖŞÜçğıöşü0-9]/.test(pw)) return '❌ Şifren en az bir sembol içermeli (!, ?, * gibi).';
+return null;
+}
+
+function showRecoveryForm() {
+document.getElementById('loginForm').style.display = 'none';
+document.getElementById('recoveryForm').style.display = 'block';
+var reg = document.querySelector('.register-link');
+if (reg) reg.style.display = 'none';
+showInfo('✉️ E-postadaki bağlantı doğrulandı. Yeni şifreni belirle.');
+try { history.replaceState(null, '', window.location.pathname); } catch (e) {}
+}
+
+// E-postadaki sıfırlama bağlantısıyla gelindiyse yeni-şifre formunu aç
+// (şifre kurtarmada eski şifre sorulmaz; recovery oturumu tek kullanımlık jetonla açılır)
+supabaseClient.auth.onAuthStateChange(function(event, session) {
+if (event === 'PASSWORD_RECOVERY') showRecoveryForm();
+});
+supabaseClient.auth.getSession().then(function(res) {
+if (res.data && res.data.session && window.location.hash.indexOf('type=recovery') !== -1) showRecoveryForm();
+});
+
+document.getElementById('recoveryForm').addEventListener('submit', async function(e) {
+e.preventDefault();
+var newPw = document.getElementById('newPassword').value;
+var pwErr = recoveryPasswordError(newPw);
+if (pwErr) { showError(pwErr); return; }
+var btn = document.getElementById('recoveryBtn');
+btn.disabled = true;
+btn.textContent = 'Güncelleniyor...';
+try {
+var upd = await supabaseClient.auth.updateUser({ password: newPw });
+if (upd.error) { showError('❌ ' + translateError(upd.error.message)); return; }
+await supabaseClient.auth.signOut();
+document.getElementById('recoveryForm').style.display = 'none';
+document.getElementById('loginForm').style.display = 'block';
+var reg = document.querySelector('.register-link');
+if (reg) reg.style.display = '';
+showSuccess('✅ Şifren güncellendi. Yeni şifrenle giriş yapabilirsin.');
+} catch (err) {
+showError('💥 Hata: ' + (err.message || err));
+} finally {
+btn.disabled = false;
+btn.textContent = 'Şifreyi Güncelle';
 }
 });
 

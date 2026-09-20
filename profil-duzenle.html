@@ -397,6 +397,26 @@ Profile dön
 <div class="field-hint">Profilinde görünecek simgeyi seç.</div>
 </div>
 
+<!-- FOTOĞRAF -->
+<div class="field">
+<label>Profil Fotoğrafı</label>
+<div class="avatar-preview-row">
+<div id="photoPreview" style="width:50px;height:50px;border-radius:50%;overflow:hidden;background:var(--bg-elev-2, rgba(255,255,255,0.06));display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:0.7rem;flex-shrink:0;">yok</div>
+<div class="preview-text">
+<div class="preview-label">Fotoğraf</div>
+<div class="preview-value" id="photoLabel">Simge kullanılıyor</div>
+</div>
+</div>
+<div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+<label class="btn btn-cancel" style="cursor:pointer;">
+Fotoğraf Seç
+<input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" style="display:none;">
+</label>
+<button class="btn btn-cancel" id="photoRemoveBtn" style="display:none;">Kaldır</button>
+</div>
+<div class="field-hint" id="photoHint">En fazla 2 MB (JPEG/PNG/WebP). Kareye otomatik sığdırılır. Fotoğraf varsa simge yerine o görünür.</div>
+</div>
+
 <!-- BİYOGRAFİ -->
 <div class="field">
 <label for="bio">Hakkımda (kısa biyografi)</label>
@@ -492,6 +512,85 @@ function updatePreview() {
   labelEl.textContent = found ? found.label : 'Baş Harf';
 }
 
+// PROFİL FOTOĞRAFI
+var photoUrl = null;
+var photoInput = document.getElementById('photoInput');
+var photoPreview = document.getElementById('photoPreview');
+var photoLabel = document.getElementById('photoLabel');
+var photoHint = document.getElementById('photoHint');
+var photoRemoveBtn = document.getElementById('photoRemoveBtn');
+
+function refreshPhotoUI() {
+if (photoUrl) {
+photoPreview.innerHTML = '<img src="' + photoUrl + '" style="width:100%;height:100%;object-fit:cover;display:block;" alt="">';
+photoLabel.textContent = 'Fotoğraf yüklü';
+photoRemoveBtn.style.display = '';
+} else {
+photoPreview.textContent = 'yok';
+photoLabel.textContent = 'Simge kullanılıyor';
+photoRemoveBtn.style.display = 'none';
+}
+}
+
+function resizeToAvatar(file) {
+return new Promise(function(resolve, reject) {
+var img = new Image();
+var objUrl = URL.createObjectURL(file);
+img.onload = function() {
+URL.revokeObjectURL(objUrl);
+var S = 256;
+var scale = Math.max(S / img.width, S / img.height);
+var w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+var canvas = document.createElement('canvas');
+canvas.width = S; canvas.height = S;
+canvas.getContext('2d').drawImage(img, Math.round((S - w) / 2), Math.round((S - h) / 2), w, h);
+canvas.toBlob(function(blob) {
+if (blob) resolve(blob); else reject(new Error('dönüştürülemedi'));
+}, 'image/jpeg', 0.85);
+};
+img.onerror = function() { URL.revokeObjectURL(objUrl); reject(new Error('dosya okunamadı')); };
+img.src = objUrl;
+});
+}
+
+photoInput.addEventListener('change', async function() {
+var file = photoInput.files && photoInput.files[0];
+if (!file) return;
+if (!/^(image\/jpeg|image\/png|image\/webp)$/.test(file.type)) { photoHint.textContent = '❌ Sadece JPEG, PNG veya WebP seç.'; photoInput.value = ''; return; }
+if (file.size > 2 * 1024 * 1024) { photoHint.textContent = '❌ Dosya 2 MB sınırını aşıyor.'; photoInput.value = ''; return; }
+photoHint.textContent = '⏳ Yükleniyor...';
+try {
+var sRes = await supabaseClient.auth.getSession();
+var sess = sRes.data.session;
+if (!sess) { photoHint.textContent = '❌ Giriş yapmalısın.'; return; }
+var blob = await resizeToAvatar(file);
+var path = sess.user.id + '/avatar.jpg';
+var up = await supabaseClient.storage.from('avatars').upload(path, blob, { contentType: 'image/jpeg', upsert: true });
+if (up.error) { photoHint.textContent = '❌ Yüklenemedi: ' + up.error.message; return; }
+photoUrl = supabaseClient.storage.from('avatars').getPublicUrl(path).data.publicUrl + '?v=' + Date.now();
+photoHint.textContent = 'En fazla 2 MB (JPEG/PNG/WebP). Kareye otomatik sığdırılır. Fotoğraf varsa simge yerine o görünür.';
+refreshPhotoUI();
+} catch (err) {
+photoHint.textContent = '❌ Hata: ' + (err.message || err);
+}
+photoInput.value = '';
+});
+
+photoRemoveBtn.addEventListener('click', async function() {
+try {
+var sRes = await supabaseClient.auth.getSession();
+var sess = sRes.data.session;
+if (!sess) return;
+if (photoUrl) {
+await supabaseClient.storage.from('avatars').remove([sess.user.id + '/avatar.jpg']);
+}
+photoUrl = null;
+refreshPhotoUI();
+} catch (err) {
+photoHint.textContent = '❌ Hata: ' + (err.message || err);
+}
+});
+
 // KAYDET
 submitBtn.addEventListener('click', async function() {
 var bio = bioEl.value.trim();
@@ -511,7 +610,7 @@ return;
 
 var res = await supabaseClient
 .from('profiles')
-.update({ bio: bio, avatar: selectedAvatar })
+.update({ bio: bio, avatar: selectedAvatar, avatar_url: photoUrl })
 .eq('id', session.user.id);
 
 if (res.error) {
@@ -537,7 +636,7 @@ return;
 
 var res = await supabaseClient
 .from('profiles')
-.select('bio, avatar, full_name, status')
+.select('bio, avatar, avatar_url, full_name, status')
 .eq('id', session.user.id)
 .single();
 
@@ -555,6 +654,8 @@ var len = res.data.bio.length;
 charCount.textContent = len + ' / 300';
 }
 if (res.data.avatar) selectedAvatar = res.data.avatar;
+photoUrl = res.data.avatar_url || null;
+refreshPhotoUI();
 
 document.getElementById('loadingState').style.display = 'none';
 document.getElementById('formContent').style.display = 'block';

@@ -29,18 +29,23 @@ window.KATRAN_AVATAR_LIST = [
   { id: 'gulenyuz', label: 'Gülen Yüz' }
 ];
 
-// Yardımcı: avatar HTML'i döndür
+// Yardımcı: avatar HTML'i döndür (fotoğraf varsa img, yoksa simge)
 window.renderAvatar = function(profile, size) {
   if (!profile) profile = {};
   var avatarId = profile.avatar || 'harf';
   var initial = (profile.full_name || 'K').charAt(0).toUpperCase();
   size = size || 40;
-  
+
   var fontSize = Math.round(size * 0.42);
   var svgSize = Math.round(size * 0.6);
-  
+
   var inner = '';
-  if (avatarId === 'harf' || !window.KATRAN_AVATARS[avatarId]) {
+  if (profile.avatar_url) {
+    // Fotoğraf belli: yer ayrılır, boş daire çizilir; resim yüklenince belirir.
+    // Simge hiç basılmaz (flaş yok). Bozuk linkte img kalkar, boş daire kalır.
+    var src = String(profile.avatar_url).replace(/"/g, '&quot;');
+    inner = '<img src="' + src + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity 0.25s;" onload="this.style.opacity=1" onerror="this.remove()">';
+  } else if (avatarId === 'harf' || !window.KATRAN_AVATARS[avatarId]) {
     inner = '<span style="font-family: \'Playfair Display\', serif; font-weight: 900; font-size: ' + fontSize + 'px; line-height: 1;">' + initial + '</span>';
   } else {
     var svg = window.KATRAN_AVATARS[avatarId];

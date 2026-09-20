@@ -293,8 +293,9 @@ h1 { font-size: 1.5rem; }
 </div>
 
 <div class="form-group">
-<label for="password">Şifre (en az 6 karakter)</label>
+<label for="password">Şifre</label>
 <input type="password" id="password" required minlength="6" placeholder="••••••••" autocomplete="new-password">
+<small class="field-hint">En az 6 karakter; bir büyük harf, bir küçük harf, bir rakam ve bir sembol (!, ?, * gibi) içermeli.</small>
 </div>
 
 <div class="form-group">
@@ -306,7 +307,7 @@ h1 { font-size: 1.5rem; }
 <div class="rules-check">
 <input type="checkbox" id="rules" required>
 <label for="rules">
-<a href="kurallar.html" target="_blank">Topluluk kurallarını</a> okudum ve kabul ediyorum.
+<a href="kurallar.html" target="_blank">Topluluk kurallarını ve kişisel veriler bölümünü</a> okudum ve kabul ediyorum.
 </label>
 </div>
 
@@ -396,6 +397,16 @@ emailAvailable = true;
 }, 500);
 });
 
+// ŞİFRE GÜÇ KONTROLÜ (sunucudaki kuralla aynı: en az 6 karakter + büyük/küçük harf + rakam + sembol)
+function passwordError(pw) {
+if (!pw || pw.length < 6) return '❌ Şifren en az 6 karakter olmalı.';
+if (!/[A-ZÇĞİÖŞÜ]/.test(pw)) return '❌ Şifren en az bir büyük harf içermeli.';
+if (!/[a-zçğıöşü]/.test(pw)) return '❌ Şifren en az bir küçük harf içermeli.';
+if (!/[0-9]/.test(pw)) return '❌ Şifren en az bir rakam içermeli.';
+if (!/[^A-Za-zÇĞİÖŞÜçğıöşü0-9]/.test(pw)) return '❌ Şifren en az bir sembol içermeli (!, ?, * gibi).';
+return null;
+}
+
 // FORM GÖNDERİMİ
 document.getElementById('applyForm').addEventListener('submit', async function(e) {
 e.preventDefault();
@@ -461,9 +472,10 @@ submitBtn.textContent = 'Başvuruyu Gönder';
 return;
 }
 
-if (!formData.password || formData.password.length < 6) {
+var pwErr = passwordError(formData.password);
+if (pwErr) {
 messageDiv.className = 'message error';
-messageDiv.textContent = '❌ Şifren en az 6 karakter olmalı.';
+messageDiv.textContent = pwErr;
 submitBtn.disabled = false;
 submitBtn.textContent = 'Başvuruyu Gönder';
 return;
@@ -478,21 +490,8 @@ return;
 }
 
 try {
-var appRes = await supabaseClient.from('applications').insert([{
-email: formData.email,
-full_name: formData.full_name,
-username: formData.username,
-reason: formData.reason,
-status: 'pending'
-}]);
-
-if (appRes.error) {
-if (appRes.error.code === '23505') {
-throw new Error('Bu e-posta veya kullanıcı adı ile zaten bir başvuru var.');
-}
-throw new Error('Başvuru kaydedilemedi: ' + appRes.error.message);
-}
-
+// ÖNCE hesap oluştur: başarısız olursa (zayıf şifre, kayıtlı e-posta)
+// geride yetim başvuru satırı kalmaz, kullanıcı düzeltip tekrar deneyebilir.
 var authRes = await supabaseClient.auth.signUp({
 email: formData.email,
 password: formData.password,
@@ -508,7 +507,26 @@ if (authRes.error) {
 if (/already registered|already exists/i.test(authRes.error.message)) {
 throw new Error('Bu e-posta ile zaten bir hesap var. Giriş yapmayı dene.');
 }
+if (/weak|Password should|güç/i.test(authRes.error.message)) {
+throw new Error('Şifren koşulları sağlamıyor: en az 6 karakter, bir büyük harf, bir küçük harf, bir rakam ve bir sembol gerekli.');
+}
 throw new Error(authRes.error.message);
+}
+
+// Hesap oluştu → başvuru satırını kaydet
+var appRes = await supabaseClient.from('applications').insert([{
+email: formData.email,
+full_name: formData.full_name,
+username: formData.username,
+reason: formData.reason,
+status: 'pending'
+}]);
+
+if (appRes.error) {
+if (appRes.error.code === '23505') {
+throw new Error('Hesabın oluşturuldu, ancak bu e-posta veya kullanıcı adıyla zaten bir başvuru kaydı var. E-postanı doğrulayıp onayı bekle.');
+}
+throw new Error('Hesabın oluşturuldu ama başvuru kaydedilemedi: ' + appRes.error.message);
 }
 
 messageDiv.className = 'message success';

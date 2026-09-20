@@ -1251,7 +1251,7 @@
                 var s = await client.auth.getSession();
                 var session = s.data.session;
                 if (!session) return;
-                var r = await client.from('profiles').select('full_name, username, avatar, status').eq('id', session.user.id).single();
+                var r = await client.from('profiles').select('full_name, username, avatar, avatar_url, status').eq('id', session.user.id).single();
                 if (r.data && r.data.status !== 'pending') paintMastheadAuth(r.data);
             } catch (e) {}
         }

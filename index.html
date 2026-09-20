@@ -1183,7 +1183,7 @@
                 if (session) {
                     var profileRes = await supabaseClient
                         .from('profiles')
-                        .select('full_name, username, avatar, status')
+                        .select('full_name, username, avatar, avatar_url, status')
                         .eq('id', session.user.id)
                         .single();
 

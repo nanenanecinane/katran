@@ -149,11 +149,47 @@
             font-weight: 700;
         }
         
+        .kvkk {
+            background: rgba(224, 49, 49, 0.04);
+            border-left: 4px solid var(--karanfil);
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin: 3rem 0;
+            font-size: 0.95rem;
+            color: var(--katran);
+        }
+        
+        .kvkk h2 {
+            font-family: var(--font-serif);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--karanfil);
+        }
+        
+        .kvkk ol {
+            counter-reset: kvkk;
+        }
+        
+        .kvkk ol li {
+            counter-increment: kvkk;
+            padding: 0.8rem 0 0.8rem 3rem;
+            font-size: 0.92rem;
+        }
+        
+        .kvkk ol li::before {
+            content: counter(kvkk);
+            top: 0.8rem;
+            width: 2rem;
+            height: 2rem;
+            font-size: 0.95rem;
+        }
+        
         .footer-note {
             margin-top: 3rem;
             padding: 2rem;
-            background: var(--katran);
-            color: var(--kagit);
+            background: rgba(176, 68, 85, 0.08);
+            border: 1px solid rgba(176, 68, 85, 0.25);
+            color: var(--katran);
             border-radius: 12px;
             text-align: center;
         }
@@ -248,7 +284,7 @@
         
         <div class="intro">
             Katran, edebiyat ve düşüncenin buluştuğu; herkesin kendini güvende ve özgür hissettiği bir topluluktur.
-            Aşağıdaki kurallar bu ortamı korumak için vardır. Başvuru yaparak bu kuralları kabul etmiş olursun.
+            Aşağıdaki kuralları ve kişisel veriler bölümünü kabul etmeden başvuru yapamazsın; başvuru butonuna basman hepsini okuyup onayladığın anlamına gelir.
         </div>
         
         <ol>
@@ -293,6 +329,44 @@
                 Katran yönetimi, kuralları değiştirme, üyelikleri iptal etme ve içerik kaldırma hakkını saklı tutar.
             </li>
         </ol>
+        
+        <div class="kvkk">
+            <h2>Kişisel Verilerin Korunması (Aydınlatma ve Açık Rıza)</h2>
+            <ol>
+                <li>
+                    <strong>Toplanan veriler.</strong>
+                    Ad-soyad, kullanıcı adı, e-posta, şifre (hash'lenerek saklanır, yönetim dahil kimse göremez), profil fotoğrafı, biyografi, paylaşımların, yorumların, mesajların, kitaplık kayıtların ve güvenlik için tutulan teknik kayıtlar (giriş zamanı, IP adresi gibi).
+                </li>
+                <li>
+                    <strong>Amaç ve dayanak.</strong>
+                    Başvurunun değerlendirilmesi, hesabın işletilmesi, güvenliğin ve kötüye kullanımın önlenmesi, gerekli duyuruların iletilmesi. Dayanak: başvuruyla verdiğin açık rıza ve üyelik ilişkisi.
+                </li>
+                <li>
+                    <strong>Herkese açıklık.</strong>
+                    Katran varsayılan olarak herkese açık bir alandır. Profilin, adın, yazıların, yorumların, kitaplık rafların ve fotoğrafın herkes tarafından görülebilir, kopyalanabilir ve arama motorlarınca indekslenebilir. Gizli kalmasını istediğin şeyi paylaşma.
+                </li>
+                <li>
+                    <strong>Aktarım ve saklama.</strong>
+                    Veriler, hizmet aldığımız altyapılarda saklanır ve işlenir (şu an Supabase veritabanı/depolama ve Brevo e-posta servisi; sunucular Türkiye dışında olabilir). Altyapı değişirse veriler yeni sağlayıcıya taşınabilir; bu metin gelecekteki benzer aktarımları da kapsar.
+                </li>
+                <li>
+                    <strong>Garanti yok.</strong>
+                    Makul güvenlik önlemleri alınır, ancak internette mutlak gizlilik ve güvenlik garantisi verilemez.
+                </li>
+                <li>
+                    <strong>Silme.</strong>
+                    Ayrılmak istersen hesabının ve makul ölçüde bağlı verilerinin silinmesini isteyebilirsin (yasal saklama yükümlülükleri ve başkalarının alıntıları gibi teknik istisnalar hariç).
+                </li>
+                <li>
+                    <strong>Hakların.</strong>
+                    Verilerine erişme, düzeltme, silme ve itiraz için site yönetimiyle iletişime geçebilirsin.
+                </li>
+                <li>
+                    <strong>Rıza.</strong>
+                    Başvuru butonuna basman bu metni okuyup anladığın ve açık rıza verdiğin anlamına gelir. Kabul etmiyorsan başvurma.
+                </li>
+            </ol>
+        </div>
         
         <div class="footer-note">
             <p>Bu kurallar Katran'ı Katran yapan şeylerdir. Onları koruyalım.</p>

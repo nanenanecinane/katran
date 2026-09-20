@@ -33,9 +33,8 @@ transition: background 0.3s ease, color 0.3s ease;
 .container { max-width: 1060px; }
 #profileContent { display: grid; grid-template-columns: 300px 1fr; gap: 0 2.5rem; align-items: start; }
 #profileContent > .top-bar { grid-column: 1 / -1; }
-#profileContent > div:nth-of-type(-n+6):not(.top-bar) { grid-column: 1; }
-#profileContent > div:nth-of-type(n+7) { grid-column: 2; }
-#profileContent .profile-card { position: sticky; top: 100px; }
+#profileContent > .profile-side { grid-column: 1; position: sticky; top: 100px; }
+#profileContent > .profile-main { grid-column: 2; min-width: 0; }
 }
 @media (min-width: 900px) and (max-width: 1023.98px) {
 .container { max-width: 760px; }
@@ -478,6 +477,7 @@ Ana Sayfa
 <button class="logout-btn" id="logoutBtn">Çıkış</button>
 </div>
 
+<div class="profile-side">
 <div class="profile-card">
 <button class="edit-btn" id="editBtn">
 <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -523,7 +523,9 @@ Düzenle
 <h2>Hakkımda</h2>
 <p id="bio">Henüz bir biyografi eklenmemiş. <a href="profil-duzenle.html">Ekle →</a></p>
 </div>
+</div>
 
+<div class="profile-main">
 <div class="section">
 <div class="section-header">
 <h2>Okuduklarım</h2>
@@ -551,6 +553,7 @@ Düzenle
 <div id="myPosts"><div style="color:var(--text-muted);font-size:0.9rem;">Yükleniyor...</div></div>
 </div>
 
+</div>
 </div>
 </div>
 
@@ -725,7 +728,7 @@ document.getElementById('modalBody').innerHTML = '<div style="padding:2rem;text-
 return;
 }
 
-var profRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar').in('id', userIds);
+var profRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar, avatar_url').in('id', userIds);
 var profiles = profRes.data || [];
 
 var html = '';

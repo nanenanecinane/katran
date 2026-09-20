@@ -33,9 +33,8 @@ transition: background 0.3s ease, color 0.3s ease;
 .container { max-width: 1060px; }
 #profileContent { display: grid; grid-template-columns: 300px 1fr; gap: 0 2.5rem; align-items: start; }
 #profileContent > .top-bar { grid-column: 1 / -1; }
-#profileContent > div:nth-of-type(-n+5):not(.top-bar) { grid-column: 1; }
-#profileContent > div:nth-of-type(n+6) { grid-column: 2; }
-#profileContent .profile-card { position: sticky; top: 100px; }
+#profileContent > .profile-side { grid-column: 1; position: sticky; top: 100px; }
+#profileContent > .profile-main { grid-column: 2; min-width: 0; }
 }
 .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem; }
 .back-link {
@@ -293,6 +292,7 @@ Akışa dön
 </a>
 </div>
 
+<div class="profile-side">
 <div class="profile-card">
 <div class="avatar-container" id="avatarContainer"></div>
 <h1 class="full-name" id="fullName">—</h1>
@@ -323,7 +323,9 @@ Akışa dön
 <h2>Hakkımda</h2>
 <p id="bio">—</p>
 </div>
+</div>
 
+<div class="profile-main">
 <div class="section">
 <div class="section-header"><h2>Okudukları</h2></div>
 <div class="shelf-wrap">
@@ -339,6 +341,7 @@ Akışa dön
 
 <div class="own-note" id="ownNote" style="display:none;">
 Bu senin profilini. <a href="profil.html">Kendi profil sayfana git →</a>
+</div>
 </div>
 </div>
 </div>
@@ -602,7 +605,7 @@ var res = await supabaseClient.from('follows').select('following_id').eq('follow
 userIds = (res.data || []).map(function(r) { return r.following_id; });
 }
 if (!userIds.length) { document.getElementById('modalBody').innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);font-size:0.9rem;">Henüz kimse yok.</div>'; return; }
-var profRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar').in('id', userIds);
+var profRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar, avatar_url').in('id', userIds);
 var profiles = profRes.data || [];
 var html = '';
 profiles.forEach(function(p) {

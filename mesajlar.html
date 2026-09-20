@@ -428,7 +428,7 @@ unreadCounts[other] = (unreadCounts[other] || 0) + 1;
 var otherIds = Object.keys(convos);
 if (!otherIds.length) { allConvos = []; return; }
 
-var profRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar').in('id', otherIds);
+var profRes = await supabaseClient.from('public_profiles').select('id, full_name, username, avatar, avatar_url').in('id', otherIds);
 var profileMap = {};
 (profRes.data || []).forEach(function(p) { profileMap[p.id] = p; });
 
@@ -453,7 +453,7 @@ b.style.display = 'inline-block';
 async function loadAllUsers() {
 var res = await supabaseClient
 .from('public_profiles')
-.select('id, full_name, username, avatar, status')
+.select('id, full_name, username, avatar, avatar_url, status')
 .eq('status', 'approved')
 .neq('id', currentUser.id)
 .order('full_name', { ascending: true })

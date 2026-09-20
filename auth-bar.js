@@ -31,7 +31,8 @@
       localStorage.setItem(CACHE_KEY, JSON.stringify({
         full_name: profile.full_name || '',
         username: profile.username || '',
-        avatar: profile.avatar || 'harf'
+        avatar: profile.avatar || 'harf',
+        avatar_url: profile.avatar_url || ''
       }));
     } catch (e) {}
   }
@@ -102,7 +103,7 @@
       }
       var r = await client
         .from('profiles')
-        .select('full_name, username, avatar, status')
+        .select('full_name, username, avatar, avatar_url, status')
         .eq('id', session.user.id)
         .single();
       if (r.data && r.data.status === 'approved') {
