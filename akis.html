@@ -747,6 +747,7 @@ var html = '';
 posts.forEach(function(post) {
 var author = profileCache[post.user_id] || { full_name: 'İsimsiz', username: 'kullanici', avatar: 'harf' };
 var isOwner = currentUser && currentUser.id === post.user_id;
+var canDelete = isOwner || (currentProfile && currentProfile.role === 'admin');
 var liked = myLikes[post.id] ? 'liked' : '';
 
 // REPOST
@@ -784,7 +785,7 @@ if (post.repost_of && !post.is_repost) {
   html += '<a href="kullanici.html?id=' + post.user_id + '" class="post-avatar-link">' + getAvatar(author, 42) + '</a>';
   html += '<a href="kullanici.html?id=' + post.user_id + '" style="text-decoration:none;color:inherit;flex:1;min-width:0;">';
   html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">@' + escapeHtml(author.username || 'kullanici') + ' · ' + timeAgo(post.created_at) + '</div></div></a>';
-  if (isOwner) {
+  if (canDelete) {
     html += '<button class="post-menu" onclick="toggleMenu(\'' + post.id + '\', event)">' + ICONS.more + '</button>';
     html += '<div class="dropdown" id="menu-' + post.id + '">';
     html += '<button onclick="deletePost(\'' + post.id + '\')" class="danger">' + ICONS.trash + ' Sil</button>';
@@ -829,7 +830,7 @@ if (post.type === 'analysis') {
   html += '<a href="kullanici.html?id=' + post.user_id + '" class="post-avatar-link">' + getAvatar(author, 42) + '</a>';
   html += '<a href="kullanici.html?id=' + post.user_id + '" style="text-decoration:none;color:inherit;flex:1;min-width:0;">';
   html += '<div class="post-meta"><div class="post-name"><strong>' + escapeHtml(author.full_name) + '</strong>, <em>' + escapeHtml(post.quote_book || 'bir kitap') + '</em> hakkında analiz yazdı</div><div class="post-username">@' + escapeHtml(author.username || 'kullanici') + ' · ' + timeAgo(post.created_at) + '</div></div></a>';
-  if (isOwner) {
+  if (canDelete) {
     html += '<button class="post-menu" onclick="toggleMenu(\'' + post.id + '\', event)">' + ICONS.more + '</button>';
     html += '<div class="dropdown" id="menu-' + post.id + '">';
     html += '<button onclick="deletePost(\'' + post.id + '\')" class="danger">' + ICONS.trash + ' Sil</button>';
@@ -877,7 +878,7 @@ if (post.type === 'quote') {
   html += '<a href="kullanici.html?id=' + post.user_id + '" class="post-avatar-link">' + getAvatar(author, 42) + '</a>';
   html += '<a href="kullanici.html?id=' + post.user_id + '" style="text-decoration:none;color:inherit;flex:1;min-width:0;">';
   html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">@' + escapeHtml(author.username || 'kullanici') + ' · ' + timeAgo(post.created_at) + '</div></div></a>';
-  if (isOwner) {
+  if (canDelete) {
     html += '<button class="post-menu" onclick="toggleMenu(\'' + post.id + '\', event)">' + ICONS.more + '</button>';
     html += '<div class="dropdown" id="menu-' + post.id + '">';
     html += '<button onclick="deletePost(\'' + post.id + '\')" class="danger">' + ICONS.trash + ' Sil</button>';
@@ -927,7 +928,7 @@ html += '<div class="post-header">';
 html += '<a href="kullanici.html?id=' + post.user_id + '" class="post-avatar-link">' + getAvatar(author, 42) + '</a>';
 html += '<a href="kullanici.html?id=' + post.user_id + '" style="text-decoration:none;color:inherit;flex:1;min-width:0;">';
 html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">@' + escapeHtml(author.username || 'kullanici') + ' · ' + timeAgo(post.created_at) + '</div></div></a>';
-if (isOwner) {
+if (canDelete) {
 html += '<button class="post-menu" onclick="toggleMenu(\'' + post.id + '\', event)">' + ICONS.more + '</button>';
 html += '<div class="dropdown" id="menu-' + post.id + '">';
 html += '<button onclick="deletePost(\'' + post.id + '\')" class="danger">' + ICONS.trash + ' Sil</button>';
@@ -970,7 +971,7 @@ html += '<a href="kullanici.html?id=' + post.user_id + '" style="text-decoration
 html += '<div class="post-meta"><div class="post-name">' + escapeHtml(author.full_name) + '</div><div class="post-username">@' + escapeHtml(author.username || 'kullanici') + ' · ' + timeAgo(post.created_at) + '</div></div></a>';
 html += '<button class="post-menu" onclick="toggleMenu(\'' + post.id + '\', event)">' + ICONS.more + '</button>';
 html += '<div class="dropdown" id="menu-' + post.id + '">';
-if (isOwner) html += '<button onclick="deletePost(\'' + post.id + '\')" class="danger">' + ICONS.trash + ' Sil</button>';
+if (canDelete) html += '<button onclick="deletePost(\'' + post.id + '\')" class="danger">' + ICONS.trash + ' Sil</button>';
 html += '<button onclick="doRepost(\'' + post.id + '\', this)">' + ICONS.repost + ' Yeniden Paylaş</button>';
 html += '<button onclick="openQuoteModal(\'' + post.id + '\')">' + ICONS.quote + ' Alıntıla</button>';
 html += '<button onclick="openDmModal(\'' + post.id + '\')">' + ICONS.send + ' Mesaj Olarak Paylaş</button>';

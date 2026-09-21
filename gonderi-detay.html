@@ -293,6 +293,7 @@ var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 var currentUser = null;
+var isSiteAdmin = false;
 var post = null;
 var profileCache = {};
 var bookCache = {};
@@ -353,7 +354,8 @@ return;
 var sessionRes = await supabaseClient.auth.getSession();
 if (sessionRes.data.session) {
 currentUser = sessionRes.data.session.user;
-var profRes = await supabaseClient.from('profiles').select('status, full_name').eq('id', currentUser.id).single();
+var profRes = await supabaseClient.from('profiles').select('status, full_name, role').eq('id', currentUser.id).single();
+if (profRes.data && profRes.data.role === 'admin') isSiteAdmin = true;
 var lRes = await supabaseClient.from('likes').select('post_id').eq('user_id', currentUser.id);
 (lRes.data || []).forEach(function(l) { myLikes[l.post_id] = true; });
 }
@@ -388,7 +390,7 @@ render();
 function render() {
 var container = document.getElementById('content');
 var author = profileCache[post.user_id] || { full_name: 'İsimsiz', avatar: 'harf' };
-var isOwner = currentUser && currentUser.id === post.user_id;
+var isOwner = currentUser && (currentUser.id === post.user_id || isSiteAdmin);
 var liked = myLikes[post.id] ? 'liked' : '';
 
 var html = '';
@@ -555,7 +557,7 @@ loadComments();
 
 function renderActions() {
 var liked = myLikes[post.id] ? 'liked' : '';
-var isOwner = currentUser && currentUser.id === post.user_id;
+var isOwner = currentUser && (currentUser.id === post.user_id || isSiteAdmin);
 var html = '<div class="post-actions">';
 html += '<button class="action-btn ' + liked + '" onclick="toggleLike(\'' + post.id + '\', this)">' + ICONS.heart + '<span class="like-count">' + (post.likes_count || 0) + '</span></button>';
 html += '<button class="action-btn" onclick="scrollToComments()">' + ICONS.comment + '<span class="comment-count">' + (post.comments_count || 0) + '</span></button>';
@@ -634,7 +636,7 @@ html += '<div style="color:var(--text-dim);font-size:0.88rem;font-style:italic;p
 } else {
 comments.forEach(function(c) {
 var author = profileCache[c.user_id] || { full_name: 'İsimsiz', avatar: 'harf' };
-var canDelete = currentUser && (currentUser.id === c.user_id || currentUser.id === post.user_id);
+var canDelete = currentUser && (currentUser.id === c.user_id || currentUser.id === post.user_id || isSiteAdmin);
 html += '<div class="comment">';
 html += getAvatar(author, 32);
 html += '<div class="comment-body">';

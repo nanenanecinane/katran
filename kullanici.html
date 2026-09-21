@@ -372,6 +372,7 @@ var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 var currentUser = null;
+var isSiteAdmin = false;
 var targetUserId = null;
 var isFollowing = false;
 
@@ -432,6 +433,10 @@ if (!targetUserId) { showError('Kullanıcı belirtilmedi.'); return; }
 var sessionRes = await supabaseClient.auth.getSession();
 if (sessionRes.data.session) currentUser = sessionRes.data.session.user;
 var isOwn = currentUser && currentUser.id === targetUserId;
+if (currentUser && !isOwn) {
+var roleRes = await supabaseClient.from('profiles').select('role').eq('id', currentUser.id).single();
+if (roleRes.data && roleRes.data.role === 'admin') isSiteAdmin = true;
+}
 
 var profileRes = isOwn
   ? await supabaseClient.from('profiles').select('*').eq('id', targetUserId).single()
@@ -578,6 +583,7 @@ html += '</div>';
 html += '<div class="my-post-stats">';
 html += '<span>' + ICON_HEART + ' ' + (p.likes_count || 0) + '</span>';
 html += '<span>' + ICON_COMMENT + ' ' + (p.comments_count || 0) + '</span>';
+if (isSiteAdmin) html += '<span onclick="deletePost(event, \'' + p.id + '\')" style="color:var(--accent);cursor:pointer;font-weight:700;">Sil</span>';
 html += '</div></div>';
 } else {
 html += '<div class="my-post" onclick="window.location.href=\'gonderi-detay.html?id=' + p.id + '\'">';
@@ -586,10 +592,20 @@ html += '<div class="my-post-content">' + escapeHtml(p.content) + '</div>';
 html += '<div class="my-post-stats">';
 html += '<span>' + ICON_HEART + ' ' + (p.likes_count || 0) + '</span>';
 html += '<span>' + ICON_COMMENT + ' ' + (p.comments_count || 0) + '</span>';
+if (isSiteAdmin) html += '<span onclick="deletePost(event, \'' + p.id + '\')" style="color:var(--accent);cursor:pointer;font-weight:700;">Sil</span>';
 html += '</div></div>';
 }
 });
 container.innerHTML = html;
+}
+
+window.deletePost = async function(e, postId) {
+if (e) e.stopPropagation();
+if (!confirm('Silmek istediğine emin misin?')) return;
+var res = await supabaseClient.from('posts').delete().eq('id', postId);
+if (res.error) { toast('Silinemedi: ' + res.error.message); return; }
+toast('Silindi');
+loadUserPosts(targetUserId);
 }
 
 async function showUserList(title, type) {
