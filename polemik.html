@@ -176,9 +176,7 @@
             100% { transform: translate(40px, -20px) scale(1.05); }
         }
 
-        /* ============================================================
-           POLEMİK HERO
-           ============================================================ */
+        /* HERO */
         .polemik-hero {
             text-align: center;
             padding: 2rem 0 3rem;
@@ -222,9 +220,7 @@
             border-radius: 2px;
         }
 
-        /* ============================================================
-           GİRİŞ UYARISI
-           ============================================================ */
+        /* GİRİŞ UYARISI */
         .polemik-uyari {
             display: none;
             align-items: center;
@@ -238,16 +234,11 @@
             text-decoration: none;
             color: var(--katran);
             transition: var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
         }
-        .polemik-uyari.show {
-            display: flex;
-        }
+        .polemik-uyari.show { display: flex; }
         .polemik-uyari:hover {
             border-color: var(--karanfil);
             border-left-width: 6px;
-            background: linear-gradient(135deg, var(--karanfil-subtle), transparent 60%);
             transform: translateX(4px);
             box-shadow: 0 12px 30px -12px var(--karanfil-glow);
         }
@@ -274,7 +265,6 @@
             flex: 1;
             font-size: 0.92rem;
             line-height: 1.5;
-            color: var(--katran);
         }
         .polemik-uyari .metin strong {
             color: var(--karanfil);
@@ -284,25 +274,9 @@
             font-size: 1.1rem;
             color: var(--karanfil);
             flex-shrink: 0;
-            transition: transform 0.25s;
-        }
-        .polemik-uyari:hover .ok {
-            transform: translateX(4px);
         }
 
-        @media (max-width: 640px) {
-            .polemik-uyari {
-                flex-wrap: wrap;
-                gap: 0.7rem;
-                padding: 0.9rem 1rem;
-            }
-            .polemik-uyari .metin { font-size: 0.85rem; }
-            .polemik-uyari .ok { margin-left: auto; }
-        }
-
-        /* ============================================================
-           ARAÇ ÇUBUĞU
-           ============================================================ */
+        /* ARAÇ ÇUBUĞU */
         .polemik-toolbar {
             display: flex;
             align-items: center;
@@ -353,16 +327,13 @@
             white-space: nowrap;
         }
 
-        /* ============================================================
-           POLEMİK LİSTESİ
-           ============================================================ */
+        /* LİSTE */
         .polemik-list {
             display: flex;
             flex-direction: column;
             gap: 1.2rem;
             padding-bottom: 5rem;
         }
-
         .polemik-item {
             background: var(--kagit);
             border: 1px solid rgba(176, 68, 85, 0.25);
@@ -430,6 +401,17 @@
             color: var(--muted);
             letter-spacing: 0.04em;
         }
+        .polemik-anon-badge {
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 0.28rem 0.7rem;
+            border-radius: 60px;
+            border: 1px solid var(--toz);
+            color: var(--toz);
+            background: transparent;
+        }
 
         .polemik-title {
             flex: 1;
@@ -496,7 +478,7 @@
             transition: max-height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .polemik-item.open .polemik-body {
-            max-height: 4000px;
+            max-height: 20000px;
         }
         .polemik-body-inner {
             padding: 0 2.2rem 2.2rem;
@@ -548,6 +530,172 @@
             font-weight: 700;
         }
 
+        /* KARŞI GÖRÜŞLER BÖLÜMÜ */
+        .karsi-bolum {
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 2px solid rgba(176, 68, 85, 0.25);
+        }
+        .karsi-bolum-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .karsi-bolum-head h3 {
+            font-family: var(--font-serif);
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--katran);
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+        .karsi-bolum-head h3 .sayi {
+            font-size: 0.8rem;
+            font-style: italic;
+            font-weight: 400;
+            color: var(--toz);
+        }
+        .btn-karsi {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.4rem;
+            background: transparent;
+            color: var(--karanfil);
+            border: 1.5px solid var(--karanfil);
+            border-radius: 60px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.82rem;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+        .btn-karsi:hover {
+            background: var(--karanfil);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -8px var(--karanfil-glow);
+        }
+        .btn-karsi svg {
+            width: 14px; height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+        }
+        .btn-karsi.giris-gerek {
+            color: var(--muted);
+            border-color: var(--muted);
+            opacity: 0.7;
+        }
+        .btn-karsi.giris-gerek:hover {
+            background: transparent;
+            color: var(--muted);
+            box-shadow: none;
+            transform: none;
+        }
+
+        .karsi-liste {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .karsi-item {
+            background: var(--kagit-dark);
+            border: 1px solid rgba(176, 68, 85, 0.2);
+            border-radius: 14px;
+            padding: 1.5rem 1.7rem;
+            position: relative;
+            transition: var(--transition-smooth);
+        }
+        [data-theme="light"] .karsi-item {
+            background: rgba(0,0,0,0.015);
+            border-color: rgba(0,0,0,0.06);
+        }
+        .karsi-item::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 1.5rem; bottom: 1.5rem;
+            width: 3px;
+            background: var(--karanfil);
+            border-radius: 0 3px 3px 0;
+            opacity: 0.6;
+        }
+        .karsi-item:hover {
+            border-color: rgba(176, 68, 85, 0.4);
+            box-shadow: 0 10px 30px -15px var(--karanfil-glow);
+        }
+        .karsi-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+            font-size: 0.7rem;
+        }
+        .karsi-meta .rozet {
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            padding: 0.22rem 0.6rem;
+            border-radius: 60px;
+            background: var(--karanfil);
+            color: #fff;
+        }
+        .karsi-meta .anon {
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 0.22rem 0.6rem;
+            border-radius: 60px;
+            border: 1px solid var(--toz);
+            color: var(--toz);
+        }
+        .karsi-meta .yazar {
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--karanfil);
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .karsi-meta .tarih {
+            font-style: italic;
+            color: var(--toz);
+            margin-left: auto;
+        }
+        .karsi-item h4 {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--katran);
+            line-height: 1.3;
+            margin-bottom: 0.7rem;
+            letter-spacing: -0.01em;
+        }
+        .karsi-item p {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: var(--katran);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .karsi-empty {
+            padding: 1.5rem 0;
+            text-align: center;
+            font-style: italic;
+            color: var(--toz);
+            font-size: 0.9rem;
+        }
+
+        /* EMPTY */
         .polemik-empty {
             text-align: center;
             padding: 5rem 1rem;
@@ -567,9 +715,7 @@
             font-size: 1rem;
         }
 
-        /* ============================================================
-           FAB
-           ============================================================ */
+        /* FAB */
         .fab-polemik {
             position: fixed;
             bottom: 30px;
@@ -604,10 +750,8 @@
             stroke-linecap: round;
         }
 
-        /* ============================================================
-           MODAL
-           ============================================================ */
-         .modal-overlay {
+        /* MODAL */
+        .modal-overlay {
             position: fixed;
             inset: 0;
             background: rgba(13, 4, 5, 0.75);
@@ -762,6 +906,68 @@
         .char-counter.ok   { color: var(--karanfil); }
         .char-counter.fail { color: #e05555; }
 
+        /* Anonim kutusu */
+        .anon-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding: 1rem 1.2rem;
+            background: var(--kagit-dark);
+            border: 1px solid rgba(176, 68, 85, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            user-select: none;
+            transition: var(--transition-smooth);
+        }
+        [data-theme="light"] .anon-box {
+            border-color: rgba(0,0,0,0.08);
+        }
+        .anon-box:hover {
+            border-color: rgba(176, 68, 85, 0.4);
+        }
+        .anon-box input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px; height: 20px;
+            border-radius: 6px;
+            border: 2px solid var(--karanfil);
+            background: transparent;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+            position: relative;
+            transition: var(--transition-smooth);
+        }
+        .anon-box input[type="checkbox"]:checked {
+            background: var(--karanfil);
+        }
+        .anon-box input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1px;
+            width: 6px;
+            height: 11px;
+            border: solid #fff;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        .anon-box .anon-text {
+            flex: 1;
+        }
+        .anon-box .anon-text strong {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--katran);
+            margin-bottom: 0.15rem;
+            font-weight: 700;
+        }
+        .anon-box .anon-text span {
+            font-size: 0.78rem;
+            color: var(--muted);
+            font-style: italic;
+        }
+
         .modal-actions {
             display: flex;
             gap: 0.8rem;
@@ -872,9 +1078,7 @@
             font-style: italic;
         }
 
-        /* ============================================================
-           LOADER
-           ============================================================ */
+        /* LOADER */
         #loader {
             position: fixed;
             inset: 0;
@@ -998,6 +1202,9 @@
                 bottom: 20px; right: 20px;
                 width: 44px; height: 44px;
             }
+            .karsi-bolum-head { gap: 0.6rem; }
+            .karsi-item { padding: 1.2rem 1.3rem; }
+            .karsi-item::before { top: 1.2rem; bottom: 1.2rem; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -1022,7 +1229,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             Ana Sayfa
         </a>
-        <a href="yazilar.html">
+                <a href="yazilar.html">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
             Yazılar
         </a>
@@ -1097,14 +1304,13 @@
             <div class="rule"></div>
         </section>
 
-        <!-- Giriş uyarısı (sadece giriş yapmamış kullanıcıya görünür) -->
         <a href="giris.html" class="polemik-uyari" id="polemikUyari">
             <span class="ikon">
                 <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </span>
             <span class="metin">
                 <strong>Polemiğe katılmak için giriş yap.</strong>
-                Kendi tezini ortaya atmak, tartışmaya dahil olmak için hesabına giriş yapman gerekiyor.
+                Kendi tezini ortaya atmak, karşı görüş yazmak için hesabına giriş yapman gerekiyor.
             </span>
             <span class="ok">→</span>
         </a>
@@ -1150,15 +1356,16 @@
     <span>Yeni Polemik</span>
 </button>
 
-<div class="modal-overlay" id="polemikModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+<!-- MODAL 1: YENİ POLEMİK -->
+<div class="modal-overlay" id="polemikModal" role="dialog" aria-modal="true">
     <div class="modal">
         <button class="modal-close" id="modalClose" aria-label="Kapat">
             <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
 
         <div id="modalFormWrap">
-                        <h2 class="modal-title" id="modalTitle">Yeni <span class="accent">Polemik</span></h2>
-                      <p class="modal-sub">Bir tez ortaya at. Özet herkes görür, metin kart açılınca okunur.</p>
+            <h2 class="modal-title">Yeni <span class="accent">Polemik</span></h2>
+            <p class="modal-sub">Bir tez ortaya at. Özet herkes görür, metin kart açılınca okunur.</p>
 
             <div class="modal-error" id="modalError"></div>
 
@@ -1170,7 +1377,7 @@
 
                 <div class="field">
                     <label for="polemikSummary">Özet</label>
-                    <textarea id="polemikSummary" class="summary" maxlength="200" required placeholder="Polemiği tek cümlede özetle. Herkes bu özeti görecek."></textarea>
+                    <textarea id="polemikSummary" class="summary" maxlength="200" required placeholder="Polemiği tek cümlede özetle."></textarea>
                     <div class="field-meta">
                         <span>20 – 200 karakter</span>
                         <span class="char-counter fail" id="summaryCounter">0 / 200</span>
@@ -1185,6 +1392,14 @@
                         <span class="char-counter fail" id="charCounter">0 / 60</span>
                     </div>
                 </div>
+
+                <label class="anon-box" for="polemikAnon">
+                    <input type="checkbox" id="polemikAnon">
+                    <span class="anon-text">
+                        <strong>Anonim olarak paylaş</strong>
+                        <span>İşaretlersen adın görünmez, "anonim" olarak yayınlanır.</span>
+                    </span>
+                </label>
 
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="modalCancel">
@@ -1208,6 +1423,64 @@
     </div>
 </div>
 
+<!-- MODAL 2: KARŞI GÖRÜŞ -->
+<div class="modal-overlay" id="karsiModal" role="dialog" aria-modal="true">
+    <div class="modal">
+        <button class="modal-close" id="karsiClose" aria-label="Kapat">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+
+        <div id="karsiFormWrap">
+            <h2 class="modal-title">Karşı <span class="accent">Görüş</span></h2>
+            <p class="modal-sub" id="karsiModalSub">Bu teze karşı çık. Kendi iddianı ortaya koy.</p>
+
+            <div class="modal-error" id="karsiError"></div>
+
+            <form id="karsiForm" novalidate>
+                <div class="field">
+                    <label for="karsiTitle">Başlık</label>
+                    <input type="text" id="karsiTitle" maxlength="200" required placeholder="Karşı görüşünün başlığı...">
+                </div>
+
+                <div class="field">
+                    <label for="karsiBody">Karşı Görüş Metni</label>
+                    <textarea id="karsiBody" required placeholder="Karşı tezini buraya yaz..."></textarea>
+                    <div class="field-meta">
+                        <span>En az 100 karakter</span>
+                        <span class="char-counter fail" id="karsiCounter">0 / 100</span>
+                    </div>
+                </div>
+
+                <label class="anon-box" for="karsiAnon">
+                    <input type="checkbox" id="karsiAnon">
+                    <span class="anon-text">
+                        <strong>Anonim olarak paylaş</strong>
+                        <span>İşaretlersen adın görünmez, "anonim" olarak yayınlanır.</span>
+                    </span>
+                </label>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="karsiCancel">
+                        <span>Vazgeç</span>
+                    </button>
+                    <button type="submit" class="btn" id="karsiSubmit">
+                        <span>Yayınla</span>
+                        <span class="arrow">→</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-success" id="karsiSuccess" style="display:none;">
+            <div class="check">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h3>Karşı görüş yayınlandı</h3>
+            <p>Birazdan polemik altında görünecek.</p>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="avatares.js"></script>
 
@@ -1220,6 +1493,8 @@
     var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     var currentUser = null;
+    var repliesByPolemic = {}; // { polemic_id: [replies...] }
+    var activePolemicIdForReply = null;
 
     // LOADER
     var loader = document.getElementById('loader');
@@ -1238,7 +1513,7 @@
         }
     }, 4000);
 
-    // SCROLL PROGRESS
+    // SCROLL
     var scrollProgress = document.getElementById('scrollProgress');
     window.addEventListener('scroll', function() {
         var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -1282,7 +1557,7 @@
         });
     }
 
-    // HEADER SCROLL
+    // HEADER
     var masthead = document.getElementById('masthead');
     window.addEventListener('scroll', function() {
         if (window.pageYOffset > 60) masthead.classList.add('scrolled');
@@ -1328,7 +1603,6 @@
             }
             unhideAuth();
         }
-
         try {
             var sessionRes = await supabaseClient.auth.getSession();
             var session = sessionRes.data.session;
@@ -1370,18 +1644,16 @@
                 unhideAuth();
             }
         } catch (err) {
-            console.log('Oturum kontrol hatası:', err);
+            console.log('Oturum hatası:', err);
             showUyari();
             unhideAuth();
         }
+        // Kullanıcı hazır olunca liste render'ını yenile (buton durumu için)
+        if (allPolemics.length) renderList(currentFiltered());
     }
     checkLogin();
 
-    // POLEMİK LİSTESİ
-    var listEl = document.getElementById('polemikList');
-    var countEl = document.getElementById('polemikCount');
-    var allPolemics = [];
-
+    // YARDIMCILAR
     function escapeHtml(s) {
         return String(s || '')
             .replace(/&/g, '&amp;')
@@ -1398,6 +1670,22 @@
         } catch (e) { return ''; }
     }
 
+    // LİSTE
+    var listEl = document.getElementById('polemikList');
+    var countEl = document.getElementById('polemikCount');
+    var allPolemics = [];
+    var currentQuery = '';
+
+    function currentFiltered() {
+        if (!currentQuery) return allPolemics;
+        var q = currentQuery;
+        return allPolemics.filter(function(p) {
+            return (p.title || '').toLowerCase().indexOf(q) !== -1
+                || (p.summary || '').toLowerCase().indexOf(q) !== -1
+                || (p.body || '').toLowerCase().indexOf(q) !== -1;
+        });
+    }
+
     function renderList(items) {
         if (!items.length) {
             listEl.innerHTML = '' +
@@ -1411,18 +1699,21 @@
         var html = '';
         for (var i = 0; i < items.length; i++) {
             var p = items[i];
-            var authorTxt = p.author_name ? p.author_name : 'anonim';
-            var summaryTxt = p.summary || '';
+            var authorTxt = p.is_anonymous ? 'anonim' : (p.author_name || 'anonim');
+            var anonBadge = p.is_anonymous ? '<span class="polemik-anon-badge">Anonim</span>' : '';
+            var replies = repliesByPolemic[p.id] || [];
+
             html += '' +
                 '<article class="polemik-item" data-id="' + escapeHtml(p.id) + '">' +
                     '<div class="polemik-head" role="button" tabindex="0" aria-expanded="false">' +
                         '<div class="polemik-title">' +
                             '<div class="polemik-meta">' +
                                 '<span class="polemik-badge">Açık Tartışma</span>' +
+                                anonBadge +
                                 '<span class="polemik-date">' + formatDate(p.created_at) + '</span>' +
                             '</div>' +
                             '<h2>' + escapeHtml(p.title) + '</h2>' +
-                            (summaryTxt ? '<p class="polemik-summary">' + escapeHtml(summaryTxt) + '</p>' : '') +
+                            (p.summary ? '<p class="polemik-summary">' + escapeHtml(p.summary) + '</p>' : '') +
                         '</div>' +
                         '<button class="polemik-toggle" aria-label="Aç/Kapat" tabindex="-1">' +
                             '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
@@ -1435,6 +1726,7 @@
                                 '<span class="label">Kaleme Alan</span>' +
                                 '<span class="name">' + escapeHtml(authorTxt) + '</span>' +
                             '</div>' +
+                            renderKarsiBolum(p.id, replies) +
                         '</div>' +
                     '</div>' +
                 '</article>';
@@ -1442,6 +1734,48 @@
         listEl.innerHTML = html;
         countEl.textContent = items.length + ' polemik';
         bindItemToggles();
+    }
+
+    function renderKarsiBolum(polemicId, replies) {
+        var btnClass = currentUser ? 'btn-karsi' : 'btn-karsi giris-gerek';
+        var btnLabel = currentUser ? 'Karşı Görüş Yaz' : 'Karşı Görüş için Giriş Yap';
+        var btnHref = currentUser ? '#' : 'giris.html';
+
+        var replyHtml = '';
+        if (!replies || !replies.length) {
+            replyHtml = '<div class="karsi-empty">Henüz karşı görüş yok. İlk itirazı sen yaz.</div>';
+        } else {
+            var rHtml = '';
+            for (var j = 0; j < replies.length; j++) {
+                var r = replies[j];
+                var rAuthor = r.is_anonymous ? 'anonim' : (r.author_name || 'anonim');
+                var rAnon = r.is_anonymous ? '<span class="anon">Anonim</span>' : '';
+                rHtml += '' +
+                    '<div class="karsi-item">' +
+                        '<div class="karsi-meta">' +
+                            '<span class="rozet">Karşı Görüş</span>' +
+                            rAnon +
+                            '<span class="yazar">' + escapeHtml(rAuthor) + '</span>' +
+                            '<span class="tarih">' + formatDate(r.created_at) + '</span>' +
+                        '</div>' +
+                        '<h4>' + escapeHtml(r.title) + '</h4>' +
+                        '<p>' + escapeHtml(r.body) + '</p>' +
+                    '</div>';
+            }
+            replyHtml = rHtml;
+        }
+
+        return '' +
+            '<div class="karsi-bolum">' +
+                '<div class="karsi-bolum-head">' +
+                    '<h3>Karşı Görüşler <span class="sayi">' + (replies ? replies.length : 0) + '</span></h3>' +
+                    '<a href="' + btnHref + '" class="' + btnClass + '" data-polemic="' + escapeHtml(polemicId) + '">' +
+                        '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+                        btnLabel +
+                    '</a>' +
+                '</div>' +
+                '<div class="karsi-liste">' + replyHtml + '</div>' +
+            '</div>';
     }
 
     function bindItemToggles() {
@@ -1454,6 +1788,18 @@
                     e.preventDefault();
                     toggleItem.call(this);
                 }
+            });
+        }
+        // Karşı görüş butonları
+        var btns = listEl.querySelectorAll('.btn-karsi');
+        for (var k = 0; k < btns.length; k++) {
+            var b = btns[k];
+            if (b.classList.contains('giris-gerek')) continue;
+            b.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var pid = this.getAttribute('data-polemic');
+                openKarsiModal(pid);
             });
         }
     }
@@ -1483,18 +1829,38 @@
         try {
             var res = await supabaseClient
                 .from('polemics')
-                .select('id, title, summary, body, author_name, status, created_at')
+                .select('id, title, summary, body, author_name, is_anonymous, status, created_at')
                 .order('created_at', { ascending: false });
 
             if (res.error) throw res.error;
             allPolemics = res.data || [];
+
+            // Karşı görüşleri de çek
+            if (allPolemics.length) {
+                var ids = allPolemics.map(function(p) { return p.id; });
+                var repRes = await supabaseClient
+                    .from('polemic_replies')
+                    .select('id, polemic_id, title, body, author_name, is_anonymous, created_at')
+                    .in('polemic_id', ids)
+                    .order('created_at', { ascending: false });
+
+                if (!repRes.error && repRes.data) {
+                    repliesByPolemic = {};
+                    for (var i = 0; i < repRes.data.length; i++) {
+                        var r = repRes.data[i];
+                        if (!repliesByPolemic[r.polemic_id]) repliesByPolemic[r.polemic_id] = [];
+                        repliesByPolemic[r.polemic_id].push(r);
+                    }
+                }
+            }
+
             renderList(allPolemics);
         } catch (err) {
             console.log('Polemik yükleme hatası:', err);
             listEl.innerHTML = '' +
                 '<div class="polemik-empty">' +
                     '<div class="glyph">!</div>' +
-                    '<p>Polemikler yüklenemedi. Lütfen daha sonra tekrar dene.</p>' +
+                    '<p>Polemikler yüklenemedi.</p>' +
                 '</div>';
             countEl.textContent = '—';
         }
@@ -1506,19 +1872,14 @@
     var searchTimer = null;
     searchInput.addEventListener('input', function() {
         clearTimeout(searchTimer);
-        var q = this.value.trim().toLowerCase();
+        var val = this.value.trim().toLowerCase();
         searchTimer = setTimeout(function() {
-            if (!q) { renderList(allPolemics); return; }
-            var filtered = allPolemics.filter(function(p) {
-                return (p.title || '').toLowerCase().indexOf(q) !== -1
-                    || (p.summary || '').toLowerCase().indexOf(q) !== -1
-                    || (p.body || '').toLowerCase().indexOf(q) !== -1;
-            });
-            renderList(filtered);
+            currentQuery = val;
+            renderList(currentFiltered());
         }, 180);
     });
 
-    // MODAL
+    // MODAL 1 — YENİ POLEMİK
     var modal = document.getElementById('polemikModal');
     var modalFormWrap = document.getElementById('modalFormWrap');
     var modalSuccess = document.getElementById('modalSuccess');
@@ -1527,13 +1888,12 @@
     var titleInput = document.getElementById('polemikTitle');
     var summaryInput = document.getElementById('polemikSummary');
     var bodyInput = document.getElementById('polemikBody');
+    var anonInput = document.getElementById('polemikAnon');
     var summaryCounter = document.getElementById('summaryCounter');
     var charCounter = document.getElementById('charCounter');
     var submitBtn = document.getElementById('modalSubmit');
 
-    var MIN_BODY = 60;
-    var MIN_SUMMARY = 20;
-    var MAX_SUMMARY = 200;
+    var MIN_BODY = 60, MIN_SUMMARY = 20, MAX_SUMMARY = 200;
 
     function openModal() {
         modalFormWrap.style.display = 'block';
@@ -1556,19 +1916,14 @@
     modal.addEventListener('click', function(e) {
         if (e.target === modal) closeModal();
     });
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
-    });
 
     function updateCounters() {
-        // Özet
         var sLen = summaryInput.value.trim().length;
         summaryCounter.textContent = sLen + ' / ' + MAX_SUMMARY;
         summaryCounter.classList.remove('warn', 'ok', 'fail');
         if (sLen < MIN_SUMMARY) summaryCounter.classList.add(sLen === 0 ? 'fail' : 'warn');
         else summaryCounter.classList.add('ok');
 
-        // Metin
         var bLen = bodyInput.value.trim().length;
         charCounter.textContent = bLen + ' / ' + MIN_BODY;
         charCounter.classList.remove('warn', 'ok', 'fail');
@@ -1579,9 +1934,9 @@
     summaryInput.addEventListener('input', updateCounters);
     bodyInput.addEventListener('input', updateCounters);
 
-    function showError(msg) {
-        modalError.textContent = msg;
-        modalError.classList.add('show');
+    function showError(el, msg) {
+        el.textContent = msg;
+        el.classList.add('show');
     }
 
     form.addEventListener('submit', async function(e) {
@@ -1591,38 +1946,18 @@
         var title = titleInput.value.trim();
         var summary = summaryInput.value.trim();
         var body = bodyInput.value.trim();
+        var anon = anonInput.checked;
 
-        if (title.length < 3) {
-            showError('Başlık en az 3 karakter olmalı.');
-            titleInput.focus();
-            return;
-        }
-        if (summary.length < MIN_SUMMARY) {
-            showError('Özet en az ' + MIN_SUMMARY + ' karakter olmalı.');
-            summaryInput.focus();
-            return;
-        }
-        if (summary.length > MAX_SUMMARY) {
-            showError('Özet en fazla ' + MAX_SUMMARY + ' karakter olabilir.');
-            summaryInput.focus();
-            return;
-        }
-        if (body.length < MIN_BODY) {
-            showError('Polemik metni en az ' + MIN_BODY + ' karakter olmalı.');
-            bodyInput.focus();
-            return;
-        }
-        if (!currentUser) {
-            showError('Oturum bulunamadı. Lütfen tekrar giriş yap.');
-            return;
-        }
+        if (title.length < 3) { showError(modalError, 'Başlık en az 3 karakter olmalı.'); titleInput.focus(); return; }
+        if (summary.length < MIN_SUMMARY) { showError(modalError, 'Özet en az ' + MIN_SUMMARY + ' karakter olmalı.'); summaryInput.focus(); return; }
+        if (body.length < MIN_BODY) { showError(modalError, 'Polemik metni en az ' + MIN_BODY + ' karakter olmalı.'); bodyInput.focus(); return; }
+        if (!currentUser) { showError(modalError, 'Oturum bulunamadı.'); return; }
 
         submitBtn.disabled = true;
         submitBtn.querySelector('span').textContent = 'Yayınlanıyor...';
 
         try {
-            var authorName = currentUser.full_name || currentUser.username || 'anonim';
-
+            var authorName = anon ? 'anonim' : (currentUser.full_name || currentUser.username || 'anonim');
             var res = await supabaseClient
                 .from('polemics')
                 .insert({
@@ -1631,9 +1966,10 @@
                     body: body,
                     author_id: currentUser.id,
                     author_name: authorName,
+                    is_anonymous: anon,
                     status: 'open'
                 })
-                .select('id, title, summary, body, author_name, status, created_at')
+                .select('id, title, summary, body, author_name, is_anonymous, status, created_at')
                 .single();
 
             if (res.error) throw res.error;
@@ -1642,16 +1978,137 @@
             modalSuccess.style.display = 'block';
 
             allPolemics.unshift(res.data);
-            renderList(allPolemics);
+            repliesByPolemic[res.data.id] = [];
+            renderList(currentFiltered());
 
             setTimeout(closeModal, 1800);
 
         } catch (err) {
             console.log('Polemik ekleme hatası:', err);
-            showError('Polemik yayınlanamadı: ' + (err.message || 'bilinmeyen hata'));
+            showError(modalError, 'Polemik yayınlanamadı: ' + (err.message || 'bilinmeyen hata'));
         } finally {
             submitBtn.disabled = false;
             submitBtn.querySelector('span').textContent = 'Yayınla';
+        }
+    });
+
+    // MODAL 2 — KARŞI GÖRÜŞ
+    var karsiModal = document.getElementById('karsiModal');
+    var karsiFormWrap = document.getElementById('karsiFormWrap');
+    var karsiSuccess = document.getElementById('karsiSuccess');
+    var karsiError = document.getElementById('karsiError');
+    var karsiForm = document.getElementById('karsiForm');
+    var karsiTitleInput = document.getElementById('karsiTitle');
+    var karsiBodyInput = document.getElementById('karsiBody');
+    var karsiAnonInput = document.getElementById('karsiAnon');
+    var karsiCounter = document.getElementById('karsiCounter');
+    var karsiSubmit = document.getElementById('karsiSubmit');
+    var karsiModalSub = document.getElementById('karsiModalSub');
+
+    var MIN_KARSI = 100;
+
+    function openKarsiModal(polemicId) {
+        var p = allPolemics.find(function(x) { return x.id === polemicId; });
+        if (!p) return;
+        activePolemicIdForReply = polemicId;
+        karsiModalSub.textContent = '"' + p.title + '" için karşı görüşünü yaz.';
+        karsiFormWrap.style.display = 'block';
+        karsiSuccess.style.display = 'none';
+        karsiError.classList.remove('show');
+        karsiForm.reset();
+        updateKarsiCounter();
+        karsiModal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        setTimeout(function() { karsiTitleInput.focus(); }, 200);
+    }
+    function closeKarsiModal() {
+        karsiModal.classList.remove('show');
+        document.body.style.overflow = '';
+        activePolemicIdForReply = null;
+    }
+
+    document.getElementById('karsiClose').addEventListener('click', closeKarsiModal);
+    document.getElementById('karsiCancel').addEventListener('click', closeKarsiModal);
+    karsiModal.addEventListener('click', function(e) {
+        if (e.target === karsiModal) closeKarsiModal();
+    });
+
+    function updateKarsiCounter() {
+        var len = karsiBodyInput.value.trim().length;
+        karsiCounter.textContent = len + ' / ' + MIN_KARSI;
+        karsiCounter.classList.remove('warn', 'ok', 'fail');
+        if (len === 0) karsiCounter.classList.add('fail');
+        else if (len < MIN_KARSI) karsiCounter.classList.add('warn');
+        else karsiCounter.classList.add('ok');
+    }
+    karsiBodyInput.addEventListener('input', updateKarsiCounter);
+
+    karsiForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        karsiError.classList.remove('show');
+
+        var title = karsiTitleInput.value.trim();
+        var body = karsiBodyInput.value.trim();
+        var anon = karsiAnonInput.checked;
+
+        if (title.length < 3) { showError(karsiError, 'Başlık en az 3 karakter olmalı.'); karsiTitleInput.focus(); return; }
+        if (body.length < MIN_KARSI) { showError(karsiError, 'Karşı görüş en az ' + MIN_KARSI + ' karakter olmalı.'); karsiBodyInput.focus(); return; }
+        if (!currentUser) { showError(karsiError, 'Oturum bulunamadı.'); return; }
+        if (!activePolemicIdForReply) { showError(karsiError, 'Polemik bulunamadı.'); return; }
+
+        karsiSubmit.disabled = true;
+        karsiSubmit.querySelector('span').textContent = 'Yayınlanıyor...';
+
+        try {
+            var authorName = anon ? 'anonim' : (currentUser.full_name || currentUser.username || 'anonim');
+            var res = await supabaseClient
+                .from('polemic_replies')
+                .insert({
+                    polemic_id: activePolemicIdForReply,
+                    title: title,
+                    body: body,
+                    author_id: currentUser.id,
+                    author_name: authorName,
+                    is_anonymous: anon
+                })
+                .select('id, polemic_id, title, body, author_name, is_anonymous, created_at')
+                .single();
+
+            if (res.error) throw res.error;
+
+            karsiFormWrap.style.display = 'none';
+            karsiSuccess.style.display = 'block';
+
+            if (!repliesByPolemic[activePolemicIdForReply]) repliesByPolemic[activePolemicIdForReply] = [];
+            repliesByPolemic[activePolemicIdForReply].unshift(res.data);
+
+            var pid = activePolemicIdForReply;
+            renderList(currentFiltered());
+
+            // İlgili polemik açık kalsın
+            var item = listEl.querySelector('.polemik-item[data-id="' + pid + '"]');
+            if (item) {
+                item.classList.add('open');
+                var h = item.querySelector('.polemik-head');
+                if (h) h.setAttribute('aria-expanded', 'true');
+            }
+
+            setTimeout(closeKarsiModal, 1800);
+
+        } catch (err) {
+            console.log('Karşı görüş ekleme hatası:', err);
+            showError(karsiError, 'Karşı görüş yayınlanamadı: ' + (err.message || 'bilinmeyen hata'));
+        } finally {
+            karsiSubmit.disabled = false;
+            karsiSubmit.querySelector('span').textContent = 'Yayınla';
+        }
+    });
+
+    // ESC — iki modal için
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (modal.classList.contains('show')) closeModal();
+            if (karsiModal.classList.contains('show')) closeKarsiModal();
         }
     });
 
