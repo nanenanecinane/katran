@@ -518,9 +518,108 @@
         }
 
         /* ============================================================
-           10. İLETİŞİM
+           9b. POLEMİK DUYURUSU (ana sayfa şeridi)
            ============================================================ */
-        .contact {
+        .polemik-duyuru {
+            display: none;
+            margin: -1rem 0 3rem;
+            padding: 1.1rem 1.6rem;
+            background: linear-gradient(135deg, var(--karanfil-subtle), transparent 80%);
+            border: 1px solid rgba(176, 68, 85, 0.3);
+            border-left: 3px solid var(--karanfil);
+            border-radius: 14px;
+            text-decoration: none;
+            color: var(--katran);
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        .polemik-duyuru.show {
+            display: flex;
+        }
+        .polemik-duyuru:hover {
+            border-color: var(--karanfil);
+            border-left-width: 6px;
+            background: linear-gradient(135deg, var(--karanfil-subtle), transparent 60%);
+            transform: translateX(4px);
+            box-shadow: 0 12px 30px -12px var(--karanfil-glow);
+        }
+        .polemik-duyuru .etiket {
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--karanfil);
+            white-space: nowrap;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .polemik-duyuru .etiket::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--karanfil);
+            box-shadow: 0 0 0 0 var(--karanfil-glow);
+            animation: duyuruNokta 2s ease-in-out infinite;
+        }
+        @keyframes duyuruNokta {
+            0%, 100% { box-shadow: 0 0 0 0 var(--karanfil-glow); }
+            50%      { box-shadow: 0 0 0 6px transparent; }
+        }
+        .polemik-duyuru .baslik {
+            flex: 1;
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            font-weight: 700;
+            font-style: italic;
+            color: var(--katran);
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transition: color 0.3s;
+        }
+        .polemik-duyuru:hover .baslik {
+            color: var(--karanfil);
+        }
+        .polemik-duyuru .ok {
+            font-size: 1rem;
+            color: var(--karanfil);
+            flex-shrink: 0;
+            transition: transform 0.25s;
+        }
+        .polemik-duyuru:hover .ok {
+            transform: translateX(4px);
+        }
+
+        @media (max-width: 640px) {
+            .polemik-duyuru {
+                flex-wrap: wrap;
+                gap: 0.6rem;
+                padding: 1rem 1.2rem;
+                margin: -1rem 0 2rem;
+            }
+            .polemik-duyuru .baslik {
+                white-space: normal;
+                font-size: 0.95rem;
+                flex-basis: 100%;
+                order: 2;
+            }
+            .polemik-duyuru .ok {
+                order: 1;
+                margin-left: auto;
+            }
+        }
+
+        /* ============================================================
+           10. İLETİŞİM
+           =================================================
+          .contact {
             padding: 1rem 0 3rem;
             text-align: center;
         }
@@ -623,7 +722,7 @@
             justify-content: center;
             animation: bugFloat 2.5s ease-in-out infinite;
         }
-                .loader-bug img,
+              .loader-bug img,
         .loader-bug svg {
             width: 100%;
             height: 100%;
@@ -816,6 +915,10 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                     Yazılar
                 </a>
+                <a href="polemik.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+                    Polemik
+                </a>
                 <a href="akis.html">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                     Akış
@@ -909,6 +1012,13 @@
                 </h1>
                 <p class="desc">Edebiyat, sanat ve özgür düşüncenin buluşma noktası.</p>
             </section>
+
+            <!-- Polemik Duyurusu (en son polemik varsa görünür) -->
+            <a href="polemik.html" class="polemik-duyuru" id="polemikDuyuru">
+                <span class="etiket">Polemik</span>
+                <span class="baslik" id="polemikDuyuruBaslik">—</span>
+                <span class="ok">→</span>
+            </a>
 
             <!-- Son Sayı -->
             <section class="card">
@@ -1020,7 +1130,7 @@
             <div class="footer-particle" aria-hidden="true"></div>
             <div class="footer-particle" aria-hidden="true"></div>
             <div class="footer-particle" aria-hidden="true"></div>
-            <div class="footer-particle" aria-hidden="true"></div>
+                        <div class="footer-particle" aria-hidden="true"></div>
 
             <div class="footer-content">
                 <div class="footer-brand"><span class="red">Katran</span> Dergi</div>
@@ -1220,7 +1330,34 @@
         checkLogin();
 
         // =========================================================
-        // 6. CONSOLE ART
+        // 6. POLEMİK DUYURUSU (en son polemik)
+        // =========================================================
+        (async function loadPolemikDuyuru() {
+            try {
+                var res = await supabaseClient
+                    .from('polemics')
+                    .select('title, slug, created_at')
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+
+                if (res.error) throw res.error;
+                if (!res.data || !res.data.length) return;
+
+                var p = res.data[0];
+                var baslik = document.getElementById('polemikDuyuruBaslik');
+                var duyuru = document.getElementById('polemikDuyuru');
+                if (baslik && duyuru) {
+                    baslik.textContent = '"' + p.title + '"';
+                    duyuru.classList.add('show');
+                }
+            } catch (err) {
+                // Sessizce geç — duyuru yoksa görünmez
+                console.log('Polemik duyuru yüklenemedi:', err);
+            }
+        })();
+
+        // =========================================================
+        // 7. CONSOLE ART
         // =========================================================
         console.log('%c✦ KATRAN DERGİ ✦', 'font-size: 28px; font-weight: 900; color: #b04455;');
         console.log('%cKırmızı karanfil ektik, katranın bağrına.', 'font-size: 16px; font-style: italic; color: #8a6068;');
@@ -1229,3 +1366,4 @@
     </script>
 </body>
 </html>
+    
