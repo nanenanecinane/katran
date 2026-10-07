@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <meta charset="utf-8"/>
+    <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('katran-theme') || localStorage.getItem('theme') || 'katran';
+        if (t === 'dark') t = 'katran';
+        if (t !== 'light' && t !== 'katran') t = 'katran';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'katran');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Polemik — Katran Dergi</title>
+
+    <meta name="description" content="Katran Dergi Polemik — Farklı fikirlerin açıkça, sertçe ve dürüstçe konuşulduğu alan.">
+    <meta name="author" content="Katran Dergi">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="site.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --katran: #f8ece8;
+            --karanfil: #b04455;
+            --karanfil-dark: #8b2e3e;
+            --karanfil-glow: rgba(176, 68, 85, 0.3);
+            --karanfil-subtle: rgba(176, 68, 85, 0.08);
+            --kagit: #0d0405;
+            --kagit-dark: #17090c;
+            --toz: #8a6068;
+            --altin: #e8b860;
+            --muted: #c8a0a8;
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Inter', sans-serif;
+            --transition-smooth: 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            --shadow-soft: 0 20px 60px -20px rgba(139, 46, 62, 0.3);
+            --shadow-strong: 0 30px 80px -20px rgba(139, 46, 62, 0.4);
+            --border-radius-card: 20px;
+            --border-radius-btn: 60px;
+        }
+
+        [data-theme="light"] {
+            --katran: #0a0808;
+            --kagit: #f4efe8;
+            --kagit-dark: #e6ded5;
+            --toz: #a89e94;
+            --muted: #7a7068;
+            --shadow-soft: 0 20px 60px -20px rgba(0, 0, 0, 0.08);
+            --shadow-strong: 0 30px 80px -20px rgba(0, 0, 0, 0.15);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--kagit);
+            color: var(--katran);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            transition: background 0.6s ease, color 0.6s ease;
+        }
+
+        ::selection { background: var(--karanfil); color: var(--kagit); }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--kagit); border-radius: 20px; }
+        ::-webkit-scrollbar-thumb { background: var(--karanfil); border-radius: 20px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--karanfil-dark); }
+
+        .scroll-progress {
+            position: fixed;
+            top: 0; left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--karanfil), var(--karanfil-dark));
+            z-index: 9997;
+            transition: width 0.1s ease;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 0 20px var(--karanfil-glow);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--karanfil);
+            background: var(--kagit);
+            color: var(--katran);
+            font-size: 1.4rem;
+            cursor: pointer;
+            z-index: 999;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: var(--shadow-strong);
+        }
+        .theme-toggle svg {
+            width: 24px; height: 24px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .site-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        .bg-ambient {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .bg-ambient .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: orbDrift 20s ease-in-out infinite alternate;
+        }
+        .bg-ambient .orb:nth-child(1) {
+            width: 500px; height: 500px;
+            top: -10%; left: -5%;
+            background: rgba(176, 68, 85, 0.06);
+            animation-duration: 25s;
+        }
+        .bg-ambient .orb:nth-child(2) {
+            width: 400px; height: 400px;
+            bottom: -10%; right: -5%;
+            background: rgba(176, 68, 85, 0.05);
+            animation-duration: 30s;
+            animation-delay: 5s;
+        }
+        @keyframes orbDrift {
+            0%   { transform: translate(0, 0) scale(1); }
+            33%  { transform: translate(60px, -40px) scale(1.1); }
+            66%  { transform: translate(-30px, 50px) scale(0.9); }
+            100% { transform: translate(40px, -20px) scale(1.05); }
+        }
+
+        /* ============================================================
+           POLEMİK HERO
+           ============================================================ */
+        .polemik-hero {
+            text-align: center;
+            padding: 2rem 0 3rem;
+        }
+        .polemik-hero .ust-etiket {
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--karanfil);
+            display: block;
+            margin-bottom: 1rem;
+        }
+        .polemik-hero h1 {
+            font-family: var(--font-serif);
+            font-weight: 900;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            color: var(--katran);
+            margin-bottom: 1.2rem;
+        }
+        .polemik-hero h1 .accent {
+            font-style: italic;
+            font-weight: 400;
+            color: var(--karanfil);
+        }
+        .polemik-hero .desc {
+            font-size: 1.02rem;
+            color: var(--muted);
+            max-width: 560px;
+            margin: 0 auto;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+        .polemik-hero .rule {
+            width: 60px;
+            height: 2px;
+            background: var(--karanfil);
+            margin: 1.8rem auto 0;
+            border-radius: 2px;
+        }
+
+        /* ============================================================
+           GİRİŞ UYARISI
+           ============================================================ */
+        .polemik-uyari {
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.4rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--karanfil-subtle), transparent 80%);
+            border: 1px solid rgba(176, 68, 85, 0.3);
+            border-left: 3px solid var(--karanfil);
+            border-radius: 14px;
+            text-decoration: none;
+            color: var(--katran);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        .polemik-uyari.show {
+            display: flex;
+        }
+        .polemik-uyari:hover {
+            border-color: var(--karanfil);
+            border-left-width: 6px;
+            background: linear-gradient(135deg, var(--karanfil-subtle), transparent 60%);
+            transform: translateX(4px);
+            box-shadow: 0 12px 30px -12px var(--karanfil-glow);
+        }
+        .polemik-uyari .ikon {
+            flex-shrink: 0;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: var(--karanfil-subtle);
+            border: 1px solid var(--karanfil);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--karanfil);
+        }
+        .polemik-uyari .ikon svg {
+            width: 16px; height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .polemik-uyari .metin {
+            flex: 1;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            color: var(--katran);
+        }
+        .polemik-uyari .metin strong {
+            color: var(--karanfil);
+            font-weight: 700;
+        }
+        .polemik-uyari .ok {
+            font-size: 1.1rem;
+            color: var(--karanfil);
+            flex-shrink: 0;
+            transition: transform 0.25s;
+        }
+        .polemik-uyari:hover .ok {
+            transform: translateX(4px);
+        }
+
+        @media (max-width: 640px) {
+            .polemik-uyari {
+                flex-wrap: wrap;
+                gap: 0.7rem;
+                padding: 0.9rem 1rem;
+            }
+            .polemik-uyari .metin { font-size: 0.85rem; }
+            .polemik-uyari .ok { margin-left: auto; }
+        }
+
+        /* ============================================================
+           ARAÇ ÇUBUĞU
+           ============================================================ */
+        .polemik-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+        .polemik-search {
+            flex: 1;
+            min-width: 220px;
+            position: relative;
+        }
+        .polemik-search input {
+            width: 100%;
+            padding: 0.85rem 1.2rem 0.85rem 2.8rem;
+            background: var(--kagit-dark);
+            border: 1px solid rgba(176, 68, 85, 0.25);
+            border-radius: 60px;
+            color: var(--katran);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+        }
+        [data-theme="light"] .polemik-search input {
+            border-color: rgba(0,0,0,0.08);
+        }
+        .polemik-search input:focus {
+            outline: none;
+            border-color: var(--karanfil);
+            box-shadow: 0 0 0 4px var(--karanfil-subtle);
+        }
+        .polemik-search svg {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px; height: 18px;
+            stroke: var(--muted);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+        .polemik-count {
+            font-size: 0.78rem;
+            font-style: italic;
+            color: var(--muted);
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        /* ============================================================
+           POLEMİK LİSTESİ
+           ============================================================ */
+        .polemik-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            padding-bottom: 5rem;
+        }
+
+        .polemik-item {
+            background: var(--kagit);
+            border: 1px solid rgba(176, 68, 85, 0.25);
+            border-radius: var(--border-radius-card);
+            box-shadow: var(--shadow-soft);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="light"] .polemik-item {
+            border-color: rgba(0,0,0,0.05);
+        }
+        .polemik-item::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--karanfil), var(--karanfil-dark));
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .polemik-item:hover::before,
+        .polemik-item.open::before {
+            transform: scaleY(1);
+        }
+        .polemik-item:hover {
+            box-shadow: var(--shadow-strong);
+            border-color: rgba(176, 68, 85, 0.4);
+        }
+
+        .polemik-head {
+            padding: 2rem 2.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.2rem;
+            user-select: none;
+        }
+        .polemik-head:hover .polemik-title h2 {
+            color: var(--karanfil);
+        }
+
+        .polemik-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .polemik-badge {
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            padding: 0.28rem 0.7rem;
+            border-radius: 60px;
+            border: 1px solid var(--karanfil);
+            color: var(--karanfil);
+            background: var(--karanfil-subtle);
+        }
+        .polemik-date {
+            font-size: 0.72rem;
+            font-style: italic;
+            color: var(--muted);
+            letter-spacing: 0.04em;
+        }
+
+        .polemik-title {
+            flex: 1;
+            min-width: 0;
+        }
+        .polemik-title h2 {
+            font-family: var(--font-serif);
+            font-weight: 900;
+            font-size: clamp(1.25rem, 2.5vw, 1.7rem);
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+            color: var(--katran);
+            margin-bottom: 0.6rem;
+            transition: color 0.3s;
+        }
+        .polemik-summary {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--muted);
+            font-weight: 300;
+            font-style: italic;
+            border-left: 2px solid rgba(176, 68, 85, 0.35);
+            padding-left: 0.9rem;
+            margin-top: 0.3rem;
+        }
+        .polemik-item.open .polemik-summary {
+            display: none;
+        }
+
+        .polemik-toggle {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(176, 68, 85, 0.3);
+            background: transparent;
+            color: var(--karanfil);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+            margin-top: 0.2rem;
+        }
+        .polemik-toggle svg {
+            width: 16px; height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .polemik-item.open .polemik-toggle {
+            background: var(--karanfil);
+            border-color: var(--karanfil);
+            color: #fff;
+        }
+        .polemik-item.open .polemik-toggle svg {
+            transform: rotate(45deg);
+        }
+
+        .polemik-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .polemik-item.open .polemik-body {
+            max-height: 4000px;
+        }
+        .polemik-body-inner {
+            padding: 0 2.2rem 2.2rem;
+            border-top: 1px dashed rgba(176, 68, 85, 0.25);
+            margin: 0 2.2rem;
+            padding-left: 0;
+            padding-right: 0;
+            padding-top: 1.8rem;
+        }
+        .polemik-text {
+            font-family: var(--font-serif);
+            font-size: 1.08rem;
+            line-height: 1.9;
+            color: var(--katran);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .polemik-text::first-letter {
+            font-size: 3.2rem;
+            font-weight: 900;
+            font-style: italic;
+            color: var(--karanfil);
+            float: left;
+            line-height: 0.85;
+            margin: 0.15rem 0.6rem 0 0;
+        }
+        .polemik-author-line {
+            margin-top: 1.8rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(176, 68, 85, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .polemik-author-line .label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--toz);
+        }
+        .polemik-author-line .name {
+            font-family: var(--font-serif);
+            font-size: 1rem;
+            font-style: italic;
+            color: var(--karanfil);
+            font-weight: 700;
+        }
+
+        .polemik-empty {
+            text-align: center;
+            padding: 5rem 1rem;
+            color: var(--muted);
+        }
+        .polemik-empty .glyph {
+            font-family: var(--font-serif);
+            font-size: 5rem;
+            font-style: italic;
+            color: var(--karanfil);
+            opacity: 0.35;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+        .polemik-empty p {
+            font-style: italic;
+            font-size: 1rem;
+        }
+
+        /* ============================================================
+           FAB
+           ============================================================ */
+        .fab-polemik {
+            position: fixed;
+            bottom: 30px;
+            right: 100px;
+            padding: 1rem 1.8rem;
+            background: linear-gradient(135deg, var(--karanfil), var(--karanfil-dark));
+            color: #fff;
+            border: none;
+            border-radius: 60px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            z-index: 998;
+            display: none;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow: 0 15px 40px -10px var(--karanfil-glow);
+            transition: var(--transition-smooth);
+        }
+        .fab-polemik.show { display: inline-flex; }
+        .fab-polemik:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 20px 50px -10px rgba(176, 68, 85, 0.5);
+        }
+        .fab-polemik svg {
+            width: 18px; height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+         .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(13, 4, 5, 0.75);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 9998;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+        .modal {
+            background: var(--kagit);
+            border: 1px solid rgba(176, 68, 85, 0.3);
+            border-radius: var(--border-radius-card);
+            width: 100%;
+            max-width: 720px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2.5rem;
+            position: relative;
+            box-shadow: var(--shadow-strong);
+            transform: translateY(20px) scale(0.98);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .modal-overlay.show .modal {
+            transform: translateY(0) scale(1);
+        }
+        .modal::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--karanfil), var(--karanfil-dark));
+        }
+        .modal-close {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(176, 68, 85, 0.3);
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+        }
+        .modal-close:hover {
+            background: var(--karanfil);
+            color: #fff;
+            border-color: var(--karanfil);
+            transform: rotate(90deg);
+        }
+        .modal-close svg {
+            width: 18px; height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        .modal-title {
+            font-family: var(--font-serif);
+            font-weight: 900;
+            font-size: 1.8rem;
+            letter-spacing: -0.02em;
+            color: var(--katran);
+            margin-bottom: 0.4rem;
+        }
+        .modal-title .accent {
+            font-style: italic;
+            font-weight: 400;
+            color: var(--karanfil);
+        }
+        .modal-sub {
+            font-size: 0.85rem;
+            font-style: italic;
+            color: var(--muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .field { margin-bottom: 1.5rem; }
+        .field label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.6rem;
+        }
+        .field input,
+        .field textarea {
+            width: 100%;
+            padding: 0.95rem 1.1rem;
+            background: var(--kagit-dark);
+            border: 1px solid rgba(176, 68, 85, 0.25);
+            border-radius: 12px;
+            color: var(--katran);
+            font-family: inherit;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            transition: var(--transition-smooth);
+            resize: vertical;
+        }
+        [data-theme="light"] .field input,
+        [data-theme="light"] .field textarea {
+            border-color: rgba(0,0,0,0.08);
+        }
+        .field input:focus,
+        .field textarea:focus {
+            outline: none;
+            border-color: var(--karanfil);
+            box-shadow: 0 0 0 4px var(--karanfil-subtle);
+        }
+        .field textarea {
+            min-height: 220px;
+            font-family: var(--font-serif);
+            font-size: 1.02rem;
+            line-height: 1.8;
+        }
+        .field textarea.summary {
+            min-height: 90px;
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .field-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+            font-size: 0.72rem;
+            color: var(--toz);
+            letter-spacing: 0.04em;
+        }
+        .char-counter {
+            font-variant-numeric: tabular-nums;
+            transition: color 0.2s;
+        }
+        .char-counter.warn { color: var(--altin); }
+        .char-counter.ok   { color: var(--karanfil); }
+        .char-counter.fail { color: #e05555; }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px dashed rgba(176, 68, 85, 0.25);
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.9rem 2rem;
+            background: var(--katran);
+            color: var(--kagit);
+            border: 2px solid var(--katran);
+            border-radius: var(--border-radius-btn);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            letter-spacing: 0.02em;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--karanfil), var(--karanfil-dark));
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+        .btn:hover::before { opacity: 1; }
+        .btn:hover {
+            border-color: var(--karanfil);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px -12px rgba(176, 68, 85, 0.3);
+        }
+        .btn span,
+        .btn .arrow { position: relative; z-index: 1; }
+        .btn .arrow {
+            margin-left: auto;
+            font-size: 1.1rem;
+            transition: transform 0.25s;
+        }
+        .btn:hover .arrow { transform: translateX(4px); }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--muted);
+            border-color: var(--muted);
+        }
+        .btn-secondary:hover {
+            border-color: var(--katran);
+            color: var(--katran);
+        }
+
+        .modal-error {
+            background: rgba(224, 85, 85, 0.1);
+            border: 1px solid rgba(224, 85, 85, 0.4);
+            color: #e05555;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 1.2rem;
+            display: none;
+        }
+        .modal-error.show { display: block; }
+
+        .modal-success {
+            text-align: center;
+            padding: 2rem 0 1rem;
+        }
+        .modal-success .check {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: var(--karanfil-subtle);
+            border: 2px solid var(--karanfil);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.2rem;
+            color: var(--karanfil);
+        }
+        .modal-success .check svg {
+            width: 30px; height: 30px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .modal-success h3 {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--katran);
+            margin-bottom: 0.5rem;
+        }
+        .modal-success p {
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        /* ============================================================
+           LOADER
+           ============================================================ */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--kagit);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        #loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .loader-bug {
+            width: 140px; height: 140px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bugFloat 2.5s ease-in-out infinite;
+        }
+        .loader-bug img,
+        .loader-bug svg {
+            width: 100%; height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px rgba(176, 68, 85, 0.4));
+        }
+        .loader-bug::before {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(176, 68, 85, 0.25) 0%, transparent 70%);
+            animation: bugGlow 2s ease-in-out infinite;
+        }
+        @keyframes bugFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25%      { transform: translateY(-8px) rotate(-2deg); }
+            75%      { transform: translateY(-8px) rotate(2deg); }
+        }
+        @keyframes bugGlow {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50%      { transform: scale(1.15); opacity: 0.9; }
+        }
+        .loader-title {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--katran);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .loader-title .red {
+            color: var(--karanfil);
+            text-shadow: 0 0 20px rgba(176, 68, 85, 0.5);
+        }
+        .loader-sub {
+            color: var(--muted);
+            font-size: 0.85rem;
+            font-style: italic;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+        }
+        .loader-bar {
+            width: 120px;
+            height: 2px;
+            background: var(--kagit-dark);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .loader-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--karanfil), var(--karanfil-dark));
+            border-radius: 10px;
+            animation: progressFill 0.7s ease-in-out forwards;
+        }
+        @keyframes progressFill {
+            0%   { width: 0%; }
+            30%  { width: 30%; }
+            60%  { width: 65%; }
+            100% { width: 100%; }
+        }
+        .loader-bug-fallback {
+            font-size: 5rem;
+            color: var(--karanfil);
+            display: none;
+        }
+        .loader-bug.no-svg img,
+        .loader-bug.no-svg svg { display: none; }
+        .loader-bug.no-svg .loader-bug-fallback { display: block; }
+
+        @media (max-width: 640px) {
+            .site-wrapper { padding: 0 1rem; }
+            .polemik-hero h1 { font-size: clamp(2.2rem, 12vw, 3.2rem); }
+            .polemik-head { padding: 1.4rem 1.4rem; gap: 0.8rem; }
+            .polemik-body-inner {
+                margin: 0 1.4rem;
+                padding-top: 1.4rem;
+                padding-bottom: 1.4rem;
+            }
+            .polemik-text { font-size: 1rem; }
+            .polemik-text::first-letter {
+                font-size: 2.4rem;
+                margin-right: 0.4rem;
+            }
+            .modal { padding: 1.6rem; }
+            .modal-title { font-size: 1.4rem; }
+            .fab-polemik {
+                right: 80px;
+                bottom: 20px;
+                padding: 0.9rem;
+            }
+            .fab-polemik span { display: none; }
+            .theme-toggle {
+                bottom: 20px; right: 20px;
+                width: 44px; height: 44px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="masthead" id="masthead" role="banner">
+    <a href="index.html" class="brand" aria-label="Katran Dergi Ana Sayfa">
+        <span class="brand-name"><span class="red">KATRAN</span> DERGİ</span>
+        <span class="brand-tagline">edebiyat · sanat · düşünce</span>
+    </a>
+    <nav class="nav-links" role="navigation" aria-label="Ana navigasyon">
+        <a href="index.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Ana Sayfa
+        </a>
+        <a href="yazilar.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Yazılar
+        </a>
+        <a href="polemik.html" aria-current="page">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+            Polemik
+        </a>
+        <a href="akis.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Akış
+        </a>
+        <a href="kolektif.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Kolektif
+        </a>
+        <a href="hakkinda.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            Hakkında
+        </a>
+        <span class="auth-container" id="authContainer">
+            <a href="giris.html" id="authLink" class="avatar-login-btn">
+                <span id="authText">Giriş Yap</span>
+            </a>
+        </span>
+    </nav>
+</header>
+
+<button class="theme-toggle" id="themeToggle" aria-label="Tema değiştir">
+    <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/>
+        <line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>
+</button>
+
+<div class="bg-ambient" aria-hidden="true">
+    <div class="orb"></div>
+    <div class="orb"></div>
+</div>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<div id="loader">
+    <div class="loader-bug" id="loaderBug">
+        <img src="gergedan.svg" alt="" onerror="this.parentElement.classList.add('no-svg');">
+        <div class="loader-bug-fallback">🪲</div>
+    </div>
+    <div class="loader-title"><span class="red">KATRAN</span> DERGİ</div>
+    <div class="loader-sub">Kırmızı karanfil ektik, katranın bağrına</div>
+    <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+    </div>
+</div>
+
+<div class="site-wrapper" id="siteWrapper">
+
+    <main role="main">
+
+        <section class="polemik-hero">
+            <span class="ust-etiket">Katran Dergi</span>
+            <h1><span class="accent">Polemik</span></h1>
+            <p class="desc">
+                Farklı fikirlerin açıkça, sertçe ve dürüstçe konuşulduğu alan.
+                Burada tezler savunulur, karşı çıkılır, tartışılır.
+            </p>
+            <div class="rule"></div>
+        </section>
+
+        <!-- Giriş uyarısı (sadece giriş yapmamış kullanıcıya görünür) -->
+        <a href="giris.html" class="polemik-uyari" id="polemikUyari">
+            <span class="ikon">
+                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <span class="metin">
+                <strong>Polemiğe katılmak için giriş yap.</strong>
+                Kendi tezini ortaya atmak, tartışmaya dahil olmak için hesabına giriş yapman gerekiyor.
+            </span>
+            <span class="ok">→</span>
+        </a>
+
+        <div class="polemik-toolbar">
+            <div class="polemik-search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="polemikSearch" placeholder="Polemiklerde ara..." autocomplete="off">
+            </div>
+            <span class="polemik-count" id="polemikCount">yükleniyor...</span>
+        </div>
+
+        <section class="polemik-list" id="polemikList">
+            <div class="polemik-empty">
+                <div class="glyph">…</div>
+                <p>Polemikler yükleniyor.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+        <div class="footer-particle" aria-hidden="true"></div>
+        <div class="footer-particle" aria-hidden="true"></div>
+        <div class="footer-particle" aria-hidden="true"></div>
+        <div class="footer-particle" aria-hidden="true"></div>
+        <div class="footer-particle" aria-hidden="true"></div>
+        <div class="footer-particle" aria-hidden="true"></div>
+        <div class="footer-particle" aria-hidden="true"></div>
+        <div class="footer-particle" aria-hidden="true"></div>
+
+        <div class="footer-content">
+            <div class="footer-brand"><span class="red">Katran</span> Dergi</div>
+            <div class="footer-divider" aria-hidden="true"></div>
+            <p>&copy; 2025 — Kırmızı karanfil ektik, katranın bağrına.</p>
+        </div>
+    </footer>
+
+</div>
+
+<button class="fab-polemik" id="fabPolemik" aria-label="Yeni polemik ekle">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <span>Yeni Polemik</span>
+</button>
+
+<div class="modal-overlay" id="polemikModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+        <button class="modal-close" id="modalClose" aria-label="Kapat">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+
+        <div id="modalFormWrap">
+                        <h2 class="modal-title" id="modalTitle">Yeni <span class="accent">Polemik</span></h2>
+                      <p class="modal-sub">Bir tez ortaya at. Özet herkes görür, metin kart açılınca okunur.</p>
+
+            <div class="modal-error" id="modalError"></div>
+
+            <form id="polemikForm" novalidate>
+                <div class="field">
+                    <label for="polemikTitle">Başlık</label>
+                    <input type="text" id="polemikTitle" maxlength="200" required placeholder="Polemiğin başlığı...">
+                </div>
+
+                <div class="field">
+                    <label for="polemikSummary">Özet</label>
+                    <textarea id="polemikSummary" class="summary" maxlength="200" required placeholder="Polemiği tek cümlede özetle. Herkes bu özeti görecek."></textarea>
+                    <div class="field-meta">
+                        <span>20 – 200 karakter</span>
+                        <span class="char-counter fail" id="summaryCounter">0 / 200</span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="polemikBody">Polemik Metni</label>
+                    <textarea id="polemikBody" required placeholder="Tezini buraya yaz..."></textarea>
+                    <div class="field-meta">
+                        <span>En az 60 karakter</span>
+                        <span class="char-counter fail" id="charCounter">0 / 60</span>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="modalCancel">
+                        <span>Vazgeç</span>
+                    </button>
+                    <button type="submit" class="btn" id="modalSubmit">
+                        <span>Yayınla</span>
+                        <span class="arrow">→</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-success" id="modalSuccess" style="display:none;">
+            <div class="check">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h3>Polemik yayınlandı</h3>
+            <p>Birazdan listede görünecek.</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="avatares.js"></script>
+
+<script>
+(function() {
+    'use strict';
+
+    var SUPABASE_URL = 'https://bdxvgtxregsonbvhvdav.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkeHZndHhyZWdzb25idmh2ZGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0MzM4ODcsImV4cCI6MjEwNTAwOTg4N30.7gQGqcvDzTKpQyjnRkmcCrwPny3m5pfUOy4BWk7O0CQ';
+    var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    var currentUser = null;
+
+    // LOADER
+    var loader = document.getElementById('loader');
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            if (loader) {
+                loader.classList.add('hidden');
+                setTimeout(function() { if (loader.parentNode) loader.style.display = 'none'; }, 800);
+            }
+        }, 700);
+    });
+    setTimeout(function() {
+        if (loader && !loader.classList.contains('hidden')) {
+            loader.classList.add('hidden');
+            setTimeout(function() { if (loader.parentNode) loader.style.display = 'none'; }, 800);
+        }
+    }, 4000);
+
+    // SCROLL PROGRESS
+    var scrollProgress = document.getElementById('scrollProgress');
+    window.addEventListener('scroll', function() {
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        scrollProgress.style.width = progress + '%';
+    }, { passive: true });
+
+    // THEME
+    var MOON_SVG = '<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+    var SUN_SVG = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+
+    function readTheme() {
+        try {
+            var t = localStorage.getItem('katran-theme') || localStorage.getItem('theme') || 'katran';
+            if (t === 'dark') t = 'katran';
+            return (t === 'light') ? 'light' : 'katran';
+        } catch (e) { return 'katran'; }
+    }
+    function writeTheme(v) {
+        try {
+            localStorage.setItem('katran-theme', v);
+            localStorage.setItem('theme', v);
+        } catch (e) {}
+    }
+    var themeToggle = document.getElementById('themeToggle');
+    var html = document.documentElement;
+    if (themeToggle) {
+        themeToggle.innerHTML = (readTheme() === 'light') ? SUN_SVG : MOON_SVG;
+        themeToggle.addEventListener('click', function() {
+            var isKatran = html.getAttribute('data-theme') !== 'light';
+            if (isKatran) {
+                html.setAttribute('data-theme', 'light');
+                writeTheme('light');
+                this.innerHTML = SUN_SVG;
+            } else {
+                html.setAttribute('data-theme', 'katran');
+                writeTheme('katran');
+                this.innerHTML = MOON_SVG;
+            }
+        });
+    }
+
+    // HEADER SCROLL
+    var masthead = document.getElementById('masthead');
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 60) masthead.classList.add('scrolled');
+        else masthead.classList.remove('scrolled');
+    }, { passive: true });
+
+    // AUTH
+    function readAuthCache() {
+        try {
+            var p = JSON.parse(localStorage.getItem('katran-auth-cache') || 'null');
+            if (!p || (!p.full_name && !p.username)) return null;
+            return p;
+        } catch (e) { return null; }
+    }
+    function writeAuthCache(profile) {
+        try {
+            localStorage.setItem('katran-auth-cache', JSON.stringify({
+                full_name: profile.full_name || '',
+                username: profile.username || '',
+                avatar: profile.avatar || 'harf'
+            }));
+        } catch (e) {}
+    }
+    function unhideAuth() {
+        var box = document.getElementById('authContainer');
+        if (box) box.classList.add('auth-ready');
+    }
+    function showFab() {
+        var fab = document.getElementById('fabPolemik');
+        if (fab) fab.classList.add('show');
+    }
+    function showUyari() {
+        var u = document.getElementById('polemikUyari');
+        if (u) u.classList.add('show');
+    }
+
+    async function checkLogin() {
+        var cached = readAuthCache();
+        if (cached) {
+            var authLinkEl = document.getElementById('authLink');
+            if (authLinkEl && window.renderAvatar) {
+                authLinkEl.outerHTML = '<a href="profil.html" id="authLink" title="' + (cached.full_name || '') + '">' + window.renderAvatar(cached, 40) + '</a>';
+            }
+            unhideAuth();
+        }
+
+        try {
+            var sessionRes = await supabaseClient.auth.getSession();
+            var session = sessionRes.data.session;
+
+            if (session) {
+                var profileRes = await supabaseClient
+                    .from('profiles')
+                    .select('full_name, username, avatar, avatar_url, status')
+                    .eq('id', session.user.id)
+                    .single();
+
+                var profile = profileRes.data;
+                var authLink = document.getElementById('authLink');
+
+                if (profile && profile.status === 'approved') {
+                    currentUser = {
+                        id: session.user.id,
+                        full_name: profile.full_name || '',
+                        username: profile.username || ''
+                    };
+                    writeAuthCache(profile);
+                    showFab();
+
+                    var tryRender = function() {
+                        if (window.renderAvatar) {
+                            authLink.outerHTML = '<a href="profil.html" id="authLink" title="' + (profile.full_name || '') + '">' + window.renderAvatar(profile, 40) + '</a>';
+                        } else {
+                            setTimeout(tryRender, 50);
+                        }
+                    };
+                    tryRender();
+                } else {
+                    authLink.href = 'giris.html';
+                    showUyari();
+                }
+                unhideAuth();
+            } else {
+                showUyari();
+                unhideAuth();
+            }
+        } catch (err) {
+            console.log('Oturum kontrol hatası:', err);
+            showUyari();
+            unhideAuth();
+        }
+    }
+    checkLogin();
+
+    // POLEMİK LİSTESİ
+    var listEl = document.getElementById('polemikList');
+    var countEl = document.getElementById('polemikCount');
+    var allPolemics = [];
+
+    function escapeHtml(s) {
+        return String(s || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+    function formatDate(iso) {
+        try {
+            var d = new Date(iso);
+            var months = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+            return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+        } catch (e) { return ''; }
+    }
+
+    function renderList(items) {
+        if (!items.length) {
+            listEl.innerHTML = '' +
+                '<div class="polemik-empty">' +
+                    '<div class="glyph">∴</div>' +
+                    '<p>Henüz polemik yok. İlk tezi sen ortaya at.</p>' +
+                '</div>';
+            countEl.textContent = '0 polemik';
+            return;
+        }
+        var html = '';
+        for (var i = 0; i < items.length; i++) {
+            var p = items[i];
+            var authorTxt = p.author_name ? p.author_name : 'anonim';
+            var summaryTxt = p.summary || '';
+            html += '' +
+                '<article class="polemik-item" data-id="' + escapeHtml(p.id) + '">' +
+                    '<div class="polemik-head" role="button" tabindex="0" aria-expanded="false">' +
+                        '<div class="polemik-title">' +
+                            '<div class="polemik-meta">' +
+                                '<span class="polemik-badge">Açık Tartışma</span>' +
+                                '<span class="polemik-date">' + formatDate(p.created_at) + '</span>' +
+                            '</div>' +
+                            '<h2>' + escapeHtml(p.title) + '</h2>' +
+                            (summaryTxt ? '<p class="polemik-summary">' + escapeHtml(summaryTxt) + '</p>' : '') +
+                        '</div>' +
+                        '<button class="polemik-toggle" aria-label="Aç/Kapat" tabindex="-1">' +
+                            '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+                        '</button>' +
+                    '</div>' +
+                    '<div class="polemik-body">' +
+                        '<div class="polemik-body-inner">' +
+                            '<div class="polemik-text">' + escapeHtml(p.body) + '</div>' +
+                            '<div class="polemik-author-line">' +
+                                '<span class="label">Kaleme Alan</span>' +
+                                '<span class="name">' + escapeHtml(authorTxt) + '</span>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</article>';
+        }
+        listEl.innerHTML = html;
+        countEl.textContent = items.length + ' polemik';
+        bindItemToggles();
+    }
+
+    function bindItemToggles() {
+        var heads = listEl.querySelectorAll('.polemik-head');
+        for (var i = 0; i < heads.length; i++) {
+            var head = heads[i];
+            head.addEventListener('click', toggleItem);
+            head.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleItem.call(this);
+                }
+            });
+        }
+    }
+
+    function toggleItem() {
+        var item = this.closest('.polemik-item');
+        if (!item) return;
+        var isOpen = item.classList.contains('open');
+        var openItems = listEl.querySelectorAll('.polemik-item.open');
+        for (var i = 0; i < openItems.length; i++) {
+            if (openItems[i] !== item) {
+                openItems[i].classList.remove('open');
+                var oh = openItems[i].querySelector('.polemik-head');
+                if (oh) oh.setAttribute('aria-expanded', 'false');
+            }
+        }
+        if (isOpen) {
+            item.classList.remove('open');
+            this.setAttribute('aria-expanded', 'false');
+        } else {
+            item.classList.add('open');
+            this.setAttribute('aria-expanded', 'true');
+        }
+    }
+
+    async function loadPolemics() {
+        try {
+            var res = await supabaseClient
+                .from('polemics')
+                .select('id, title, summary, body, author_name, status, created_at')
+                .order('created_at', { ascending: false });
+
+            if (res.error) throw res.error;
+            allPolemics = res.data || [];
+            renderList(allPolemics);
+        } catch (err) {
+            console.log('Polemik yükleme hatası:', err);
+            listEl.innerHTML = '' +
+                '<div class="polemik-empty">' +
+                    '<div class="glyph">!</div>' +
+                    '<p>Polemikler yüklenemedi. Lütfen daha sonra tekrar dene.</p>' +
+                '</div>';
+            countEl.textContent = '—';
+        }
+    }
+    loadPolemics();
+
+    // ARAMA
+    var searchInput = document.getElementById('polemikSearch');
+    var searchTimer = null;
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimer);
+        var q = this.value.trim().toLowerCase();
+        searchTimer = setTimeout(function() {
+            if (!q) { renderList(allPolemics); return; }
+            var filtered = allPolemics.filter(function(p) {
+                return (p.title || '').toLowerCase().indexOf(q) !== -1
+                    || (p.summary || '').toLowerCase().indexOf(q) !== -1
+                    || (p.body || '').toLowerCase().indexOf(q) !== -1;
+            });
+            renderList(filtered);
+        }, 180);
+    });
+
+    // MODAL
+    var modal = document.getElementById('polemikModal');
+    var modalFormWrap = document.getElementById('modalFormWrap');
+    var modalSuccess = document.getElementById('modalSuccess');
+    var modalError = document.getElementById('modalError');
+    var form = document.getElementById('polemikForm');
+    var titleInput = document.getElementById('polemikTitle');
+    var summaryInput = document.getElementById('polemikSummary');
+    var bodyInput = document.getElementById('polemikBody');
+    var summaryCounter = document.getElementById('summaryCounter');
+    var charCounter = document.getElementById('charCounter');
+    var submitBtn = document.getElementById('modalSubmit');
+
+    var MIN_BODY = 60;
+    var MIN_SUMMARY = 20;
+    var MAX_SUMMARY = 200;
+
+    function openModal() {
+        modalFormWrap.style.display = 'block';
+        modalSuccess.style.display = 'none';
+        modalError.classList.remove('show');
+        form.reset();
+        updateCounters();
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        setTimeout(function() { titleInput.focus(); }, 200);
+    }
+    function closeModal() {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('fabPolemik').addEventListener('click', openModal);
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
+    });
+
+    function updateCounters() {
+        // Özet
+        var sLen = summaryInput.value.trim().length;
+        summaryCounter.textContent = sLen + ' / ' + MAX_SUMMARY;
+        summaryCounter.classList.remove('warn', 'ok', 'fail');
+        if (sLen < MIN_SUMMARY) summaryCounter.classList.add(sLen === 0 ? 'fail' : 'warn');
+        else summaryCounter.classList.add('ok');
+
+        // Metin
+        var bLen = bodyInput.value.trim().length;
+        charCounter.textContent = bLen + ' / ' + MIN_BODY;
+        charCounter.classList.remove('warn', 'ok', 'fail');
+        if (bLen === 0) charCounter.classList.add('fail');
+        else if (bLen < MIN_BODY) charCounter.classList.add('warn');
+        else charCounter.classList.add('ok');
+    }
+    summaryInput.addEventListener('input', updateCounters);
+    bodyInput.addEventListener('input', updateCounters);
+
+    function showError(msg) {
+        modalError.textContent = msg;
+        modalError.classList.add('show');
+    }
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        modalError.classList.remove('show');
+
+        var title = titleInput.value.trim();
+        var summary = summaryInput.value.trim();
+        var body = bodyInput.value.trim();
+
+        if (title.length < 3) {
+            showError('Başlık en az 3 karakter olmalı.');
+            titleInput.focus();
+            return;
+        }
+        if (summary.length < MIN_SUMMARY) {
+            showError('Özet en az ' + MIN_SUMMARY + ' karakter olmalı.');
+            summaryInput.focus();
+            return;
+        }
+        if (summary.length > MAX_SUMMARY) {
+            showError('Özet en fazla ' + MAX_SUMMARY + ' karakter olabilir.');
+            summaryInput.focus();
+            return;
+        }
+        if (body.length < MIN_BODY) {
+            showError('Polemik metni en az ' + MIN_BODY + ' karakter olmalı.');
+            bodyInput.focus();
+            return;
+        }
+        if (!currentUser) {
+            showError('Oturum bulunamadı. Lütfen tekrar giriş yap.');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.querySelector('span').textContent = 'Yayınlanıyor...';
+
+        try {
+            var authorName = currentUser.full_name || currentUser.username || 'anonim';
+
+            var res = await supabaseClient
+                .from('polemics')
+                .insert({
+                    title: title,
+                    summary: summary,
+                    body: body,
+                    author_id: currentUser.id,
+                    author_name: authorName,
+                    status: 'open'
+                })
+                .select('id, title, summary, body, author_name, status, created_at')
+                .single();
+
+            if (res.error) throw res.error;
+
+            modalFormWrap.style.display = 'none';
+            modalSuccess.style.display = 'block';
+
+            allPolemics.unshift(res.data);
+            renderList(allPolemics);
+
+            setTimeout(closeModal, 1800);
+
+        } catch (err) {
+            console.log('Polemik ekleme hatası:', err);
+            showError('Polemik yayınlanamadı: ' + (err.message || 'bilinmeyen hata'));
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.querySelector('span').textContent = 'Yayınla';
+        }
+    });
+
+    console.log('%c✦ KATRAN — POLEMİK ✦', 'font-size: 24px; font-weight: 900; color: #b04455;');
+
+})();
+</script>
+</body>
+</html>
